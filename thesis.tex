@@ -1,10 +1,11 @@
-\documentclass[12pt,a4paper]{article}
+\documentclass[10pt,a4paper]{article}
 \usepackage[latin1]{inputenc}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{hyperref}
 \usepackage{parskip}
+\usepackage[subrefformat=parens]{subcaption}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.16}
 \usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
@@ -22,68 +23,7 @@
 \end{itemize}
 
 \pagebreak
-\section{Cryptography Background}
-After language was invented to share knowledge, humans soon needed a way hide it from those whom it was not intended. The first schemes used word or letter substitutions or the shuffling of characters to make the meaning of a message hard to obtain. These techniques are still used as the basic building blocks today; for example in the AES block cipher, a very popular encryption scheme, of which there are hardware implementations baked in to many of the major computer chips. Early schemes however, relied on the secrecy of the method to protect the privacy of the message which meant that they cannot be reused by others. This lead to the introduction of parametrised constructions that use a key to alter the encryption such as the Vigen\`ere cipher. Modern schemes obey Keroff's principle; that the security of the system only depends on the security of the key, allowing the same encryption method to be used by all.
-\begin{itemize}
- \item security through obscurity
- \item perfect security - information-theoretic
- \item conditional security
- \item ciphertexts - formatting
- \item block ciphers
-\end{itemize}
-
-\begin{itemize}
- \item hiding existence
- \item stenography
- \item honey encryption
- \item deniable encryption
-\end{itemize}
-
-\pagebreak
-\section{Format Transforming Encryption}
-
-In 1981, NIST\cite{FIPS74} outlined a mode of DES that was able to restrict the ciphertext of an encryption to a string of a fixed, finite alphabet such as decimal digits $ \Sigma = \{0,1...9\} $. This allows plain texts such as phone numbers of form $ X \in \Sigma^N $ to be encrypted to a ciphertext $ Y = \Sigma^N $ that is also a phone number. Although that FIPS document is now withdrawn it sparked further work such as Brightwell and Smith\cite{DPE}. They first specify the particular use case of encrypting data in place in a database where the ciphertexts must abide by the same type constraints of the database schema. The paper then goes on to describe their  Datatype-Preserving Encryption scheme that again works with DES in a streaming mode and works over an indexed finite alphabet, however the algorithm has redundant elements such as shuffling the alphabet's ordering that are not backed up with reasoning and there is no proof of security. More recently, Black and Rogaway\cite{CAFD} provide three constructions in their paper. They analyse the security of each one against the standard adversary $Adv^{prp}$ and also discuss the practical considerations of scaling.
-
-The field has become a highly practical one, with companies such as Voltage moving to take advantage of the concept. They are using it to upgrade older systems by adding a layer of security that since does not change the structure of the data is invisible to the applications that sit on top. Therefore the costs of this retrofitting is vastly reduced since the need to completely redesign the system is usually eliminated. As of 2018, HPE\cite{hp} are still pushing it as part of their SecureData product to help maintain legacy software.
-
-To keep up with the work in industry, Bellare et al. wrote a comprehensive paper\cite{fpe} that formally defines the goals of FTE. They did this in the form of adversary based games. They redefine the standard Pseudo Random Permutation (PRP) Security game which challenges an adversary to distinguish the encryption scheme from a random permutation. The paper also gives weaker notions they think are more appropriate. Single Point Indistinguishably (SPI) requires the adversary to be unable to distinguish between the encryption of any chosen plaintext and a randomly selected ciphertext. The Message Recovery (MR) game gives the adversary the distribution of plaintexts and asks for a decryption of a randomly selected ciphertext, given an encryption and verification oracle. Finally they define Message Privacy (MP) as the inability of an adversary to compute a function of a plaintext given the ciphertext; Note in this game the adversary can select the function it hopes it will have most success with. They state the following strength hierarchy for these games, showing PRP does give us the Message Recovery property we ultimately want.
-$$ PRP \implies SPI \implies MP \implies MR $$
-The first implication is trivial since a random function will produce a random element when given the message. The last last implications is also trivial since MR is just a special cast of MP - where the function is fixed to be the identity. For the proof of $ SPI \implies MP $ the paper shows how an adversary $B$ for SPI can be  constructed using an adversary $A$ for MP with sufficiently large advantage since $B$ is able to run $A$ and satisfy it's calls to the encryption oracle using its own oracle.
-\subsection{Rank Then Encipher}
-In the second half of the paper\cite{fpe} Bellare et al. then propose a framework called Rank then Encipher. This framework supports and enhances the methods already discussed since it enables any encryption scheme that supports arbitrary size alphabets to be used to encrypt more complex languages. It simplifies the complexity of language features such as a checksum character by maps words to an simple index so that the encryption scheme used can be generic. It does this by partitioning the language in to slices of the words of each length. That is, for the language $\mathcal{X} = \{\mathcal{X}_N : N \in \mathcal{N} \}$ for lengths $\mathcal{N}$, each slice $\mathcal{X}_N = \{ X : X \in \mathcal{X}, \vert X \vert = N  \}$. Now each slice can be arbitrarily ordered as $\mathcal{X} = \{ X_0, X_1, \cdots , X_{n-1} \} $ and a bijective mapping can be defined $rank_N :: \mathcal{X}_N \rightarrow \mathbb{Z}_n$.
-Then for the whole language, we can define
-$$ rank :: \mathcal{N} \times \mathcal{X} \rightarrow \mathbb{N} \cup \bot $$
-$$ rank(N,X) =
-\left\{
-	\begin{array}{ll}
-		rank_N(X)  & \mbox{if } \vert X \vert = N\\
-		\bot & \mbox{otherwise} 
-	\end{array}
-\right.
-$$
-
-$$ unrank :: \mathcal{N} \times \mathbb{N} \rightarrow \mathcal{X} \cup \bot $$
-$$ unrank(N,i) =
-\left\{
-	\begin{array}{ll}
-		rank_N^{-1}(i)  & \mbox{if } i \in \mathbb{Z}_{\mathcal{X}_N}\\
-		\bot & \mbox{otherwise} 
-	\end{array}
-\right.
-$$\\\\
-Then if we have an encryption scheme $Enc :: \mathcal{K} \times \mathcal{N} \times \mathbb{N} \rightarrow \mathbb{N}$ that works over arbitrary domains to encrypt values into $\mathbb{Z}_{|\mathcal{X}_N|}$, we can define out scheme $\mathcal{E}_k^N = unrank_N \cdot Enc_k^{|X_N|} \cdot rank_N$. Using this construction, they state how the security properties of the original encryption scheme over the finite domain is inherited by the the rank then encrypt scheme over the language.
-
-They provide a ranking and un-ranking algorithm for regular languages, but to make this efficient, pre-computation is needed. For each word length a table has to be created which can be done through dynamic programming.
-
-Furthermore, using M\"akinen's\cite{rankcf}, algorithms if a language can be described an unambiguous context free grammar then ranking can be done in linear time and unranking can be done in $O(n \log n)$ time, if we allow $O(n^2)$ time and space preprocessing. This is since the left Szilard language of the grammar can be more easily ranked and unranked. Conversion back to the original grammar is as simple as linearly applying the rules and conversion from a word to it's left Szilard counterpart depends on the efficiency of parsing, which, is not linear, but for unambiguous grammars is still efficient.
-
-\begin{itemize}
- \item rank then encipher approach
- \item security notations
- \item application for proxy transport
- \item downfall
- \item opaque vs innocuous
-\end{itemize}
+\section{Introduction}
 
 \pagebreak
 \section{Motivation}
@@ -120,7 +60,7 @@ The packet inspection is also done on a protocol basis. Censors are usually tole
 
 One of the most effective tools for evading network surveillance is The Onion Router which not only hides the contents of packets like TLS, but also obfuscates their destination. It does this by maintaining a opaque network which decorrelates the inputs and outputs. Therefore, it is hard to workout where traffic that enters the network at an entry node will exit, and then therefore what its final destination is. To realise this, each packet is encrypted 3 times (on top of standard TLS encryption) and, as the packet moves through the network, a layer of encryption is removed at each relay node. This means, as it mixes with other packets it is hard to identify. Paths through the network are randomly allocated and keys are exchanged securely using a Diffe-Helman protocol. This is done one node at a time, through the existing link such that nodes only know the identities of their predecessor and successor in the chain. 
 
-However, there has been a lot of work and success in to de-anonymising the TOR protocol to gather information on users. There has been research in to both passive and active attacks attacks giving varying levels of success but with varying levels of effort.  Website fingerprinting attacks such as Cair et al.\cite{webfinger} only need single point of eavesdropping but suffer from high false positives. Traffic confirmation attacks which require access to both ends of the cummunication such as Shmatikov et al.\cite{conf} need long periods to gain statistical significance. Active attacks such as water marking through delays are a lot quicker but they involve a lot more work for the attacker. However, government bodies with large powers such as the NSA are interested in this field so it is not out of the realms of possibility. Even so, if an adversary only controls a small proportion of the network the chances of being allocated a fully comprised relay chain is small. Recently, Arp et a.\cite{torban} released a side-channel attack for TOR which is more reliable but less intrusive that other methods that use browser exploits. In fact in their research Nithyanand et al.\cite{AS} found that very high levels of all circuits were potentially vulnerable to state level adversaries. To counter this, they have built a TOR client that is aware of adversaries and is able to more intelligently select relay paths. This is successful in reducing the rate of affected connections but as with all these techniques sacrifices performance, adding latency to the circuit generation before any data can be sent.
+However, there has been a lot of work and success in to de-anonymising the TOR protocol to gather information on users. There has been research in to both passive and active attacks attacks giving varying levels of success but with varying levels of effort.  Website fingerprinting attacks such as Cair et al.\cite{webfinger} only need single point of eavesdropping but suffer from high false positives. Traffic confirmation attacks which require access to both ends of the cummunication such as Shmatikov et al.\cite{conf} need long periods to gain statistical significance. Active attacks such as water marking through delays are a lot quicker but they involve a lot more work for the attacker. However, government bodies with large powers such as the NSA are interested in this field so it is not out of the realms of possibility. Even so, if an adversary only controls a small proportion of the network the chances of being allocated a fully comprised relay chain is small. Recently, Arp et a.\cite{torben} released a side-channel attack for TOR which is more reliable but less intrusive that other methods that use browser exploits. In fact in their research Nithyanand et al.\cite{AS} found that very high levels of all circuits were potentially vulnerable to state level adversaries. To counter this, they have built a TOR client that is aware of adversaries and is able to more intelligently select relay paths. This is successful in reducing the rate of affected connections but as with all these techniques sacrifices performance, adding latency to the circuit generation before any data can be sent.
 
 Although TOR has these issues, it makes the surveillance of users browsing astronomically harder and so censors such as the Chinese Government have resorted to a complete ban on the service. Tor packets are very recognisable due to their predictable size and structure but some improvement have been made to adjust it's fingerprint to match TLS as much as possible. 
 
@@ -128,8 +68,138 @@ Tor works by allowing users to connect to one of the publicly known entry guard 
 To circumvent this, users instead connect to private bridges in uncensored zones (such as the US) so that the indented destination of the packets was hidden. However, with protocol fingerprinting by deep packet inspection (DPI) and the use of active probes censors can still catch these unlisted bridges in under 15 minutes of use!
 The use of FTE bridges has been able to fool these DPI systems for now since they fool the common protocol classification systems which use regular expressions also. However, as deep learning becomes more prevalent it is known that this will not be enough.
 
+
 \pagebreak
-\section{Statitistical Analysis}
+\section{Cryptography Background}
+After language was invented to share knowledge, humans soon needed a way hide it from those whom it was not intended. The first schemes used word or letter substitutions or the shuffling of characters to make the meaning of a message hard to obtain. These techniques are still used as the basic building blocks today; for example in the AES block cipher, a very popular encryption scheme, of which there are hardware implementations baked in to many of the major computer chips. Early schemes however, relied on the secrecy of the method to protect the privacy of the message which meant that they cannot be reused by others. This lead to the introduction of parametrised constructions that use a key to alter the encryption such as the Vigen\`ere cipher. Modern schemes obey Kerkoff's principle; that the security of the system only depends on the security of the key, allowing the same encryption method to be used by all.
+\begin{itemize}
+ \item security through obscurity
+ \item perfect security - information-theoretic
+ \item conditional security
+ \item ciphertexts - formatting
+ \item block ciphers
+\end{itemize}
+
+\begin{itemize}
+ \item hiding existence
+ \item stenography
+ \item honey encryption
+ \item deniable encryption
+\end{itemize}
+
+\pagebreak
+\section{Format Preserving Encryption}
+
+In 1981, NIST\cite{FIPS74} outlined a mode of DES that was able to restrict the ciphertext of an encryption to a string of a fixed, finite alphabet such as decimal digits $ \Sigma = \{0,1...9\} $. This allows plain texts such as phone numbers of form $ X \in \Sigma^N $ to be encrypted to a ciphertext $ Y = \Sigma^N $ that is also a phone number. Although that FIPS document is now withdrawn it sparked further work such as Brightwell and Smith\cite{DPE}. They first specify the particular use case of encrypting data in place in a database where the ciphertexts must abide by the same type constraints of the database schema. The paper then goes on to describe their  Datatype-Preserving Encryption scheme that again works with DES in a streaming mode and works over an indexed finite alphabet, however the algorithm has redundant elements such as shuffling the alphabet's ordering that are not backed up with reasoning and there is no proof of security. More recently, Black and Rogaway\cite{CAFD} provide three constructions in their paper. They analyse the security of each one against the standard adversary $Adv^{prp}$ and also discuss the practical considerations of scaling.
+
+The field has become a highly practical one, with companies such as Voltage moving to take advantage of the concept. They are using it to upgrade older systems by adding a layer of security that since does not change the structure of the data is invisible to the applications that sit on top. Therefore the costs of this retrofitting is vastly reduced since the need to completely redesign the system is usually eliminated. As of 2018, HPE\cite{hp} are still pushing it as part of their SecureData product to help maintain legacy software.
+
+To keep up with the work in industry, Bellare et al. wrote a comprehensive paper\cite{fpe} that formally defines the goals of FTE. They did this in the form of adversary based games. They redefine the standard Pseudo Random Permutation (PRP) Security game which challenges an adversary to distinguish the encryption scheme from a random permutation. The paper also gives weaker notions they think are more appropriate. Single Point Indistinguishably (SPI) requires the adversary to be unable to distinguish between the encryption of any chosen plaintext and a randomly selected ciphertext. The Message Recovery (MR) game gives the adversary the distribution of plaintexts and asks for a decryption of a randomly selected ciphertext, given an encryption and verification oracle. Finally they define Message Privacy (MP) as the inability of an adversary to compute a function of a plaintext given the ciphertext; Note in this game the adversary can select the function it hopes it will have most success with. They state the following strength hierarchy for these games, showing PRP does give us the Message Recovery property we ultimately want.
+$$ PRP \implies SPI \implies MP \implies MR $$
+The first implication is trivial since a random function will produce a random element when given the message. The last last implications is also trivial since MR is just a special cast of MP - where the function is fixed to be the identity. For the proof of $ SPI \implies MP $ the paper shows how an adversary $B$ for SPI can be  constructed using an adversary $A$ for MP with sufficiently large advantage since $B$ is able to run $A$ and satisfy it's calls to the encryption oracle using its own oracle.
+
+\subsection{Rank and Encrypt}
+
+In the second half of the paper\cite{fpe} Bellare et al. then proposed a framework called Rank then Encipher. This framework supports and enhances the methods already discussed since it enables any encryption scheme that supports arbitrary size alphabets to be used to encrypt more complex languages. It simplifies the complexity of language features such as a checksum character by maps words to an simple index so that the encryption scheme used can be generic. It does this by partitioning the language in to slices of the words of each length. That is, for the language $\mathcal{X} = \{\mathcal{X}_N : N \in \mathcal{N} \}$ for lengths $\mathcal{N}$, each slice $\mathcal{X}_N = \{ X : X \in \mathcal{X}, \vert X \vert = N  \}$. Now each slice can be arbitrarily ordered as $\mathcal{X} = \{ X_0, X_1, \cdots , X_{n-1} \} $ and a bijective mapping can be defined $rank_N :: \mathcal{X}_N \rightarrow \mathbb{Z}_n$.
+Then for the whole language, we can define
+$$ rank :: \mathcal{N} \times \mathcal{X} \rightarrow \mathbb{N} \cup \bot $$
+$$ rank(N,X) =
+\left\{
+	\begin{array}{ll}
+		rank_N(X)  & \mbox{if } \vert X \vert = N\\
+		\bot & \mbox{otherwise} 
+	\end{array}
+\right.
+$$
+
+$$ unrank :: \mathcal{N} \times \mathbb{N} \rightarrow \mathcal{X} \cup \bot $$
+$$ unrank(N,i) =
+\left\{
+	\begin{array}{ll}
+		rank_N^{-1}(i)  & \mbox{if } i \in \mathbb{Z}_{\mathcal{X}_N}\\
+		\bot & \mbox{otherwise} 
+	\end{array}
+\right.
+$$
+
+Then if we have an encryption scheme $Enc :: \mathcal{K} \times \mathcal{N} \times \mathbb{N} \rightarrow \mathbb{N}$ that works over arbitrary domains to encrypt values into $\mathbb{Z}_{|\mathcal{X}_N|}$, we can define out scheme $\mathcal{E}_k^N = unrank_N \cdot Enc_k^{|X_N|} \cdot rank_N$. Using this construction, they state how the security properties of the original encryption scheme over the finite domain is inherited by the the rank then encrypt scheme over the language.
+
+They provide a ranking and un-ranking algorithm for regular languages, but to make this efficient, pre-computation is needed. For each word length a table has to be created which can be done through dynamic programming.
+
+Furthermore, using M\"akinen's\cite{rankcf}, algorithms if a language can be described an unambiguous context free grammar then ranking can be done in linear time and unranking can be done in $O(n \log n)$ time, if we allow $O(n^2)$ time and space preprocessing. This is since the left Szilard language of the grammar can be more easily ranked and unranked. Conversion back to the original grammar is as simple as linearly applying the rules and conversion from a word to it's left Szilard counterpart depends on the efficiency of parsing, which, is not linear, but for unambiguous grammars is still efficient.
+
+\section{Format Transforming Encryption}
+
+Inspired by the rank and encrypt method from Bellare, Dyer et al. outlined in their paper\cite{fte} a new cryptographic primitive that extends standard symmetric encryption to produce ciphertexts that follow a selected format. This is done by chopping the front off the the scheme $\mathcal{E}^N_k$ defined above and interpreting the input bit stream as a number that represents the ranking.
+
+Their scheme is targeted against the regular expression based deep packet inspection (DPI) schemes that are commonly used in industry. These high end DPI tools are deployed by network administrators all over the world as they are able to label traffic by protocol using the regular expressions as definitions. They are attractive because they are fast, due to the speed of finite state machine automatons and can single out suspect type of traffic for further analysis of payloads.
+
+They show in their paper that FTE leaves these systems vulnerable to protocol misclassification by targeting allowed formats that can either be extracted from the enterprise software or learned by taking network samples. They also show that the formatting encryption expansion factor for realistic regular expressions is low enough to enable web surfing over the TOR protocol.
+
+Formally, the scheme takes a formatting regular expression grammar $\mathcal{F}$ and lets $L(\mathcal{F})$ be the language defined by it. Then using an existing authenticated encryption scheme $Enc_k$ encrypts the original message $M$ and interprets the unformatted ciphertext $Y$ as an element of $\mathbb{Z}_{\vert L(\mathcal{F}) \vert}$. The encoding function $unrank :: \mathbb{Z}_{\vert L(\mathcal{F}) \vert} \rightarrow L(\mathcal{F})$ is then used to format it to specification. To make \texttt{unrank} and it's inverse, decryption counterpart \texttt{rank} efficient the same precomputation is done as by Bellare and only a subset of the formatted language with fixed length is used. This turns the use of the scheme in to a block cipher used in Electronic Code Book mode. However, this lack of diffusion does not lead to pattern leakage since a random IV is used for each large block.
+
+They have integrated their scheme in to a TOR transport and they have had success in bypassing China's Golden Shield Project (GSP) censorship mechanisms.
+
+%https://blog.torproject.org/iran-partially-blocks-encrypted-network-traffic
+
+%Instead must use advanced mechanisms (discussed in Section 7) in settings with adversarial users.
+
+\pagebreak
+\section{Distribution Transforming Encryption}
+
+Although FTE produces validly formatted ciphertexts which satisfies many current filtering systems, the ciphertexts look in no way normal, such in the way that auto generated C source code looks very different to any C code that a human would write. This means that statistical analysis will discover that these streams are in fact fake. My scheme will try and form ciphertexts that are comparable to a stream of normal browser HTTP traffic.
+
+To do this, there must be a way to encapsulate not just the valid language but its frequency distribution. Sadly, augmenting the finite state machine produced by the regular expression with weights does not produce the desired effect. Adding weights to the DFA's state transitions would still produce a graph that could be ranked using a slightly altered algorith. However, these weights would not be meaningful, since they would not be taking in to consideration the previous path through transition graph and therefore previous symbols in the stream. In some graphs, where every different input stream parses through a different subset of the DFA states this approach is valid. However, efficient DFA's do not do this since it has exponential blow up.
+
+In fact, however you encode it, to fully define the probability density function for a bit stream of even a fixed length $n$, you also need exponential space. For example let's calculate the space requirement for a block of payload of size $10$ bytes long. Assume a 4 byte fixed point or floating point value is used to store the proportions, depending on the variation of the values. The storage size would be an intractable $4*(256^10) = 4*(1024^8) = 4$ yobi bytes.
+
+Therefore, obviously simpler distribution descriptions were needed i.e. heuristics. The first target is to design a distinguisher for the existing FTE scheme from normal traffic. The first heuristic was targeted at the fixed width that Dyer scheme produces. It can be clearly seen in figure \ref{fig:fake_length_dist} that compared to normal traffic the difference is obvious.
+
+\begin{figure}[h]
+\begin{subfigure}[b]{.49\linewidth}
+\includegraphics[width=\linewidth]{fake_length_dist}
+\caption{Normal vs. FTE fixed width}
+\label{fig:fake_length_dist}
+\end{subfigure}
+\begin{subfigure}[b]{.49\linewidth}
+\includegraphics[width=\linewidth]{uniform_length_dist}
+\caption{Normal vs. random width}
+\label{fig:uniform_length_dist}
+\end{subfigure}
+\caption{Length Distrbutions}
+\end{figure}
+
+In this case, the probability of the packet being exactly 256 bytes is overwhelmingly greater for the FTE scheme than form normal traffic. Of course, legitimate packets may also be this length so filtering them all out would give false positives. This might be okay if when the TCP layer resent the data it would be different as so would be let through but it sends an exact copy each time. Therefore, to amplify the probability of not catching false positives, then system must take a sample from the stream and check them all. This could be done on a small running window basis and when triggered will add the IP address to a temporary ban. This is like what happens in currently deployed keyword filtering systems such as in China. 
+
+\pagebreak
+\section{Other Solutions}
+
+ObfsProxy simply encrypts the entire packet with a streaming cipher. Earlier versions used a fixed parameters so although expensive, decryption could be done to obtain the standard traffic but now even that is not possible since a key exchange produces ephemeral keys. This procedure produces ciphertexts that are computationally indistinguishable from a random string so intensive computational statistics would be able to differentiate this from a background distribution of standard traffic. Also, do to it's complete lack of structure it would not pass any protocol white-listing filters.
+
+StegoTorus is a system that uses carefully hand crafted embeddings for ciphertexts. In the HTTP mode, it selects randomly for pre-recorded traces and hides the chopped up ciphertext inside Javascript, PDF and SWF files and header fields like Cookies. Since, the masquerading protocol is HTTP, blocking encrypted protocols will not stop this. However, it relies on distributing large volumes of these traces or everyone recording their own, otherwise censors could just block all of them specifically. This means the overhead in communication but mainly storage of traces is large 
+
+
+meek\\
+Description: Is a transport that uses HTTP for carrying bytes and TLS for obfuscation. Traffic is relayed through a third-party server (Google App Engine). It uses a trick to talk to the third party so that it looks like it is talking to an unblocked server.
+
+ScrambleSuit\\
+Description: Is a pluggable transport that protects against follow-up probing attacks and is also capable of changing its network fingerprint (packet length distribution, inter-arrival times, etc.).
+Language: Python
+
+SkypeMorph\\
+Description: It transforms Tor traffic flows so they look like Skype Video. See its source code and design paper.
+
+Dust\\
+Description: It aims to provide a packet-based (rather than connection-based) DPI-resistant protocol. See its git repository.
+
+
+\pagebreak
+\section{Implementation}
+
+
+
+\pagebreak
+\section{Statistical Analysis}
 
 \begin{enumerate}
 \item finding good binning methods
@@ -137,17 +207,13 @@ The use of FTE bridges has been able to fool these DPI systems for now since the
 \item thresholding, approximating to normal
 \end{enumerate}
 
-\input{length_dist_differences}
-
-\input{char_dist_differences}
-
-\input{char_statistic}
-
 \section{Implementation}
 
 
 \pagebreak
+\begingroup
+\raggedright
 \bibliography{thesis}{}
 \bibliographystyle{plain}
-
+\endgroup
 \end{document}
