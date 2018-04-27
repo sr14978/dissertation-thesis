@@ -8,6 +8,7 @@
 \usepackage[subrefformat=parens]{subcaption}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.16}
+\usepackage{sidecap}
 \usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
 \author{Samuel Russell}
 \title{Innocuous Ciphertexts}
@@ -171,6 +172,106 @@ Therefore, obviously simpler distribution descriptions were needed i.e. heuristi
 
 In this case, the probability of the packet being exactly 256 bytes is overwhelmingly greater for the FTE scheme than form normal traffic. Of course, legitimate packets may also be this length so filtering them all out would give false positives. This might be okay if when the TCP layer resent the data it would be different as so would be let through but it sends an exact copy each time. Therefore, to amplify the probability of not catching false positives, then system must take a sample from the stream and check them all. This could be done on a small running window basis and when triggered will add the IP address to a temporary ban. This is like what happens in currently deployed keyword filtering systems such as in China. 
 
+Another heuristic for defining the distribution is pattern frequency. This can be done at varying levels of granularity. 
+
+\pagebreak
+\section{Implementation}
+
+
+I have implemented the code for the censor and the de-censor scheme. The censor implementation consists of a measurement program that calculates the statistical similarity of batches of paths to a pre-recorded reference histogram of normal traffic. It compares the statistic to a threshold pre-calculated to separate normal from malicious requests. The de-censor scheme takes in messages, encrypts them and then encodes them using the selected emulator, that outputs an expanded ciphertext but one that is distributed according to it's reference histogram. This can be the same reference distribution as the censor, but a high success rate is also possible using a separately recorded histogram of the same normally distributed background traffic. This is important since practically, it would not be possible to extract the used distribution from in-use instances of the tool.
+
+
+All the code was written in \texttt{python2.7} for quick prototyping but for performance gains the core could be re-written in \texttt{C/C++} to remove the overheads of the python interpreter. I conducted my implementation and testing on Ubuntu 16.04 on VMware virtual machines running on a low powered i5 Intel VT enabled laptop.
+
+\subsection{Collection}
+
+Packet collection is used for both parties, since both the emulator and censor need to record a reference distribution to work against and the censor is also required to read the packets for classification. Since both my censor and de-censors are running on Ubuntu machines I used the PyShark a python wrapper around the Tshark non-interactive command-line tool. Tshark is also able to parse and filter the packets like currently deployed DPI systems. I used this feature to extract the packets I cared about using the filter in figure \ref{fig:filter}.
+
+\begin{figure}[h]
+\begin{verbatim}
+http && http.request.method == "GET"
+\end{verbatim}
+\caption{Tshark packet filter}
+\label{fig:filter}
+\end{figure}
+
+The filter shows that we only targeted GET requests. This is because HTTP is a very one sided protocol with most of the content moving from the web server to the client and therefore it is harder to hide messages inside the requests. The response encoding should be more straight forward. GET requests as opposed to POST requests take up a larger proportion of web traffic and so are the obvious choice. 
+
+In this experiment I have fixed all other parameters apart from path. This is a proof of principle
+of the sides of communication to forge due to it's normally low data size. Files returned from servers are usually much less structured 
+
+To collect real web traffic data, I built a web-crawler using the FOSS Selenium web automation framework. To gather a realistic distribution I needed to emulate the whole browser environment since X amount of the requests from modern sites are dynamics initiated from inside the scripts.
+% graph
+
+I crawled recursively over the Alexa top 50 sites\cite{alexa} that support unencrypted traffic. This gave me a sample of 10,000 paths to create reference distribution.
+
+\subsection{Histogram creation}
+
+Like the recording of reference material, the calculation of distribution histograms is not time critical since they can be done offline. The process is straightforward frequency bins to count the occurrences of each option. I tried several methods as explained below.
+
+
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{bob}
+		\caption{Path length}
+		\label{fig:length_hist}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{bob}
+		\caption{Character based}
+		\label{fig:char_hist}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{bob}
+		\caption{First Letter}
+		\label{fig:first_hist}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{bob}
+		\caption{Random Letter}
+		\label{fig:rand_hist}
+	\end{subfigure}
+
+	\caption{Distribution Histographs}\label{fig:hists}
+\end{figure}
+
+Path length - this was targeted at the FTE scheme that used a fixed length. It shows very few examples would be needed to differentiate the origins.
+
+Character distribution - This graph exibits the underlying encryption schemes uniform randomness, whereas in real traffic not all characters are created equally.
+
+First Letter - This method was attempted to see if the same distinguishing effect would be possible only using a fixed subset of the URL.
+
+Random Letter - like the previous this uses a limited sample by randomises it's location to see if this improved on the above results.
+
+
+\begin{enumerate}
+\item offline - so not performance critical
+\item smoothing
+\end{enumerate}
+
+\subsection{Statistical Analysis}
+
+\begin{enumerate}
+\item finding good binning methods
+\item Chi Square vs fischer test
+\item thresholding, approximating to normal
+\item library used
+\end{enumerate}
+
+\subsection{Encryption}
+
+The DTE is an encrypt-then-encode framework. To ensure the same standards of encryption as in the FTE scheme DTE must also provide IND-CCA security. To ensure this I will use an authenticated encryption scheme i will use counter mode with HMAC using AES256 for encryption and SHA256 for authentication. Therefore, assuming the underlying block cipher - AES - is secure, this mode provides indistinguishability under a chosen ciphertext attack. This security guarantee is only for the encryption layer. 
+
+%Now prove the property holds for the whole scheme
+
+I used the Cryptography implementation from the PyCrypto library. This provides an AES block cipher, SHA256 Hash in a Merkle-Damg$\mathring{a}$rd construction and counter mode framework. The IV is chosen randomly.
+
+\subsection{Proxy Embedding}
+
+\pagebreak
+\section{Evalutation}
+
 \pagebreak
 \section{Other Solutions}
 
@@ -191,23 +292,6 @@ Description: It transforms Tor traffic flows so they look like Skype Video. See 
 
 Dust\\
 Description: It aims to provide a packet-based (rather than connection-based) DPI-resistant protocol. See its git repository.
-
-
-\pagebreak
-\section{Implementation}
-
-
-
-\pagebreak
-\section{Statistical Analysis}
-
-\begin{enumerate}
-\item finding good binning methods
-\item Chi Square vs fischer test
-\item thresholding, approximating to normal
-\end{enumerate}
-
-\section{Implementation}
 
 
 \pagebreak
