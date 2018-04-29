@@ -7,8 +7,9 @@
 \usepackage{parskip}
 \usepackage[subrefformat=parens]{subcaption}
 \usepackage{pgfplots}
-\pgfplotsset{compat=1.16}
+\pgfplotsset{width=7cm,compat=1.16}
 \usepackage{sidecap}
+\usepackage{wrapfig}
 \usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
 \author{Samuel Russell}
 \title{Innocuous Ciphertexts}
@@ -172,7 +173,96 @@ Therefore, obviously simpler distribution descriptions were needed i.e. heuristi
 
 In this case, the probability of the packet being exactly 256 bytes is overwhelmingly greater for the FTE scheme than form normal traffic. Of course, legitimate packets may also be this length so filtering them all out would give false positives. This might be okay if when the TCP layer resent the data it would be different as so would be let through but it sends an exact copy each time. Therefore, to amplify the probability of not catching false positives, then system must take a sample from the stream and check them all. This could be done on a small running window basis and when triggered will add the IP address to a temporary ban. This is like what happens in currently deployed keyword filtering systems such as in China. 
 
-Another heuristic for defining the distribution is pattern frequency. This can be done at varying levels of granularity. 
+Another heuristic for defining the distribution is pattern frequency. This can be done at varying levels of granularity to give varying results. The obvious level is at the character level, which only produces strings containing valid characters, since they are extracted from normal traffic. Since patterns are drawn independently, any lower level of granularity produces byte values for non valid characters such as control characters. This makes detection easy for a censor as these values are not allowed in the protocol without even considering their frequency of use in normal traffic. Longer patterns have pros and cons; more character dependence, leading to more realistic URLs to the eye, but the complexity is increased dramatically. If multiple character patterns are used, sequences of semantically correct content appear such as words and data structures (query string parameters). 
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+Pattern Length&
+Distrobution Bin Number&
+Max Splitting&
+Extension Factor\\
+\hline
+4&16&5&1.7\\
+8&81&14&2.1\\
+16&3310&52&2.8\\
+24&10115&101&3.6\\
+32&16471&93&4.9\\
+40&19464&88&6.2\\
+48&19863&80&7.6\\
+\hline
+\end{tabular}
+\caption{Effects of changing Pattern length}
+\label{tab:patlen}
+\end{table}
+
+Table \ref{tab:patlen} shows some trends that occur when the pattern length is altered. The statistics are gathered from analysis of one reference sample of normal URLs.
+
+\begin{wrapfigure}{L}{0.5\textwidth}
+\begin{tikzpicture}
+\begin{axis}[
+    ylabel={Extention Factor},
+    xlabel={Pattern Length},
+    xmin=0, xmax=55,
+    ymin=0, ymax=8,
+    ytick={0,1,2,3,4,5,6,7,8},
+    xtick={0,10,20,30,40,50},
+    legend pos=north west,
+    ymajorgrids=true,
+    grid style=dashed,
+]
+ 
+\addplot[color=blue,mark=square]
+    coordinates {(4,1.7)(8,2.1)(16,2.8)(24,3.6)(32,4.9)(40,6.2)(48,7.6) };
+ 
+\end{axis}
+\end{tikzpicture}
+
+\begin{tikzpicture}
+\begin{axis}[
+    ylabel={Distrobution Bin Number $\times 10^3$},
+    xlabel={Pattern Length},
+    xmin=0, xmax=55,
+    ymin=0, ymax=20,
+    ytick={0,5,10,15,20},
+    xtick={0,10,20,30,40,50},
+    legend pos=north west,
+    ymajorgrids=true,
+    grid style=dashed,
+]
+ 
+\addplot[color=blue,mark=square]
+    coordinates {(4,0.016)(8,0.081)(16,3.310)(24,10.115)(32,16.471)(40,19.464)(48,19.863) };
+ 
+\end{axis}
+\end{tikzpicture}
+\begin{tikzpicture}
+\begin{axis}[
+    ylabel={Max Splitting},
+    xlabel={Pattern Length},
+    xmin=0, xmax=55,
+    ymin=0, ymax=110,
+    ytick={0,20,40,60,80,100},
+    xtick={0,10,20,30,40,50},
+    legend pos=north west,
+    ymajorgrids=true,
+    grid style=dashed,
+]
+ 
+\addplot[color=blue,mark=square]
+    coordinates {(4,5)(8,14)(16,52)(24,101)(32,93)(40,88)(48,80) };
+ 
+\end{axis}
+\end{tikzpicture}
+\end{wrapfigure}
+
+
+The expansion factor follows the following equation; let $s$ be the maximum splitting before errors, and $pl$ to be the patten length.
+$$|out| = |in| \times \left( \log_s 256 \times pl / 8 \right)$$ 
+This stems from the conversion of bases from $0x100=256$ in a character to $s$ divisions over the pattern of $pl$ bits and therefore $pl/8$ bytes. The equation shows the linear correlation between pattern length and expansion, though the graph shows the rate of inefficiency increases slightly with pattern size. This is due to the how well the bigger pattern distributions split in the equal portions. Initially, the splitting amount increases but after 24 bits (3 characters) it pivots and gradually decreases.  This is due to the increasing variance in bin size as the patterns get larger
+
+
 
 \pagebreak
 \section{Implementation}
