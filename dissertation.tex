@@ -1,5 +1,39 @@
-\documentclass[10pt,a4paper]{article}
-\usepackage[latin1]{inputenc}
+% The document class supplies options to control rendering of some standard
+% features in the result.  The goal is for uniform style, so some attention 
+% to detail is *vital* with all fields.  Each field (i.e., text inside the
+% curly braces below, so the MEng text inside {MEng} for instance) should 
+% take into account the following:
+%
+% - author name       should be formatted as "FirstName LastName"
+%   (not "Initial LastName" for example),
+% - supervisor name   should be formatted as "Title FirstName LastName"
+%   (where Title is "Dr." or "Prof." for example),
+% - degree programme  should be "BSc", "MEng", "MSci", "MSc" or "PhD",
+% - dissertation title should be correctly capitalised (plus you can have
+%   an optional sub-title if appropriate, or leave this field blank),
+% - dissertation type should be formatted as one of the following:
+%   * for the MEng degree programme either "enterprise" or "research" to
+%     reflect the stream,
+%   * for the MSc  degree programme "$X/Y/Z$" for a project deemed to be
+%     X%, Y% and Z% of type I, II and III.
+% - year              should be formatted as a 4-digit year of submission
+%   (so 2014 rather than the accademic year, say 2013/14 say).
+
+\documentclass[ % the name of the author
+                    author={Samuel Russell},
+                % the name of the supervisor
+                supervisor={Professor Bogdan Warinschi},
+                % the degree programme
+                    degree={MEng},
+                % the dissertation    title (which cannot be blank)
+                     title={Innocuous Ciphertexts},
+                % the dissertation subtitle (which can    be blank)
+                  subtitle={The DE-CENSOR Scheme},
+                % the dissertation     type
+                      type={research},
+                % the year of submission
+                      year={2018} ]{dissertation}
+
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
@@ -11,27 +45,154 @@
 \usepackage{sidecap}
 \usepackage{wrapfig}
 \usepackage{multirow}
-\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
-\author{Samuel Russell}
-\title{Innocuous Ciphertexts}
+
 \begin{document}
+
+
+% =============================================================================
+
+% This macro creates the standard UoB title page by using information drawn
+% from the document class (meaning it is vital you select the correct degree 
+% title and so on).
+
 \maketitle
 
-\section{Contributions}
+% After the title page (which is a special case in that it is not numbered)
+% comes the front matter or preliminaries; this macro signals the start of
+% such content, meaning the pages are numbered with Roman numerals.
 
+\frontmatter
+
+% This macro creates the standard UoB declaration; on the printed hard-copy,
+% this must be physically signed by the author in the space indicated.
+
+\makedecl
+
+% LaTeX automatically generates a table of contents, plus associated lists 
+% of figures, tables and algorithms.  The former is a compulsory part of the
+% dissertation, but if you do not require the latter they can be suppressed
+% by simply commenting out the associated macro.
+
+\tableofcontents
+
+
+% The following sections are part of the front matter, but are not generated
+% automatically by LaTeX; the use of \chapter* means they are not numbered.
+
+% -----------------------------------------------------------------------------
+
+\chapter*{Executive Summary}
+
+{\bf A compulsory section, of at most $1$ page} 
+\vspace{1cm} 
+
+\noindent
+This section should pr\'{e}cis the project context, aims and objectives,
+and main contributions (e.g., deliverables) and achievements; the same 
+section may be called an abstract elsewhere.  The goal is to ensure the 
+reader is clear about what the topic is, what you have done within this 
+topic, {\em and} what your view of the outcome is.
+
+The former aspects should be guided by your specification: essentially 
+this section is a (very) short version of what is typically the first 
+chapter.  Note that for research-type projects, this {\bf must} include 
+a clear research hypothesis.  This will obviously differ significantly
+for each project, but an example might be as follows:
+
+\begin{quote}
+My research hypothesis is that a suitable genetic algorithm will yield
+more accurate results (when applied to the standard ACME data set) than 
+the algorithm proposed by Jones and Smith, while also executing in less
+time.
+\end{quote}
+
+\noindent
+The latter aspects should (ideally) be presented as a concise, factual 
+bullet point list.  Again the points will differ for each project, but 
+an might be as follows:
+
+\begin{quote}
+\noindent
 \begin{itemize}
-\item Critically discuss the downfalls of using an FTE system to encode ciphertexts.
-\item Build a statistical tool for distinguishing emulated from normal traffic.
-\item Build a new scheme that is able to overcome this detection.
+\item I spent $120$ hours collecting material on and learning about the 
+      Java garbage-collection sub-system. 
+\item I wrote a total of $5000$ lines of source code, comprising a Linux 
+      device driver for a robot (in C) and a GUI (in Java) that is 
+      used to control it.
+\item I designed a new algorithm for computing the non-linear mapping 
+      from A-space to B-space using a genetic algorithm, see page $17$.
+\item I implemented a version of the algorithm proposed by Jones and 
+      Smith in [6], see page $12$, corrected a mistake in it, and 
+      compared the results with several alternatives.
 \end{itemize}
+\end{quote}
 
-\pagebreak
-\section{Introduction}
+% -----------------------------------------------------------------------------
 
+\chapter*{Notation and Acronyms}
 
+{\bf An optional section, of roughly $1$ or $2$ pages}
+\vspace{1cm} 
 
-\pagebreak
-\section{Motivation}
+\noindent
+Any well written document will introduce notation and acronyms before
+their use, {\em even if} they are standard in some way: this ensures 
+any reader can understand the resulting self-contained content.  
+
+Said introduction can exist within the dissertation itself, wherever 
+that is appropriate.  For an acronym, this is typically achieved at 
+the first point of use via ``Advanced Encryption Standard (AES)'' or 
+similar, noting the capitalisation of relevant letters.  However, it 
+can be useful to include an additional, dedicated list at the start 
+of the dissertation; the advantage of doing so is that you cannot 
+mistakenly use an acronym before defining it.  A limited example is 
+as follows:
+
+\begin{quote}
+\noindent
+\begin{tabular}{lcl}
+AES                 &:     & Advanced Encryption Standard                                         \\
+DES                 &:     & Data Encryption Standard                                             \\
+                    &\vdots&                                                                      \\
+${\mathcal H}( x )$ &:     & the Hamming weight of $x$                                            \\
+${\mathbb  F}_q$    &:     & a finite field with $q$ elements                                     \\
+$x_i$               &:     & the $i$-th bit of some binary sequence $x$, st. $x_i \in \{ 0, 1 \}$ \\
+\end{tabular}
+\end{quote}
+
+% -----------------------------------------------------------------------------
+
+\chapter*{Acknowledgements}
+
+{\bf An optional section, of at most $1$ page}
+\vspace{1cm} 
+
+\noindent
+It is common practice (although totally optional) to acknowledge any
+third-party advice, contribution or influence you have found useful
+during your work.  Examples include support from friends or family, 
+the input of your Supervisor and/or Advisor, external organisations 
+or persons who  have supplied resources of some kind (e.g., funding, 
+advice or time).
+% =============================================================================
+
+% After the front matter comes a number of chapters; under each chapter,
+% sections, subsections and even subsubsections are permissible.  The
+% pages in this part are numbered with Arabic numerals.  Note that:
+%
+% - A reference point can be marked using \label{XXX}, and then later
+%   referred to via \ref{XXX}; for example Chapter\ref{chap:context}.
+% - The chapters are presented here in one file; this can become hard
+%   to manage.  An alternative is to save the content in seprate files
+%   the use \input{XXX} to import it, which acts like the #include
+%   directive in C.
+
+\mainmatter
+
+% -----------------------------------------------------------------------------
+
+\chapter{Motivations}
+\label{chap:context}
 
 Tim Berners-Lee says\cite{gard} that since its conception, the world wide web has been built with the principles of openness and privacy. These key values, that also lie at the heart of democracy, can ensure that if a website is made available on web, anyone can connect to it - no matter who they are or where they live. 
 
@@ -73,9 +234,11 @@ Tor works by allowing users to connect to one of the publicly known entry guard 
 To circumvent this, users instead connect to private bridges in uncensored zones (such as the United States) so that the indented destination of the packets is hidden. However, with protocol fingerprinting by deep packet inspection (DPI) and the use of active probes, censors can still catch these unlisted bridges in under 15 minutes of use!
 The use of obfuscation and FTE (described in section \ref{sec:FTE}) bridges has been able to fool these DPI systems for now since they fool the common protocol classification systems which use regular expressions. However, as deep learning becomes more prevalent it is known that this will not be enough.
 
+% -----------------------------------------------------------------------------
 
-\pagebreak
-\section{Cryptography Background}
+\chapter{Cryptographic Background}
+\label{chap:technical}
+
 After language was invented to share knowledge, humans soon needed a way hide it from those whom it was not intended. The first schemes used word or letter substitutions or the shuffling of characters to make the meaning of a message hard to obtain. These techniques are still used as the basic building blocks today; for example in the AES block cipher, a very popular encryption scheme, of which there are hardware implementations baked in to many of the major computer chips. Early schemes however, relied on the secrecy of the method to protect the privacy of the message which meant that they cannot be reused by others. This lead to the introduction of parametrised constructions that use a key to alter the encryption such as the Vigen\`ere cipher. Modern schemes obey Kerkoff's principle; that the security of the system only depends on the security of the key, allowing the same encryption method to be used by all.
 \begin{itemize}
  \item security through obscurity
@@ -92,7 +255,11 @@ After language was invented to share knowledge, humans soon needed a way hide it
  \item deniable encryption
 \end{itemize}
 
-\pagebreak
+% -----------------------------------------------------------------------------
+
+\chapter{Project Execution}
+\label{chap:execution}
+
 \section{Format Preserving Encryption}
 
 In 1981, NIST\cite{FIPS74} outlined a mode of DES that was able to restrict the ciphertext of an encryption to a string of a fixed, finite alphabet such as decimal digits $ \Sigma = \{0,1...9\} $. This allows plain texts such as phone numbers of form $ X \in \Sigma^N $ to be encrypted to a ciphertext $ Y = \Sigma^N $ that is also a phone number. Although that FIPS document is now withdrawn, it sparked further work such as what was done by Brightwell and Smith\cite{DPE}. They first specify the particular use case of encrypting data in place as inside a database where the ciphertexts must abide by the same type constraints of the database schema. The paper then goes on to describe their  Datatype-Preserving Encryption scheme that again works with DES in a streaming mode and works over an indexed finite alphabet. However the algorithm has redundant elements, such as shuffling the alphabet's ordering, that are not backed up with reasoning and there is no proof of security. More recently, Black and Rogaway\cite{CAFD} provide three constructions in their paper. They analyse the security of each one against the standard adversary $Adv^{prp}$ and also discuss the practical considerations of scaling asymptotically and in practice.
@@ -149,7 +316,6 @@ They have integrated their scheme in to a TOR transport and they have had succes
 
 %Instead must use advanced mechanisms (discussed in Section 7) in settings with adversarial users.
 
-\pagebreak
 \section{Distribution Transforming Encryption}
 
 Although FTE produces validly formatted ciphertexts which satisfies many current filtering systems, the ciphertexts look in no way normal. Informally, this is in the same way auto generated C source code looks very different to any C code that a human would write. This means that statistical analysis such as deep learning techniques, will discover that these streams are in fact fake. My scheme will try and form ciphertexts that are comparable to a stream of normal browser HTTP traffic by transforming the distribution to match. 
@@ -315,6 +481,7 @@ This preprocessing step is outlined in implementation.
 It is important to note that if a correction makes the lower bound greater than the higher bound the process is invalid and the splitting must be reduced.
 
 \begin{figure}[h]
+\centering
 \includegraphics[scale=.8]{correction}
 \caption{Showing how the input splitting is corrected to create an injective function.}
 \label{correction}
@@ -332,17 +499,15 @@ Firstly, the correction of the boundaries of the inputs were moved to match the 
 The divisions started as non-overlapping and during the correction, this did not change, 
 $$\forall i \neq j \in \mathbb{Z}_s, \big[ B[i],B[i+1] \big) \cap \big[ B[j],B[j+1] \big) = \emptyset$$
 since the boundaries match the pre-image of a output value is contained by only one input value,
-$$ \forall i \neq j \in \mathbb{Z}_s, \alpha,\beta \in \mathcal{H} \text{ such that } \alpha \in Img_{F^{-1}_{D_N}}(\big[ B[i],B[i+1] \big)) \text{ and } \beta \in Img_{F^{-1}_{D_N}}(\big[ B[j],B[j+1] \big)) \text{ then } \alpha \neq \beta$$
+$$ \forall i \neq j \in \mathbb{Z}_s, \alpha,\beta \in \mathcal{H} \text{ such that } \alpha \in Img_{F^{-1}_{D_N}}(\big[ B[i],B[i+1] \big)) \text{ and } \beta \in Img_{F^{-1}_{D_N}}(\big[ B[j],B[j+1] \big))$$
+$$\text{ then } \alpha \neq \beta$$
 Therefore, if we take arbitrary $x, x' \in \mathbb{Z}_s, \text{ letting } \alpha = F^{-1}_{D_N}(x), \text{ and } \beta = F^{-1}_{D_N}(x'), \text{ st. } \alpha = \beta \in \mathcal{H}$ then by the contrapositive above $x=x'$.
 
 \subsection{Towards a Concrete Scheme}
 
 I name this scheme DE-CENSOR: a Distribution Encoding of Ciphertexts to Emulate Normal Surfing for Onion Routing.
 
-
-\pagebreak
 \section{Implementation}
-
 
 I have implemented the code for the censor and the de-censor scheme. The censor implementation consists of a measurement program that calculates the statistical similarity of batches of paths to a pre-recorded reference histogram of normal traffic. It compares the statistic to a threshold pre-calculated to separate normal from malicious requests. The de-censor scheme takes in messages, encrypts them and then encodes them using the selected emulator, that outputs an expanded ciphertext but one that is distributed according to it's reference histogram. This can be the same reference distribution as the censor, but a high success rate is also possible using a separately recorded histogram of the same normally distributed background traffic. This is important since practically, it would not be possible to extract the used distribution from in-use instances of the tool.
 
@@ -434,11 +599,12 @@ The DTE is an encrypt-then-encode framework. To ensure the same standards of enc
 I used the Cryptography implementation from the PyCrypto library. This provides an AES block cipher, SHA256 Hash in a Merkle-Damg$\mathring{a}$rd construction and counter mode framework. The IV is chosen randomly.
 
 \subsection{Proxy Embedding}
+% -----------------------------------------------------------------------------
 
-\pagebreak
-\section{Evalutation}
+\chapter{Critical Evaluation}
+\label{chap:evaluation}
 
-\subsection{Evaluating Pattern Length Effects}\label{sec:gran}
+\section{Evaluating Pattern Length Effects}\label{sec:gran}
 
 \begin{table}[h]
 \centering
@@ -465,7 +631,6 @@ I used the Cryptography implementation from the PyCrypto library. This provides 
 \end{table}
 
 Table \ref{tab:patlen} shows some trends that occur when the pattern length is altered. The statistics are gathered from analysis of one reference sample of normal URLs.
-
 
 \begin{figure}[h]
 \centering
@@ -684,14 +849,84 @@ Dust\\
 Description: It aims to provide a packet-based (rather than connection-based) DPI-resistant protocol. See its git repository.
 
 
+% -----------------------------------------------------------------------------
 
-\pagebreak
-\section{Conclusion}
+\chapter{Conclusion}
+\label{chap:conclusion}
 
-\pagebreak
-\begingroup
-\raggedright
-\bibliography{thesis}{}
-\bibliographystyle{plain}
-\endgroup
+{\bf A compulsory chapter,     of roughly $5$ pages} 
+\vspace{1cm} 
+
+\noindent
+The concluding chapter of a dissertation is often underutilised because it 
+is too often left too close to the deadline: it is important to allocation
+enough attention.  Ideally, the chapter will consist of three parts:
+
+\begin{enumerate}
+\item (Re)summarise the main contributions and achievements, in essence
+      summing up the content.
+\item Clearly state the current project status (e.g., ``X is working, Y 
+      is not'') and evaluate what has been achieved with respect to the 
+      initial aims and objectives (e.g., ``I completed aim X outlined 
+      previously, the evidence for this is within Chapter Y'').  There 
+      is no problem including aims which were not completed, but it is 
+      important to evaluate and/or justify why this is the case.
+\item Outline any open problems or future plans.  Rather than treat this
+      only as an exercise in what you {\em could} have done given more 
+      time, try to focus on any unexplored options or interesting outcomes
+      (e.g., ``my experiment for X gave counter-intuitive results, this 
+      could be because Y and would form an interesting area for further 
+      study'' or ``users found feature Z of my software difficult to use,
+      which is obvious in hindsight but not during at design stage; to 
+      resolve this, I could clearly apply the technique of Smith [7]'').
+\end{enumerate}
+
+% =============================================================================
+
+% Finally, after the main matter, the back matter is specified.  This is
+% typically populated with just the bibliography.  LaTeX deals with these
+% in one of two ways, namely
+%
+% - inline, which roughly means the author specifies entries using the 
+%   \bibitem macro and typesets them manually, or
+% - using BiBTeX, which means entries are contained in a separate file
+%   (which is essentially a databased) then inported; this is the 
+%   approach used below, with the databased being dissertation.bib.
+%
+% Either way, the each entry has a key (or identifier) which can be used
+% in the main matter to cite it, e.g., \cite{X}, \cite[Chapter 2}{Y}.
+
+\backmatter
+
+\bibliography{dissertation}
+
+% -----------------------------------------------------------------------------
+
+% The dissertation concludes with a set of (optional) appendicies; these are 
+% the same as chapters in a sense, but once signaled as being appendicies via
+% the associated macro, LaTeX manages them appropriatly.
+
+\appendix
+
+\chapter{An Example Appendix}
+\label{appx:example}
+
+Content which is not central to, but may enhance the dissertation can be 
+included in one or more appendices; examples include, but are not limited
+to
+
+\begin{itemize}
+\item lengthy mathematical proofs, numerical or graphical results which 
+      are summarised in the main body,
+\item sample or example calculations, 
+      and
+\item results of user studies or questionnaires.
+\end{itemize}
+
+\noindent
+Note that in line with most research conferences, the marking panel is not
+obliged to read such appendices.
+
+% =============================================================================
+
 \end{document}
