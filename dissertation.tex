@@ -22,7 +22,7 @@
 \documentclass[ % the name of the author
                     author={Samuel Russell},
                 % the name of the supervisor
-                supervisor={Professor Bogdan Warinschi},
+                supervisor={Prof. Bogdan Warinschi},
                 % the degree programme
                     degree={MEng},
                 % the dissertation    title (which cannot be blank)
@@ -45,6 +45,10 @@
 \usepackage{sidecap}
 \usepackage{wrapfig}
 \usepackage{multirow}
+\usepackage{tabularx}
+
+%\usepackage{lineno}
+%\linenumbers
 
 \begin{document}
 
@@ -114,50 +118,34 @@ an might be as follows:
 \begin{quote}
 \noindent
 \begin{itemize}
-\item I spent $120$ hours collecting material on and learning about the 
-      Java garbage-collection sub-system. 
-\item I wrote a total of $5000$ lines of source code, comprising a Linux 
-      device driver for a robot (in C) and a GUI (in Java) that is 
-      used to control it.
-\item I designed a new algorithm for computing the non-linear mapping 
-      from A-space to B-space using a genetic algorithm, see page $17$.
-\item I implemented a version of the algorithm proposed by Jones and 
-      Smith in [6], see page $12$, corrected a mistake in it, and 
-      compared the results with several alternatives.
+\item Critically discuss the downfalls of using an FTE system to encode ciphertexts.
+-\item Build a statistical tool for distinguishing emulated from normal traffic.
+-\item Build a new scheme that is able to overcome this detection.
 \end{itemize}
 \end{quote}
 
 % -----------------------------------------------------------------------------
 
-\chapter*{Notation and Acronyms}
+\chapter*{Definitions and Acronyms}
 
-{\bf An optional section, of roughly $1$ or $2$ pages}
 \vspace{1cm} 
 
-\noindent
-Any well written document will introduce notation and acronyms before
-their use, {\em even if} they are standard in some way: this ensures 
-any reader can understand the resulting self-contained content.  
-
-Said introduction can exist within the dissertation itself, wherever 
-that is appropriate.  For an acronym, this is typically achieved at 
-the first point of use via ``Advanced Encryption Standard (AES)'' or 
-similar, noting the capitalisation of relevant letters.  However, it 
-can be useful to include an additional, dedicated list at the start 
-of the dissertation; the advantage of doing so is that you cannot 
-mistakenly use an acronym before defining it.  A limited example is 
-as follows:
 
 \begin{quote}
 \noindent
-\begin{tabular}{lcl}
-AES                 &:     & Advanced Encryption Standard                                         \\
-DES                 &:     & Data Encryption Standard                                             \\
-                    &\vdots&                                                                      \\
-${\mathcal H}( x )$ &:     & the Hamming weight of $x$                                            \\
-${\mathbb  F}_q$    &:     & a finite field with $q$ elements                                     \\
-$x_i$               &:     & the $i$-th bit of some binary sequence $x$, st. $x_i \in \{ 0, 1 \}$ \\
-\end{tabular}
+\begin{tabularx}{\textwidth}{ r c X }
+AES                 &:		& Advanced Encryption Standard                                         \\
+DES                 &:		& Data Encryption Standard                                             \\
+Normal distribution &:		& Laplace-Gauss distribution
+\\
+normal traffic		&:		& Traffic generated from a normal person
+browsing their normal sites on their normal web browser.\\
+FTE					&:		& Format Transforming Encryption\\
+DE-CENSOR			&:		& Distribution Encoding of Ciphertexts to Emulate Normal Surfing for Onion Routing\\
+Record Layer		&:		& Layer in the network stack that receives data from te application layer, encrypts it, fragments it to an appropriate size and sends it on to the Transport Layer.\\
+SOCKS				&:		& Socket Secure - Internet Proxy Protocol
+
+\end{tabularx}
 \end{quote}
 
 % -----------------------------------------------------------------------------
@@ -194,27 +182,27 @@ advice or time).
 \chapter{Motivations}
 \label{chap:context}
 
-Tim Berners-Lee says\cite{gard} that since its conception, the world wide web has been built with the principles of openness and privacy. These key values, that also lie at the heart of democracy, can ensure that if a website is made available on web, anyone can connect to it - no matter who they are or where they live. 
+Tim Berners-Lee says~\cite{gard} that since its conception, the world wide web has been built with the principles of openness and privacy. These key values, that also lie at the heart of democracy, can ensure that if a website is made available on web, anyone can connect to it - no matter who they are or where they live. 
 
-However, recently, changes have been made which challenge this status quo. These changes are the censorship of certain content on the internet for users in some places like the United Kingdom or in China. The motivations behind this censorship can be well-meaning, for example, the blocking of illegal content such as child pornography with the intention of protecting the innocent lives of children. Further attempts to reduce damage to people's lives was the implementation of search engine de-listing of personal content partitioned by the right-to-be-forgotten movement\cite{rtbf}. However, this decision sparked much controversy since people believed that this deletion of history could lower the quality of the internet. 
+However, recently, changes have been made which challenge this status quo. These changes are the censorship of certain content on the internet for users in some places like the United Kingdom or in China. The motivations behind this censorship can be well-meaning, for example, the blocking of illegal content such as child pornography with the intention of protecting the innocent lives of children. Further attempts to reduce damage to people's lives was the implementation of search engine de-listing of personal content partitioned by the right-to-be-forgotten movement~\cite{rtbf}. However, this decision sparked much controversy since people believed that this deletion of history could lower the quality of the internet. 
 
-However, other cases of censorship are on a much larger scale and are not universally accepted as positive. One example is certain nation states blocking access to content that they deem to be inciting oppososition to their political standpoints. This can involve blanket restrictions to foreign websites or restricting sites, which may be hosted inside the nation, but are deemed to perpetuate negative views. Many countries ban hate-speech, or exclude it from their freedom of speech laws\cite{hate} and some countries have Libel rules\cite{libel} which ban spreading of false information. However, there are a number of nations that actually hide information about certain world events or ideologies from their citizens, depriving their civil rights\cite{chincensor}. This is dangerous for the world as it creates environments that can breed hate directed at whomever the censors wants.
+However, other cases of censorship are on a much larger scale and are not universally accepted as positive. One example is certain nation states blocking access to content that they deem to be inciting oppososition to their political standpoints. This can involve blanket restrictions to foreign websites or restricting sites, which may be hosted inside the nation, but are deemed to perpetuate negative views. Many countries ban hate-speech, or exclude it from their freedom of speech laws~\cite{hate} and some countries have Libel rules~\cite{libel} which ban spreading of false information. However, there are a number of nations that actually hide information about certain world events or ideologies from their citizens, depriving their civil rights~\cite{chincensor}. This is dangerous for the world as it creates environments that can breed hate directed at whomever the censors wants.
 
 There is no doubt that the western economy and society has benefited greatly with the success of the web with its ability to connect people and share information. What ensures the web's success is it's status as a permissionless space that leads to creativity, innovation and freedom of expression. This allows any new, small start-up companies and individuals to use this commodity to build services and communities without the need for legal approval or business deals, leaving their projects to be free to grow and prosper. Proposed Net Neutrality regulations would allow internet service providers to prioritise certain site's traffic. This does not permit full censorship but even the slowing down of traffic could reduce the usability of certain sites so that users would avoid them. This would fundamentally coerce browser's behaviour to direct them away from certain topics.
 
-Taking an existing example; in China, which is a state with among the most stringent internet censorship practices, the American Chamber of Commerce\cite{amcham} says that 4 out of 5 of its member companies report a negative impact on their business from Internet censorship. This gives financial incentives to ensure the internet remains open.
+Taking an existing example; in China, which is a state with among the most stringent internet censorship practices, the American Chamber of Commerce~\cite{amcham} says that 4 out of 5 of its member companies report a negative impact on their business from Internet censorship. This gives financial incentives to ensure the internet remains open.
 
 \section{Network Surveillance and Censorship}
 
-I will categorise censorship in two ways. The first kind is entities on the internet such as websites taking down content. This is most poignant when the content has been made by others, such as on a micro-blogging site like Facebook. Although this is an issue and currently there is debate about the balance of such censorship on these social media platforms, this is not what I will be looking at. This is because the data is gone rather that being blocked. Of course, there are tools that archive content that maybe be later retracted or deleted such as The Internet Archive's project: Wayback Machine\cite{wb}, and access to these resources is what the second type of censorship is about.
+I will categorise censorship in two ways. The first kind is entities on the internet such as websites taking down content. This is most poignant when the content has been made by others, such as on a micro-blogging site like Facebook. Although this is an issue and currently there is debate about the balance of such censorship on these social media platforms, this is not what I will be looking at. This is because the data is gone rather that being blocked. Of course, there are tools that archive content that maybe be later retracted or deleted such as The Internet Archive's project: Wayback Machine~\cite{wb}, and access to these resources is what the second type of censorship is about.
 
-Informally, the internet consists of each party's computer equipment connected together with a network of wires (and other mediums) and some management machinery to route communications to their destination.  Communications are packet based and are directed along the connections according to the Internet Protocol (IP)\cite{ip4}. This protocol header defines the destination of the packet for the purposes of working out the most appropriate route to follow. It also contains the address of the source so error messages can be directed appropriately. Among other information like version numbers and flags there is also a field that tells the intermediary machinery when to delete the message, but this is only for cases where the destination in unreachable. 
+Informally, the internet consists of each party's computer equipment connected together with a network of wires (and other mediums) and some management machinery to route communications to their destination.  Communications are packet based and are directed along the connections according to the Internet Protocol (IP)~\cite{ip4}. This protocol header defines the destination of the packet for the purposes of working out the most appropriate route to follow. It also contains the address of the source so error messages can be directed appropriately. Among other information like version numbers and flags there is also a field that tells the intermediary machinery when to delete the message, but this is only for cases where the destination in unreachable. 
 
 The second type of network surveillance and censorship sits at these intermediate points in the network and deals with how these packets are handled. By default, IP and the transport layer on top of it (TCP) does not encrypt or sign the payload data. Therefore, it is possible for the intermediary parties to read and tamper with the packets and their payloads before they are sent or even dropped from the network. 
 
-From their observations of the chinese internet filtering systems, Zittrain and Edelman\cite{edelman2005empirical} deduced several methods that were being used. Filtering on the IP address of a resource can be done by analysing the destination field of the packet. This is good for blocking direct access to static sites since it  is one of the simplest and therefore fastest to implement, though it relies on comprehensive black or white listing coordination.
+From their observations of the chinese internet filtering systems, Zittrain and Edelman~\cite{edelman2005empirical} deduced several methods that were being used. Filtering on the IP address of a resource can be done by analysing the destination field of the packet. This is good for blocking direct access to static sites since it  is one of the simplest and therefore fastest to implement, though it relies on comprehensive black or white listing coordination.
 
-The most common method of blocking is for the routers to drop these packets, but as Clayton et al. found in their practical experiments\cite{clayton2006ignoring}, for protocols that communicate in a streaming fashion over time, the network machinery sends TCP reset packets to both parties to interrupt the session and stop communication. This type of attack can be easily countered by ignoring all reset packets since, due to how the system is architectured, the original packets are allowed through. They also observed a less frequent technique which was the injection of a forged packet with random synchronisation numbers. When this reaches the destination, the server detects the incorrect value and validly triggers the sending of a reset packet. Now, if the reset packets are ignored then the two real endpoints become out of sync and the communication breaks down. Luckily, as it stands, the forged packets are poor imitations and so are easily detectable.
+The most common method of blocking is for the routers to drop these packets, but as Clayton et al. found in their practical experiments~\cite{clayton2006ignoring}, for protocols that communicate in a streaming fashion over time, the network machinery sends TCP reset packets to both parties to interrupt the session and stop communication. This type of attack can be easily countered by ignoring all reset packets since, due to how the system is architectured, the original packets are allowed through. They also observed a less frequent technique which was the injection of a forged packet with random synchronisation numbers. When this reaches the destination, the server detects the incorrect value and validly triggers the sending of a reset packet. Now, if the reset packets are ignored then the two real endpoints become out of sync and the communication breaks down. Luckily, as it stands, the forged packets are poor imitations and so are easily detectable.
 
 Another method used in practice is DNS poisoning, which involves incorrectly resolving URLs to redirect users either to a censorship notice or just a random useless address. This only affects the use of URLs and so the use of raw IP address is completely unaffected, although many sites use them internally so it creates difficulty and work for users through setting up of a local host file.
 
@@ -226,13 +214,17 @@ The packet inspection and classification is also done on a protocol basis. Censo
 
 One of the most effective tools for evading network surveillance is The Onion Router which not only hides the contents of packets like TLS, but also obfuscates their destination. It does this by maintaining a opaque network which decorrelates the movement of packets in and out. Therefore, it is hard to workout where traffic that enters the network at an entry node will exit, and then therefore what its final destination is. To realise this, each packet is encrypted 3 times (on top of standard TLS encryption) and, as the packet moves through the network, a layer of encryption is removed at each relay node. This means, as it mixes with other packets, it is hard to identify and match what is arriving with what is sent on. Paths through the network are randomly allocated and keys are exchanged securely using a Diffe-Helman protocol. This is done one node at a time through the existing link such that nodes only know the identities of their predecessor and successor in the chain. 
 
-However, there has been a lot of work and success in to de-anonymising the TOR protocol to gather information on users. There has been research in to both passive and active attacks  giving varying levels of success but with varying levels of effort. Website fingerprinting attacks such as Cair et al.\cite{webfinger} only need to eavesdrop at a single point but suffer from high false positives. Traffic confirmation attacks, which require access to both ends of the cummunication, such as Shmatikov et al.\cite{conf} need long periods to gain statistical significance. Active attacks such as water marking through delays are a lot quicker but they involve a lot more work for the attacker. However, government bodies with large powers such as the NSA are interested in this field, so use of these attacks is not out of the realms of possibility. Even so, if an adversary only controls a small proportion of the network, the chances of being allocated a fully comprised relay chain is small. Recently, Arp et a.\cite{torben} released a side-channel attack for TOR which is more reliable but less intrusive that other methods that use browser exploits. In fact in their research, Nithyanand et al.\cite{AS} found that very high levels of active circuits were potentially vulnerable to state level adversaries. To counter this, they have built a TOR client that is aware of adversaries and is able to more intelligently select relay paths. This is successful in reducing the rate of affected connections but, as with all these anonymising techniques, sacrifices performance, adding latency to the circuit generation before any data can be sent.
+However, there has been a lot of work and success in to de-anonymising the TOR protocol to gather information on users. There has been research in to both passive and active attacks  giving varying levels of success but with varying levels of effort. Website fingerprinting attacks such as Cair et al.~\cite{webfinger} only need to eavesdrop at a single point but suffer from high false positives. Traffic confirmation attacks, which require access to both ends of the cummunication, such as Shmatikov et al.~\cite{conf} need long periods to gain statistical significance. Active attacks such as water marking through delays are a lot quicker but they involve a lot more work for the attacker. However, government bodies with large powers such as the NSA are interested in this field, so use of these attacks is not out of the realms of possibility. Even so, if an adversary only controls a small proportion of the network, the chances of being allocated a fully comprised relay chain is small. Recently, Arp et a.~\cite{torben} released a side-channel attack for TOR which is more reliable but less intrusive that other methods that use browser exploits. In fact in their research, Nithyanand et al.~\cite{AS} found that very high levels of active circuits were potentially vulnerable to state level adversaries. To counter this, they have built a TOR client that is aware of adversaries and is able to more intelligently select relay paths. This is successful in reducing the rate of affected connections but, as with all these anonymising techniques, sacrifices performance, adding latency to the circuit generation before any data can be sent.
 
 Although TOR has these issues, it makes the surveillance of users' browsing astronomically harder and so censors such as the Chinese Government have resorted to a complete ban on the protocol. Originally, Tor packets were very recognisable due to their predictable size and structure but some improvement have been made to adjust it's fingerprint to match TLS as much as possible. However, more had to be done.
 
 Tor works by allowing users to connect to one of the publicly known entry guard relays. However, since these IP addresses are publicly known, they are easily detected and interfered with by network censor systems. As mentioned, one way this is done is by sending reset packets to both parties telling them to close the TCP stream.
 To circumvent this, users instead connect to private bridges in uncensored zones (such as the United States) so that the indented destination of the packets is hidden. However, with protocol fingerprinting by deep packet inspection (DPI) and the use of active probes, censors can still catch these unlisted bridges in under 15 minutes of use!
 The use of obfuscation and FTE (described in section \ref{sec:FTE}) bridges has been able to fool these DPI systems for now since they fool the common protocol classification systems which use regular expressions. However, as deep learning becomes more prevalent it is known that this will not be enough.
+
+\section{Summary}
+
+In this chapter I have explained how there are motivations for wanting to access online resources  with out the controllers of the network being able to determine the content of what you are accessing. I have discussed TOR's roll in this but that access to the TOR network is limited and that even TOR bridges are vulnerable since the traffic patterns are identifiable as TOR. Therefore, there is a need for encodings that cause misclassification of TOR traffic to other innocuous protocols. 
 
 % -----------------------------------------------------------------------------
 
@@ -262,17 +254,17 @@ After language was invented to share knowledge, humans soon needed a way hide it
 
 \section{Format Preserving Encryption}
 
-In 1981, NIST\cite{FIPS74} outlined a mode of DES that was able to restrict the ciphertext of an encryption to a string of a fixed, finite alphabet such as decimal digits $ \Sigma = \{0,1...9\} $. This allows plain texts such as phone numbers of form $ X \in \Sigma^N $ to be encrypted to a ciphertext $ Y = \Sigma^N $ that is also a phone number. Although that FIPS document is now withdrawn, it sparked further work such as what was done by Brightwell and Smith\cite{DPE}. They first specify the particular use case of encrypting data in place as inside a database where the ciphertexts must abide by the same type constraints of the database schema. The paper then goes on to describe their  Datatype-Preserving Encryption scheme that again works with DES in a streaming mode and works over an indexed finite alphabet. However the algorithm has redundant elements, such as shuffling the alphabet's ordering, that are not backed up with reasoning and there is no proof of security. More recently, Black and Rogaway\cite{CAFD} provide three constructions in their paper. They analyse the security of each one against the standard adversary $Adv^{prp}$ and also discuss the practical considerations of scaling asymptotically and in practice.
+In 1981, NIST~\cite{FIPS74} outlined a mode of DES that was able to restrict the ciphertext of an encryption to a string of a fixed, finite alphabet such as decimal digits $ \Sigma = \{0,1...9\} $. This allows plain texts such as phone numbers of form $ X \in \Sigma^N $ to be encrypted to a ciphertext $ Y = \Sigma^N $ that is also a phone number. Although that FIPS document is now withdrawn, it sparked further work such as what was done by Brightwell and Smith~\cite{DPE}. They first specify the particular use case of encrypting data in place as inside a database where the ciphertexts must abide by the same type constraints of the database schema. The paper then goes on to describe their  Datatype-Preserving Encryption scheme that again works with DES in a streaming mode and works over an indexed finite alphabet. However the algorithm has redundant elements, such as shuffling the alphabet's ordering, that are not backed up with reasoning and there is no proof of security. More recently, Black and Rogaway~\cite{CAFD} provide three constructions in their paper. They analyse the security of each one against the standard adversary $Adv^{prp}$ and also discuss the practical considerations of scaling asymptotically and in practice.
 
-The field has become a highly practical one, with companies such as Voltage moving to take advantage of the concept. They are using it to upgrade older systems by adding a layer of security that is invisible to the applications that sit on top since does not change the structure of the data. Therefore this vastly reduces the costs of this retrofitting since the need to completely redesign the system is usually eliminated. As of 2018, HPE\cite{hp} are still pushing it as part of their SecureData product to help maintain legacy software.
+The field has become a highly practical one, with companies such as Voltage moving to take advantage of the concept. They are using it to upgrade older systems by adding a layer of security that is invisible to the applications that sit on top since does not change the structure of the data. Therefore this vastly reduces the costs of this retrofitting since the need to completely redesign the system is usually eliminated. As of 2018, HPE~\cite{hp} are still pushing it as part of their SecureData product to help maintain legacy software.
 
-To keep up with the work in industry, Bellare et al. wrote a comprehensive paper\cite{fpe} that formally defines the goals of FTE. They did this in the form of adversary based games. They redefine the standard Pseudo Random Permutation (PRP) Security game which challenges an adversary to distinguish the encryption scheme from a random permutation. The paper also gives weaker notions they think are more appropriate. Single Point Indistinguishably (SPI) requires the adversary to be unable to distinguish between the encryption of any chosen plaintext from the specified language and a randomly selected ciphertext of the same language. The Message Recovery (MR) game gives the adversary the frequency distribution of plaintexts and asks for a decryption of a the ciphertext of a randomly selected item from the plaintext space. The adversary is given adaptive access to an encryption and verification oracle. Finally they define Message Privacy (MP) as the inability of an adversary to compute a function of a plaintext given the ciphertext; Note in this game the adversary can select the function it hopes it will have most success with. They state the following strength hierarchy for these games, showing PRP does give us the Message Recovery property we ultimately want.
+To keep up with the work in industry, Bellare et al. wrote a comprehensive paper~\cite{fpe} that formally defines the goals of FTE. They did this in the form of adversary based games. They redefine the standard Pseudo Random Permutation (PRP) Security game which challenges an adversary to distinguish the encryption scheme from a random permutation. The paper also gives weaker notions they think are more appropriate. Single Point Indistinguishably (SPI) requires the adversary to be unable to distinguish between the encryption of any chosen plaintext from the specified language and a randomly selected ciphertext of the same language. The Message Recovery (MR) game gives the adversary the frequency distribution of plaintexts and asks for a decryption of a the ciphertext of a randomly selected item from the plaintext space. The adversary is given adaptive access to an encryption and verification oracle. Finally they define Message Privacy (MP) as the inability of an adversary to compute a function of a plaintext given the ciphertext; Note in this game the adversary can select the function it hopes it will have most success with. They state the following strength hierarchy for these games, showing PRP does give us the Message Recovery property we ultimately want.
 $$ PRP \implies SPI \implies MP \implies MR $$
 The first implication is trivial since a random function will produce a random element when given the message. The last implications is also trivial since MR is just a special case of MP - where the function is fixed to be the identity. For the proof of $ SPI \implies MP $ the paper shows how an adversary $B$ for SPI can be constructed using an adversary $A$ for MP with sufficiently large advantage. In this construction $B$ is able to run $A$ and satisfy it's calls to the encryption oracle using its own oracle in turn.
 
 \subsection{Rank and Encrypt}
 
-In the second half of the paper\cite{fpe} Bellare et al. then proposed a framework called Rank then Encipher. This framework supports and enhances the methods already discussed since it enables any encryption scheme that supports arbitrary size alphabets to be used to encrypt more complex languages. It simplifies the complexity of language features such as a checksum character, by mapping words to an simple index so that the encryption scheme used can be generic. It does this by partitioning the language in to slices, each containing the words of a given length. That is, for the language $\mathcal{X} = \{\mathcal{X}_N : N \in \mathcal{N} \}$ for lengths in $\mathcal{N}$, each slice $\mathcal{X}_N = \{ X : X \in \mathcal{X}, \vert X \vert = N  \}$. Now the elements in each slice can be arbitrarily ordered as $\mathcal{X_N} = \{ X_0, X_1, \cdots , X_{n-1} \} $ and a bijective mapping can be defined $rank_N :: \mathcal{X}_N \rightarrow \mathbb{Z}_n$.
+In the second half of the paper~\cite{fpe} Bellare et al. then proposed a framework called Rank then Encipher. This framework supports and enhances the methods already discussed since it enables any encryption scheme that supports arbitrary size alphabets to be used to encrypt more complex languages. It simplifies the complexity of language features such as a checksum character, by mapping words to an simple index so that the encryption scheme used can be generic. It does this by partitioning the language in to slices, each containing the words of a given length. That is, for the language $\mathcal{X} = \{\mathcal{X}_N : N \in \mathcal{N} \}$ for lengths in $\mathcal{N}$, each slice $\mathcal{X}_N = \{ X : X \in \mathcal{X}, \vert X \vert = N  \}$. Now the elements in each slice can be arbitrarily ordered as $\mathcal{X_N} = \{ X_0, X_1, \cdots , X_{n-1} \} $ and a bijective mapping can be defined $rank_N :: \mathcal{X}_N \rightarrow \mathbb{Z}_n$.
 Then for the whole language, we can define
 $$ rank :: \mathcal{N} \times \mathcal{X} \rightarrow \mathbb{N} \cup \bot $$
 $$ rank(N,X) =
@@ -296,13 +288,13 @@ $$
 
 Then if we have an encryption scheme $Enc :: \mathcal{K} \times \mathcal{N} \times \mathbb{N} \rightarrow \mathbb{N}$ that works over arbitrary domains to encrypt values into $\mathbb{Z}_{|\mathcal{X}_N|}$, we can define our scheme $\mathcal{E}_k^N = unrank_N \cdot Enc_k^{|X_N|} \cdot rank_N$. Using this construction, they state how the security properties of the original encryption scheme, over the finite domain, is inherited by the the rank then encrypt scheme over the language.
 
-They provide a ranking and un-ranking algorithm for regular languages inspired by the work done by Goldberg in '85\cite{rank}, but to make this efficient, pre-computation is needed. For each word length, a table of path numbers has to be created which can be done through dynamic programming.
+They provide a ranking and un-ranking algorithm for regular languages inspired by the work done by Goldberg in '85~\cite{rank}, but to make this efficient, pre-computation is needed. For each word length, a table of path numbers has to be created which can be done through dynamic programming.
 
-Furthermore, using M\"akinen's\cite{rankcf} algorithms, if a language can be described an unambiguous context free grammar then ranking can be done in linear time and unranking can be done in $O(n \log n)$ time, if we allow $O(n^2)$ time and space preprocessing. This is since the left Szilard language of the grammar can be more easily ranked and unranked. Conversion back to the original grammar is as simple as linearly applying the rules and conversion from a word to it's left Szilard counterpart depends on the efficiency of parsing, which, is not always linear, but for unambiguous grammars is still efficient.
+Furthermore, using M\"akinen's~\cite{rankcf} algorithms, if a language can be described an unambiguous context free grammar then ranking can be done in linear time and unranking can be done in $O(n \log n)$ time, if we allow $O(n^2)$ time and space preprocessing. This is since the left Szilard language of the grammar can be more easily ranked and unranked. Conversion back to the original grammar is as simple as linearly applying the rules and conversion from a word to it's left Szilard counterpart depends on the efficiency of parsing, which, is not always linear, but for unambiguous grammars is still efficient.
 
 \section{Format Transforming Encryption}\label{sec:FTE}
 
-Inspired by the rank and encrypt method from Bellare's work, Dyer et al. outlined in their paper\cite{fte} a new cryptographic primitive that extends standard symmetric encryption to produce ciphertexts that follow a selected format. This is done by chopping the front off the scheme $\mathcal{E}^N_k$ defined above and interpreting the input bit stream as a number that represents the ranking.
+Inspired by the rank and encrypt method from Bellare's work, Dyer et al. outlined in their paper~\cite{fte} a new cryptographic primitive that extends standard symmetric encryption to produce ciphertexts that follow a selected format. This is done by chopping the front off the scheme $\mathcal{E}^N_k$ defined above and interpreting the input bit stream as a number that represents the ranking.
 
 Their scheme is targeted against the regular expression based deep packet inspection (DPI) schemes that are commonly used in industry. These high end DPI tools are deployed by network administrators all over the world as they are able to label traffic by protocol using the regular expressions as definitions. They are attractive because they are fast, due to the speed of finite state machine automatons and can single out suspect types of traffic for further analysis of payloads or outright blocking.
 
@@ -310,7 +302,31 @@ They show in their paper that FTE leaves these systems vulnerable to protocol mi
 
 Formally, the scheme takes a formatting regular expression grammar $\mathcal{F}$ and lets $L(\mathcal{F})$ be the language defined by it. Then, using an existing authenticated encryption scheme $Enc_k$, the original message $M$ is encrypted and the unformatted ciphertext $Y$ is interpreted as an element of $\mathbb{Z}_{\vert L(\mathcal{F}) \vert}$. The encoding function $unrank :: \mathbb{Z}_{\vert L(\mathcal{F}) \vert} \rightarrow L(\mathcal{F})$ is then used to format it to specification. To make \texttt{unrank} and it's inverse, decryption counterpart \texttt{rank} efficient the same precomputation is done as by Bellare and only a subset of the formatted language with fixed length is used. This is optimisation is key to be able to use this in practice. This turns the use of the scheme in to a block cipher used in Electronic Code Book mode. However, this lack of diffusion does not lead to pattern leakage since a random IV is used for each large block.
 
-They have integrated their scheme in to a TOR transport and they have had success in bypassing China's Golden Shield Project (GSP) censorship mechanisms.
+They have implemented this scheme and integrated it in to a TOR transport. Although, the regex based parameters make the scheme flexible so any protocol (described by a regular expression) can be targeted they have focused on hiding inside the HTTP protocol. To be precise they use the regular expression in figure \ref{fig:http-regex}. This hides the ciphertext inside the path of a \texttt{GET} request but due to the lack of structure - any alpha-numeric string - the packets aren't visually convincing as seen in figure \ref{fig:http-ex}.
+
+Although as a TOR proxy, the FTE scheme has had success in bypassing China's Golden Shield Project (GSP) censorship mechanisms as is listed as a official TOR transport.
+
+\begin{figure}[h]
+\begin{verbatim}
+^GET\ \/([a-zA-Z0-9\.\/]*) HTTP/1\.1\r\n\r\n$
+\end{verbatim}
+\caption{Regex pattern to describe the HTTP protocol}
+\label{fig:http-regex}
+\end{figure}
+
+
+\begin{figure}[h]
+\begin{verbatim}
+GET /EopwqPHDbCy8WfNPEO3BPB.UUXEJ7xe2NoW/fSZQny4.x/jacDVkxjZQ4uSqgZu7.N2AGbaYeFqr/DEh
+bHSMhLjVf2cZy7z7iBGOhwsgtCegXuBNZn//VGXFLUmG55Hlk5bsMMhoO4tqF.mYApGxAd2c0G/goOnZLivQB
+.qTAzDFwxPtxS1i.bw2Oud2BQ7RtZaLoAcBJ40fjLwsLi7v18Oi9Q6cUqTqHKTMsVWijB9/kh HTTP/1.1
+\end{verbatim}
+$\hookleftarrow$\\
+$\hookleftarrow$
+\caption{Example packet generated by FTE}
+\label{fig:http-ex}
+\end{figure}
+
 
 %https://blog.torproject.org/iran-partially-blocks-encrypted-network-traffic
 
@@ -318,18 +334,32 @@ They have integrated their scheme in to a TOR transport and they have had succes
 
 \section{Distribution Transforming Encryption}
 
-Although FTE produces validly formatted ciphertexts which satisfies many current filtering systems, the ciphertexts look in no way normal. Informally, this is in the same way auto generated C source code looks very different to any C code that a human would write. This means that statistical analysis such as deep learning techniques, will discover that these streams are in fact fake. My scheme will try and form ciphertexts that are comparable to a stream of normal browser HTTP traffic by transforming the distribution to match. 
+Although FTE produces validly formatted ciphertexts which satisfy many current filtering systems, the ciphertexts look in no way normal.
+Informally, this is in the same way auto generated C source code looks very different to any C code that a human would write.
+This means that statistical analysis such as deep learning techniques, will discover that these streams are in fact fake.
+My scheme will try and form ciphertexts that are comparable to a stream of normal browser HTTP traffic by transforming the distribution to match. 
 
-To do this, there must be a way to encapsulate not just the valid language but its frequency distribution. Sadly, augmenting the finite state machine produced by the regular expression with weights does not produce the desired effect. Adding weights to the DFA's state transitions would still produce a graph that could be ranked using a slightly altered algorithm. However, these weights would not be meaningful, since they would not be taking in to consideration the previous path through transition graph and therefore previous symbols in the stream. In some graphs, where every different input stream parses through a different subset of the DFA states this approach is valid. However, efficient DFA's do not do this since it has exponential blow up, and specifically not one for the languages that we are targeting.
+To do this, there must be a way to encapsulate not just the valid language but its frequency distribution.
+Sadly, augmenting the finite state machine produced by the regular expression with weights does not produce the desired effect.
+Adding weights to the DFA's state transitions would still produce a graph that could be ranked using a slightly altered algorithm.
+However, these weights would not be meaningful, since they would not be taking in to consideration the previous path through transition graph and therefore previous symbols in the stream.
+In some graphs, where every different input stream parses through a different subset of the DFA states, this approach is valid.
+However, efficient DFAs do not do this since it has exponential blow up, and specifically not the DFAs for the languages that we are targeting.
 
-I also looked in to ways of obtaining the structure of normal traffic using tools such as sequitur\cite{sequitur} to infer a grammar, but this has the same problems. 
+I also looked in to ways of obtaining the structure of normal traffic using tools such as sequitur~\cite{sequitur} to infer a grammar, but this has the same problems. 
 
-In fact, however you encode it, to fully define the probability density function for a bit stream of even a fixed length $n$, you also need exponential space. For a concrete example let's calculate the space requirement for a block of payload of size $10$ bytes long. Assume a 4 byte fixed point or floating point value is used to store the proportions, depending on the variation of the values. The storage size would be an intractable $4*(256^10) = 4*(1024^8) = 4$ yobi bytes.
-
+In fact, however you encode it, to fully define the probability density function for a bit stream of even a fixed length $n$, you need exponential space.
+For a concrete example, let's calculate the space requirement for a block of payload of size $10$ bytes long.
+Assume a 4 byte fixed point or floating point value is used to store the proportions, depending on the variation of the values.
+The storage size would be an intractable $4*(256^10) = 4*(1024^8) = 4$ yobi bytes.
 
 \subsection{Heuristic based Distributions}
 
-Therefore, obviously simpler distribution descriptions were needed - i.e. heuristics. The first target is to design a distinguisher for the existing FTE scheme from normal traffic. The first heuristic was targeted at the fixed width that Dyer scheme produces. It can be clearly seen in figure \ref{fig:fake_length_dist} that compared to normal traffic the difference is obvious. Even a uniform random distribution is quite different.
+Therefore, obviously simpler distribution descriptions were needed - i.e. heuristics.
+The first target is to design a distinguisher for the existing FTE scheme from normal traffic.
+The first heuristic was targeted at the fixed width that Dyer scheme produces.
+It can be clearly seen in figure \ref{fig:fake_length_dist} that compared to normal traffic the difference is obvious.
+Even a uniform random distribution is quite different.
 
 \begin{figure}[h]
 \begin{subfigure}[b]{.49\linewidth}
@@ -347,32 +377,32 @@ Therefore, obviously simpler distribution descriptions were needed - i.e. heuris
 
 In this case, the probability of the packet being exactly 256 bytes is overwhelmingly greater for the FTE scheme than for normal traffic.
 Of course, legitimate packets may also be this length so filtering them all out would give false positives.
-This might be okay if when the TCP layer re-sent the data missing blocked data it would be of a different length and would be let through but it sends an exact copy each time.
+This might be okay if when the TCP layer re-sent the replacement for the missing, blocked data it would be of a different length and would be let through but in fact it sends an exact copy each time.
 Therefore, to amplify the probability of not catching false positives, the system must take a sample from the stream and check them all as a batch.
 This could be done on a small running window basis and when triggered could add the IP address to a temporary ban.
 This is like what happens in currently deployed keyword filtering systems such as in China. 
 
 Another heuristic for defining the distribution is pattern frequency.
 This can be done at varying levels of granularity to give varying results.
-The obvious level of abstraction is at the character level, which if is used to base an emulation from, will only produce strings containing valid characters, since they are are what is extracted from normal traffic.
+The obvious level of abstraction is at the character level, which if used to base an emulation from, will only produce strings containing valid characters, since they are are what is extracted from normal traffic.
 Since patterns are recorded and generated independently, any lower level of granularity could produce byte values for non valid characters such as control characters.
 This makes detection easy for a censor, as these values are not allowed in the protocol, so they can reject without even considering their frequency of use in normal traffic.
 Longer patterns have pros and cons; more character dependence, leading to more realistic URLs to the eye, but the complexity is increased dramatically, as per our exponential calculation previously.
 If multiple character patterns are used, sequences of semantically correct content appear such as words and data structures like query string parameters.
 I will evaluate the difference in granularity in section \ref{sec:gran}.
 
-Other more specific heuristics include \texttt{inter-slash-distance} and ways to sample pattern distribution from only a subset of the URL such as the \texttt{initial-pattern} or \texttt{random-pattern}. These less powerful measures can all be dealt with in the same way.
+Other more less specific specific heuristics include \texttt{inter-slash-distance} and ways to sample pattern distribution from only a subset of the URL such as the \texttt{initial-pattern} or \texttt{random-pattern}. These less powerful measures can all be dealt with in the same way to parametrise an encoding.
 
 \subsection{Inverse Transform Sampling}
 
 Rejection sampling is a technique for generating observations from a given distribution. It works by generating samples of a different distribution and then transforming them using a formula.
 A classic, well-known, real-life example of this is the Buffon Needle experiment, in which the participant randomly drops needles on to a sheet of paper with evenly distributed parallel bars drawn across it.
-The needles that overlap a bars are counted verses those who don't and this proportion can be used to estimate pi as $\pi \approx \frac{2l}{t \cdot P}$ where $l$ is the length of the needles, $t$ is the gap between bars and $P$ is the proportion.
+The needles that overlap a bar are counted verses those who don't and this proportion can be used to estimate pi as $\pi \approx \frac{2l}{t \cdot P}$ where $l$ is the length of the needles, $t$ is the gap between bars and $P$ is the proportion.
 In this case, the first distribution is 3 dimensional; two spatial dimensions and one angular, and the second mapped distributions is binomial.
 The transformation formula uses some elementary calculus and involves $pi$, so by knowing the outcome of the experiment, one can work backwards to estimate its value.
 
 One type of rejection sampling is called inverse transform sampling which is commonly used for generating random numbers from arbitrary distributions.
-It is simple and efficient and can be used to generate values from the Normal distribution from the uniform sources that are gathered a computer's random resource.
+It is simple and efficient and can be used to generate values from the Normal distribution when given values from the uniform sources that are gathered by computer's random generation implementation.
 However, it works by calculating the inverse of the cumulative frequency distribution function so only works on distributions where this is invertible.
 My proposed scheme works by generating encoded ciphertexts from a heuristic which can take a finite number of discrete values $\mathcal{H}$.
 This heuristic follows the distribution $D_n$ defined by a frequency histogram, like shown in figure \ref{fig:dist_pat4}.
@@ -464,7 +494,7 @@ table {%
 
 To map the discrete input, un-encoded ciphertext values onto the continuous domain of $F^{-1}_{D_N}$ some quantisation must be done.
 However, the actual distribution structure does have an effect on the degree of quantisation (or more simply put, the amount of splitting) which can be done.
-Let $s$ be the number of splits of the continuous space $[0,1]$ and so $d = \frac{1}{s}$.
+Let $s$ be the number of splits of the continuous space $[0,1)$ and so $d = \frac{1}{s}$.
 To ensure that the encoding is invertible, as all encodings must be, we must ensure that our discrete version of $\mathcal{F}^{-1}_{D_N}$: $F^{-1}_{D_N}$ is injective and surjective.
 
 Define:
@@ -472,17 +502,18 @@ Define:
 $$F^{-1}_{D_N} :: \mathbb{Z}_s \rightarrow \mathcal{H}$$
 $$F^{-1}_{D_N}(x) = x' \xleftarrow{\$} [x, x+d); \mathcal{F}^{-1}_{D_N}(x')$$
 
-Surjectivity of $F^{-1}_{D_N}$ follows from the fact that $\mathcal{F}^{-1}_{D_N}$ is surjective by, $\forall y \in \mathcal{H}, \exists x' \in [0,1) st. \mathcal{F}^{-1}_{D_N}(x') = y$ and $ let x = \lfloor \frac{x'}{d} \rfloor$ so $x \in \mathbb{Z}_s$ and $F^{-1}_{D_N}(x) = y$ so surjective.
+Surjectivity of $F^{-1}_{D_N}$ follows from the fact that $\mathcal{F}^{-1}_{D_N}$ is surjective by, $\forall y \in \mathcal{H}, \exists x' \in [0,1)\ st.\ \mathcal{F}^{-1}_{D_N}(x') = y$ and $ let\ x = \lfloor \frac{x'}{d} \rfloor$ so $x \in \mathbb{Z}_s$ and $F^{-1}_{D_N}(x) = y$ so surjective.
 
-Injectivity is not provable in general. It depends on the exact instance of the distribution histogram.
+However, injectivity is not provable in general. It depends on the exact instance of the distribution histogram.
 In fact, it is very unlikely for no overlaps between output quantisation and input quantisation to occur.
-Therefore, I made a tweak to make the system usable. This was to shrink the input divisions slightly so that it matched up to the nearest output division.
+Therefore, I made a tweak to make the system usable.
+This was to shrink the input divisions slightly so that they matched up to the nearest output division.
 This preprocessing step is outlined in implementation.
-It is important to note that if a correction makes the lower bound greater than the higher bound the process is invalid and the splitting must be reduced.
+It is important to note that if a correction makes the lower bound greater than the higher bound the process is invalid and the splitting rate must be reduced.
 
 \begin{figure}[h]
 \centering
-\includegraphics[scale=.8]{correction}
+\includegraphics[scale=.9]{correction}
 \caption{Showing how the input splitting is corrected to create an injective function.}
 \label{correction}
 \end{figure}
@@ -491,21 +522,54 @@ In the diagram in figure \ref{correction} the smaller lines represent the output
 The green lines are the corrected splittings to force the function to be injective. This preprocessing creates an array of boundaries $B$. Augment $B$ by setting $B = [0] + B$
 
 Redefine:
-
 $$F^{-1}_{D_N}(x) = x' \xleftarrow{\$} [B[x], B[x+1]); \mathcal{F}^{-1}_{D_N}(x')$$
 
 This new function still is surjective by roughly the same proof as before but it's injectivity also holds.
+Proof:
 Firstly, the correction of the boundaries of the inputs were moved to match the boundaries of the outputs.
 The divisions started as non-overlapping and during the correction, this did not change, 
 $$\forall i \neq j \in \mathbb{Z}_s, \big[ B[i],B[i+1] \big) \cap \big[ B[j],B[j+1] \big) = \emptyset$$
-since the boundaries match the pre-image of a output value is contained by only one input value,
+Also since the boundaries match, the pre-image of a output value is contained by only one input value,
 $$ \forall i \neq j \in \mathbb{Z}_s, \alpha,\beta \in \mathcal{H} \text{ such that } \alpha \in Img_{F^{-1}_{D_N}}(\big[ B[i],B[i+1] \big)) \text{ and } \beta \in Img_{F^{-1}_{D_N}}(\big[ B[j],B[j+1] \big))$$
 $$\text{ then } \alpha \neq \beta$$
-Therefore, if we take arbitrary $x, x' \in \mathbb{Z}_s, \text{ letting } \alpha = F^{-1}_{D_N}(x), \text{ and } \beta = F^{-1}_{D_N}(x'), \text{ st. } \alpha = \beta \in \mathcal{H}$ then by the contrapositive above $x=x'$.
+Therefore, if we take arbitrary $x, x' \in \mathbb{Z}_s, \text{ such that letting} \alpha = F^{-1}_{D_N}(x), \text{ and } \beta = F^{-1}_{D_N}(x'), \text{ then } \alpha = \beta \in \mathcal{H}$ then by the contrapositive above $x=x'$.
 
 \subsection{Towards a Concrete Scheme}
 
-I name this scheme DE-CENSOR: a Distribution Encoding of Ciphertexts to Emulate Normal Surfing for Onion Routing.
+The two most promising heuristics for encapsulating the traffic's distribution are length and pattern frequency.
+I am targeting length to demonstrate the advantage of my scheme over FTE. Pattern frequency over the whole ciphertext will also fool statistical analysis looking for the more specific heuristics that I mentioned earlier such as \texttt{inter-slash-distance} and \texttt{initial-pattern}.
+Therefore, I chose to encapsulate both of these in my scheme. 
+
+A simplification I have made is, like the FTE scheme, to restrict the encoding to only worrying about the path of a HTTP GET request.
+The scheme cannot work on the packet as a whole since the pattern independence of the scheme would not be able to produce the correct legal formatting.
+Instead, each field of the protocol needs to be dealt with individually according to it's own distribution or heuristic and combined using a formatting algorithm like a regular expression.
+It could also be possible for there to be heuristics to decide whether fields such as \texttt{Cookies} should be included at all.
+However, each heuristic would be dealt with in the same way, so to limit the scope of the project to a proof of concept, I will only target the path field.
+The mechanics of the scheme will use the same structure as FTE. First, an authenticated encryption scheme is used to encrypt the original data using a symmetric key.
+This is then passed to the emulator encoding module, which uses the length and pattern heuristic distributions to produce normally distributed ciphertexts.
+The un-distributed encryption is constructed from a IV, encrypted blocks, and a HMAC. Therefore, over a choice of random encryption and signing keys it is indistinguishable from random.
+Therefore, no matter what the underlying data is the unform distributions that our encodings rely on is upheld. 
+The inverse operation must use the same key and heuristic distributions, so can invert each encoding layer and then decrypt using a standard cipher.
+I refer to this scheme as DE-CENSOR: a Distribution Encoding of Ciphertexts to Emulate Normal Surfing while Onion Routing.
+
+\subsubsection{Pattern Encoding}
+
+The mechanics of the pattern encoding is basically a base transformation from base 0x100 (characters) to a base of the number of divisions of the pattern heuristic distribution.
+Once this new list of digits is produced, the scheme can apply our discrete inverse transformation function $F^{-1}_{D_N}$ to each one to map this to a list of output patterns which can be joined to form the normally pattern-distributed ciphertext.
+
+The un-encode mechanism splits the string of patterns up and then can apply the forward transformation function. The bases of the digits can then be changed back to the byte before forming the original character string once more.
+
+\subsubsection{Length Encoding}
+
+If length encoding took in arbitrary length ciphertexts, it would need to include the length of the original in to the encoding, such as pre-pending the data with it's length as a number of bytes.
+However, whatever way this is done, the resulting output will not satisfy the uniform random requirement for the next level (pattern encoding).
+To counter this, another level of encryption could be done with another set of keys. However, this is undesirable due to the increased ciphertext length expansion and computational work.
+Another solution is to fix the whole scheme to only work on fixed sized blocks as input. TO enforece this messages can be padded before encryption using a secure padding scheme such as defined in ISO 10126~\cite{iso-pad}.
+
+
+\subsection{Formalising the Scheme}
+
+
 
 \section{Implementation}
 
@@ -534,11 +598,11 @@ of the sides of communication to forge due to it's normally low data size. Files
 To collect real web traffic data, I built a web-crawler using the FOSS Selenium web automation framework. To gather a realistic distribution I needed to emulate the whole browser environment since X amount of the requests from modern sites are dynamics initiated from inside the scripts.
 % graph
 
-I crawled recursively over the Alexa top 50 sites\cite{alexa} that support unencrypted traffic. This gave me a sample of 10,000 paths to create reference distribution.
+I crawled recursively over the Alexa top 50 sites~\cite{alexa} that support unencrypted traffic. This gave me a sample of 10,000 paths to create reference distribution.
 
 \subsection{Histogram creation}
 
-Like the recording of reference material, the calculation of distribution histograms is not time critical since they can be done offline. The process is straightforward frequency bins to count the occurrences of each option. I tried several methods as explained below.
+Like the recording of reference material, the calculation of distribution histograms is not time critical since they can be done offline. The process is straightforward frequency binning to count the occurrences of each option. I tried several methods as explained below.
 
 
 \begin{figure}[h]
@@ -567,19 +631,21 @@ Like the recording of reference material, the calculation of distribution histog
 	\caption{Distribution Histographs}\label{fig:hists}
 \end{figure}
 
-Path length - this was targeted at the FTE scheme that used a fixed length. It shows very few examples would be needed to differentiate the origins.
+\textbf{Path length} - this was targeted at the FTE scheme that used a fixed length. It shows very few examples would be needed to differentiate the origins.
 
-Character distribution - This graph exibits the underlying encryption schemes uniform randomness, whereas in real traffic not all characters are created equally.
+\textbf{Character distribution} - This graph exibits the underlying encryption schemes uniform randomness, whereas in real traffic not all characters are created equally.
 
-First Letter - This method was attempted to see if the same distinguishing effect would be possible only using a fixed subset of the URL.
+\textbf{First Letter} - This method was attempted to see if the same distinguishing effect would be possible only using a fixed subset of the URL.
 
-Random Letter - like the previous this uses a limited sample by randomises it's location to see if this improved on the above results.
+\textbf{Random Letter} - like the previous this uses a limited sample by randomises it's location to see if this improved on the above results.
+
+\subsubsection{Exponential Scaling}
 
 
-\begin{enumerate}
-\item offline - so not performance critical
-\item smoothing
-\end{enumerate}
+
+\subsubsection{Smoothing}
+
+
 
 \subsection{Statistical Analysis}
 
@@ -599,6 +665,45 @@ The DTE is an encrypt-then-encode framework. To ensure the same standards of enc
 I used the Cryptography implementation from the PyCrypto library. This provides an AES block cipher, SHA256 Hash in a Merkle-Damg$\mathring{a}$rd construction and counter mode framework. The IV is chosen randomly.
 
 \subsection{Proxy Embedding}
+
+I embedded the DE-CENSOR scheme inside the same proxy framework as FTE.
+This enables point to point innocuous channel communication using a client-server model.
+A user runs a client application on their machine, which listens on a local port.
+Any application can then use this port as a SOCKS proxy, which channels the traffic through the innocuous channel to the server.
+The server, decodes and unencrypts the data and follows then SOCKS protocol to forward the traffic on to it's ultimate destination.
+The keys and distributions must be pre-shared to allow the original traffic to be recovered, though I've included an example distribution as the default.
+The encoding happens inside a custom DE-CENSOR record layer which works on a series of buffers to transform the data before it is sent.
+
+\subsubsection{Encoding}
+
+\begin{enumerate}
+\item Firstly, data is placed into a plaintext buffer as it arrives.
+
+\item The encryption stage then consumes a fixed length block of the plaintext from the plaintext buffer and produces a ciphertext.
+This is placed in the encrypted-buffer.
+
+\item The length encoding stage then transforms these encrypted fixed length messages in to blocks of normal distributed lengths for the length-buffer.
+
+\item Each length of message is then picked by the pattern encoder one at a time, where it undergoes the final transformation in to a normally distributed GET-request paths. 
+
+\item These paths are wrapped into a HTTP GET packet which is then sent across the network over a unencrypted TCP channel to the listening proxy server.
+\end{enumerate}
+
+\subsubsection{Decoding}
+
+\begin{enumerate}
+\item As the server receives them, HTTP packets are placed into a packet-buffer.
+
+\item The path of each packet is then extracted and fed into the pattern decoder, which reverses the pattern encoding according to the pattern distribution.
+
+\item The length encoding stage then joins the messages back in to strings of fixed equal length.
+
+\item The decryption stage then deciphers the ciphertexts and removes the padding to recover the original messages.
+
+\item The SOCKS protocol headers are then used to pass on the original requests to the intended address.
+
+\end{enumerate}
+
 % -----------------------------------------------------------------------------
 
 \chapter{Critical Evaluation}
@@ -894,7 +999,7 @@ enough attention.  Ideally, the chapter will consist of three parts:
 %   approach used below, with the databased being dissertation.bib.
 %
 % Either way, the each entry has a key (or identifier) which can be used
-% in the main matter to cite it, e.g., \cite{X}, \cite[Chapter 2}{Y}.
+% in the main matter to cite it, e.g., ~\cite{X}, ~\cite[Chapter 2}{Y}.
 
 \backmatter
 
