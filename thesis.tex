@@ -184,9 +184,143 @@ Other more specific heuristics include \texttt{inter-slash-distance} and ways to
 
 \subsection{Inverse Transform Sampling}
 
+Rejection sampling is a technique for generating observations from a given distribution. It works by generating samples of a different distribution and then transforming them using a formula.
+A classic, well-known, real-life example of this is the Buffon Needle experiment, in which the participant randomly drops needles on to a sheet of paper with evenly distributed parallel bars drawn across it.
+The needles that overlap a bars are counted verses those who don't and this proportion can be used to estimate pi as $\pi \approx \frac{2l}{t \cdot P}$ where $l$ is the length of the needles, $t$ is the gap between bars and $P$ is the proportion.
+In this case, the first distribution is 3 dimensional; two spatial dimensions and one angular, and the second mapped distributions is binomial.
+The transformation formula uses some elementary calculus and involves $pi$, so by knowing the outcome of the experiment, one can work backwards to estimate its value.
+
+One type of rejection sampling is called inverse transform sampling which is commonly used for generating random numbers from arbitrary distributions.
+It is simple and efficient and can be used to generate values from the Normal distribution from the uniform sources that are gathered a computer's random resource.
+However, it works by calculating the inverse of the cumulative frequency distribution function so only works on distributions where this is invertible.
+My proposed scheme works by generating encoded ciphertexts from a heuristic which can take a finite number of discrete values $\mathcal{H}$.
+This heuristic follows the distribution $D_n$ defined by a frequency histogram, like shown in figure \ref{fig:dist_pat4}.
+Since this is discrete, forming the cumulative distribution is simply the case of iteratively adding the bin frequencies and linearly interpolating the intervals as shown in figure \ref{fig:cum_dist_pat4}.
+Since we have a finite number of intervals, the inverse can simply be the reverse lookup function $\mathcal{F}^{-1}_{D_N} :: [0,1) \rightarrow \mathcal{H}$.
+Now, assuming our input is uniformly random, sampling over the observations and applying this inverse transform $\mathcal{F}^{-1}_{D_N}$ will obtain values for our heuristics that are normally distributed.
+These values can then be used in the encoding to produced normally distributed ciphertexts.
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[b]{.49\linewidth}
+\begin{tikzpicture}
+
+\definecolor{color0}{rgb}{0.12156862745098,0.466666666666667,0.705882352941177}
+
+\begin{axis}[
+xmin=-1.19, xmax=16.19,
+ymin=0, ymax=0.230154666496227,
+tick align=outside,
+tick pos=left,
+x grid style={lightgray!92.02614379084967!black},
+y grid style={lightgray!92.02614379084967!black}
+]
+\draw[fill=color0,draw opacity=0] (axis cs:-0.4,0) rectangle (axis cs:0.4,0.0223230918645563);
+\draw[fill=color0,draw opacity=0] (axis cs:0.6,0) rectangle (axis cs:1.4,0.0376200159943381);
+\draw[fill=color0,draw opacity=0] (axis cs:1.6,0) rectangle (axis cs:2.4,0.107301002218318);
+\draw[fill=color0,draw opacity=0] (axis cs:2.6,0) rectangle (axis cs:3.4,0.152103855633172);
+\draw[fill=color0,draw opacity=0] (axis cs:3.6,0) rectangle (axis cs:4.4,0.0772054181209926);
+\draw[fill=color0,draw opacity=0] (axis cs:4.6,0) rectangle (axis cs:5.4,0.0936454073957445);
+\draw[fill=color0,draw opacity=0] (axis cs:5.6,0) rectangle (axis cs:6.4,0.219194920472597);
+\draw[fill=color0,draw opacity=0] (axis cs:6.6,0) rectangle (axis cs:7.4,0.12484703270733);
+\draw[fill=color0,draw opacity=0] (axis cs:7.6,0) rectangle (axis cs:8.4,0.0158984655724211);
+\draw[fill=color0,draw opacity=0] (axis cs:8.6,0) rectangle (axis cs:9.4,0.0335779770747821);
+\draw[fill=color0,draw opacity=0] (axis cs:9.6,0) rectangle (axis cs:10.4,0.00645483002508274);
+\draw[fill=color0,draw opacity=0] (axis cs:10.6,0) rectangle (axis cs:11.4,0.00427860235051296);
+\draw[fill=color0,draw opacity=0] (axis cs:11.6,0) rectangle (axis cs:12.4,0.0128734155706284);
+\draw[fill=color0,draw opacity=0] (axis cs:12.6,0) rectangle (axis cs:13.4,0.0269999937643906);
+\draw[fill=color0,draw opacity=0] (axis cs:13.6,0) rectangle (axis cs:14.4,0.0244379377592649);
+\draw[fill=color0,draw opacity=0] (axis cs:14.6,0) rectangle (axis cs:15.4,0.041238033475869);
+\end{axis}
+
+\end{tikzpicture}
+\caption{Probability Density Function}
+\label{fig:dist_pat4}
+\end{subfigure}
+\begin{subfigure}[b]{.49\linewidth}
+\begin{tikzpicture}
+
+\begin{axis}[
+xmin=-0.75, xmax=15.75,
+ymin=-0.0265607535422159, ymax=1.04888384540677,
+tick align=outside,
+tick pos=left,
+x grid style={lightgray!92.02614379084967!black},
+y grid style={lightgray!92.02614379084967!black}
+]
+\addplot [semithick, black, forget plot]
+table {%
+0 0.0223230918645563
+1 0.0599431078588944
+2 0.167244110077212
+3 0.319347965710384
+4 0.396553383831377
+5 0.490198791227121
+6 0.709393711699718
+7 0.834240744407048
+8 0.850139209979469
+9 0.883717187054251
+10 0.890172017079334
+11 0.894450619429847
+12 0.907324035000475
+13 0.934324028764866
+14 0.958761966524131
+15 1
+};
+\end{axis}
+
+\end{tikzpicture}
+\caption{Cumulative Probability Density Function}
+\label{fig:cum_dist_pat4}
+\end{subfigure}
+\caption{4-Bit Pattern Length Distributions}
+\label{fig:cum_conv}
+\end{figure}
 
 
 
+\subsection{Invertibility}
+
+To map the discrete input, un-encoded ciphertext values onto the continuous domain of $F^{-1}_{D_N}$ some quantisation must be done.
+However, the actual distribution structure does have an effect on the degree of quantisation (or more simply put, the amount of splitting) which can be done.
+Let $s$ be the number of splits of the continuous space $[0,1]$ and so $d = \frac{1}{s}$.
+To ensure that the encoding is invertible, as all encodings must be, we must ensure that our discrete version of $\mathcal{F}^{-1}_{D_N}$: $F^{-1}_{D_N}$ is injective and surjective.
+
+Define:
+
+$$F^{-1}_{D_N} :: \mathbb{Z}_s \rightarrow \mathcal{H}$$
+$$F^{-1}_{D_N}(x) = x' \xleftarrow{\$} [x, x+d); \mathcal{F}^{-1}_{D_N}(x')$$
+
+Surjectivity of $F^{-1}_{D_N}$ follows from the fact that $\mathcal{F}^{-1}_{D_N}$ is surjective by, $\forall y \in \mathcal{H}, \exists x' \in [0,1) st. \mathcal{F}^{-1}_{D_N}(x') = y$ and $ let x = \lfloor \frac{x'}{d} \rfloor$ so $x \in \mathbb{Z}_s$ and $F^{-1}_{D_N}(x) = y$ so surjective.
+
+Injectivity is not provable in general. It depends on the exact instance of the distribution histogram.
+In fact, it is very unlikely for no overlaps between output quantisation and input quantisation to occur.
+Therefore, I made a tweak to make the system usable. This was to shrink the input divisions slightly so that it matched up to the nearest output division.
+This preprocessing step is outlined in implementation.
+It is important to note that if a correction makes the lower bound greater than the higher bound the process is invalid and the splitting must be reduced.
+
+\begin{figure}[h]
+\includegraphics[scale=.8]{correction}
+\caption{Showing how the input splitting is corrected to create an injective function.}
+\label{correction}
+\end{figure}
+
+In the diagram in figure \ref{correction} the smaller lines represent the output histogram boundaries and the longer lines represent the splitting of the input to the function $F^{-1}_{D_N}$.
+The green lines are the corrected splittings to force the function to be injective. This preprocessing creates an array of boundaries $B$. Augment $B$ by setting $B = [0] + B$
+
+Redefine:
+
+$$F^{-1}_{D_N}(x) = x' \xleftarrow{\$} [B[x], B[x+1]); \mathcal{F}^{-1}_{D_N}(x')$$
+
+This new function still is surjective by roughly the same proof as before but it's injectivity also holds.
+Firstly, the correction of the boundaries of the inputs were moved to match the boundaries of the outputs.
+The divisions started as non-overlapping and during the correction, this did not change, 
+$$\forall i \neq j \in \mathbb{Z}_s, \big[ B[i],B[i+1] \big) \cap \big[ B[j],B[j+1] \big) = \emptyset$$
+since the boundaries match the pre-image of a output value is contained by only one input value,
+$$ \forall i \neq j \in \mathbb{Z}_s, \alpha,\beta \in \mathcal{H} \text{ such that } \alpha \in Img_{F^{-1}_{D_N}}(\big[ B[i],B[i+1] \big)) \text{ and } \beta \in Img_{F^{-1}_{D_N}}(\big[ B[j],B[j+1] \big)) \text{ then } \alpha \neq \beta$$
+Therefore, if we take arbitrary $x, x' \in \mathbb{Z}_s, \text{ letting } \alpha = F^{-1}_{D_N}(x), \text{ and } \beta = F^{-1}_{D_N}(x'), \text{ st. } \alpha = \beta \in \mathcal{H}$ then by the contrapositive above $x=x'$.
+
+\pagebreak
 \section{Evaluating Pattern Length Effects}\label{sec:gran}
 
 \begin{table}[h]
