@@ -160,6 +160,9 @@ I also looked in to ways of obtaining the structure of normal traffic using tool
 
 In fact, however you encode it, to fully define the probability density function for a bit stream of even a fixed length $n$, you also need exponential space. For a concrete example let's calculate the space requirement for a block of payload of size $10$ bytes long. Assume a 4 byte fixed point or floating point value is used to store the proportions, depending on the variation of the values. The storage size would be an intractable $4*(256^10) = 4*(1024^8) = 4$ yobi bytes.
 
+
+\subsection{Heuristic based Distributions}
+
 Therefore, obviously simpler distribution descriptions were needed - i.e. heuristics. The first target is to design a distinguisher for the existing FTE scheme from normal traffic. The first heuristic was targeted at the fixed width that Dyer scheme produces. It can be clearly seen in figure \ref{fig:fake_length_dist} that compared to normal traffic the difference is obvious. Even a uniform random distribution is quite different.
 
 \begin{figure}[h]
@@ -176,9 +179,21 @@ Therefore, obviously simpler distribution descriptions were needed - i.e. heuris
 \caption{Length Distrbutions}
 \end{figure}
 
-In this case, the probability of the packet being exactly 256 bytes is overwhelmingly greater for the FTE scheme than for normal traffic. Of course, legitimate packets may also be this length so filtering them all out would give false positives. This might be okay if when the TCP layer re-sent the data missing blocked data it would be of a different length and would be let through but it sends an exact copy each time. Therefore, to amplify the probability of not catching false positives, the system must take a sample from the stream and check them all as a batch. This could be done on a small running window basis and when triggered could add the IP address to a temporary ban. This is like what happens in currently deployed keyword filtering systems such as in China. 
+In this case, the probability of the packet being exactly 256 bytes is overwhelmingly greater for the FTE scheme than for normal traffic.
+Of course, legitimate packets may also be this length so filtering them all out would give false positives.
+This might be okay if when the TCP layer re-sent the data missing blocked data it would be of a different length and would be let through but it sends an exact copy each time.
+Therefore, to amplify the probability of not catching false positives, the system must take a sample from the stream and check them all as a batch.
+This could be done on a small running window basis and when triggered could add the IP address to a temporary ban.
+This is like what happens in currently deployed keyword filtering systems such as in China. 
 
-Another heuristic for defining the distribution is pattern frequency. This can be done at varying levels of granularity to give varying results. The obvious level is at the character level, which if is used to base an emulation only produces strings containing valid characters, since they are extracted from normal traffic. Since patterns are drawn independently, any lower level of granularity could produce byte values for non valid characters such as control characters. This makes detection easy for a censor as these values are not allowed in the protocol without even considering their frequency of use in normal traffic. Longer patterns have pros and cons; more character dependence, leading to more realistic URLs to the eye, but the complexity is increased dramatically, as per our exponential calculation previously. If multiple character patterns are used, sequences of semantically correct content appear such as words and data structures like query string parameters. I will evaluate the difference in granularity in section \ref{sec:gran}.
+Another heuristic for defining the distribution is pattern frequency.
+This can be done at varying levels of granularity to give varying results.
+The obvious level of abstraction is at the character level, which if is used to base an emulation from, will only produce strings containing valid characters, since they are are what is extracted from normal traffic.
+Since patterns are recorded and generated independently, any lower level of granularity could produce byte values for non valid characters such as control characters.
+This makes detection easy for a censor, as these values are not allowed in the protocol, so they can reject without even considering their frequency of use in normal traffic.
+Longer patterns have pros and cons; more character dependence, leading to more realistic URLs to the eye, but the complexity is increased dramatically, as per our exponential calculation previously.
+If multiple character patterns are used, sequences of semantically correct content appear such as words and data structures like query string parameters.
+I will evaluate the difference in granularity in section \ref{sec:gran}.
 
 Other more specific heuristics include \texttt{inter-slash-distance} and ways to sample pattern distribution from only a subset of the URL such as the \texttt{initial-pattern} or \texttt{random-pattern}. These less powerful measures can all be dealt with in the same way.
 
@@ -320,209 +335,10 @@ since the boundaries match the pre-image of a output value is contained by only 
 $$ \forall i \neq j \in \mathbb{Z}_s, \alpha,\beta \in \mathcal{H} \text{ such that } \alpha \in Img_{F^{-1}_{D_N}}(\big[ B[i],B[i+1] \big)) \text{ and } \beta \in Img_{F^{-1}_{D_N}}(\big[ B[j],B[j+1] \big)) \text{ then } \alpha \neq \beta$$
 Therefore, if we take arbitrary $x, x' \in \mathbb{Z}_s, \text{ letting } \alpha = F^{-1}_{D_N}(x), \text{ and } \beta = F^{-1}_{D_N}(x'), \text{ st. } \alpha = \beta \in \mathcal{H}$ then by the contrapositive above $x=x'$.
 
-\pagebreak
-\section{Evaluating Pattern Length Effects}\label{sec:gran}
+\subsection{Towards a Concrete Scheme}
 
-\begin{table}[h]
-\centering
-\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
-\hline
-\multirow{2}{*}{Pattern Length}&
-\multicolumn{3}{|c|}{Distrobution Bin Number}&
-\multicolumn{3}{|c|}{Max Splitting}&
-\multicolumn{3}{|c|}{Extension Factor}\\
-\cline{2-10}
-&10000&20000&30000&10000&20000&30000&10000&20000&30000\\
-\hline
-4 	& 16&16&16 				& 5&5&6 		& 1.7&1.7&1.6\\
-8 	& 81&82&89 				& 14&14&19		& 2.1&2.1&1.9\\
-16 	& 3310&3906&5184 		& 52&68&51 		& 2.8&2.6&2.8\\
-24 	& 10115&16443&63273 	& 101&88&100 	& 3.6&3.7&3.6\\
-32 	& 16471&28031&97963 	& 93&88&95 		& 4.9&5.0&4.8\\
-40 	& 19464&33393&105573 	& 88&95&99 		& 6.2&6.1&6.0\\
-48 	& 19863&34881&104888 	& 80&69&152 	& 7.6&7.9&6.6\\
-\hline
-\end{tabular}
-\caption{Effects of changing Pattern length}
-\label{tab:patlen}
-\end{table}
+I name this scheme DE-CENSOR: a Distribution Encoding of Ciphertexts to Emulate Normal Surfing for Onion Routing.
 
-Table \ref{tab:patlen} shows some trends that occur when the pattern length is altered. The statistics are gathered from analysis of one reference sample of normal URLs.
-
-
-\begin{wrapfigure}{L}{0.5\textwidth}
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-    ylabel={Extention Factor},
-    xlabel={Pattern Length},
-    xmin=0, xmax=55,
-    ymin=0, ymax=8,
-    ytick={0,1,2,3,4,5,6,7,8},
-    xtick={0,10,20,30,40,50},
-    legend pos=north west,
-    ymajorgrids=true,
-    grid style=dashed,
-]
- 
-\addplot[color=blue,mark=square]
-    coordinates {(4,1.7)(8,2.1)(16,2.8)(24,3.6)(32,4.9)(40,6.2)(48,7.6) };
- 
-\end{axis}
-\end{tikzpicture}
-
-\begin{tikzpicture}
-\begin{axis}[
-    ylabel={Distrobution Bin Number $\times 10^3$},
-    xlabel={Pattern Length},
-    xmin=0, xmax=55,
-    ymin=0, ymax=20,
-    ytick={0,5,10,15,20},
-    xtick={0,10,20,30,40,50},
-    legend pos=north west,
-    ymajorgrids=true,
-    grid style=dashed,
-]
- 
-\addplot[color=blue,mark=square]
-    coordinates {(4,0.016)(8,0.081)(16,3.310)(24,10.115)(32,16.471)(40,19.464)(48,19.863) };
- 
-\end{axis}
-\end{tikzpicture}
-
-\begin{tikzpicture}
-\begin{axis}[
-    ylabel={Max Splitting},
-    xlabel={Pattern Length},
-    xmin=0, xmax=55,
-    ymin=0, ymax=110,
-    ytick={0,20,40,60,80,100},
-    xtick={0,10,20,30,40,50},
-    legend pos=north west,
-    ymajorgrids=true,
-    grid style=dashed,
-]
- 
-\addplot[color=blue,mark=square]
-    coordinates {(4,5)(8,14)(16,52)(24,101)(32,93)(40,88)(48,80) };
- 
-\end{axis}
-\end{tikzpicture}
-\caption{Pattern Length statistics on sample size $10000$}
-\end{wrapfigure}
-
-The expansion factor follows the following equation; let $s$ be the maximum splitting before errors, and $pl$ to be the patten length.
-$$|output| = |input| \times \left( \log_s 256 \times pl / 8 \right)$$ 
-This stems from the conversion of bases from $0x100=256$ in a character to $s$ divisions over the pattern of $pl$ bits and therefore $pl/8$ bytes. The equation shows the linear correlation between pattern length and expansion, though the graph shows the rate of inefficiency increases slightly with pattern size. This is due to the how well the bigger pattern distributions split in the equal portions. Initially, the splitting amount increases but after 24 bits (3 characters) it pivots and gradually decreases.  This is due to the increasing variance in bin size as the patterns get larger, causing the packing into divisions harder. I will discuss the techniques of packing in the implementation section. 
-
-The distribution bin number describes the number of non-empty bins in the histogram describing the distributions.
-At small numbers this is very low, since for sub-byte patterns the unstructured definition of \texttt{ascii} representations means any character distribution tends to produce all patterns of that length.
-At the byte length, looking at table \ref{tab:patlen}, it is clear not all character as created equal, since only a maximum of 89 different byte patterns are seen.
-In a purely random sample you would expect to see the number of bins used to increase exponentially, however, the graph shows this is not the case as the rate of increase slows.
-This could be since as the pattern length increases, the number of patterns in the sample that it has to draw from decreases.
-Also, the variation between histogram bin sizes widens since smaller patterns used in different permutations produce even spreading throughout the histogram even if the larger patterns the permutations make up are very uneven.
-To give concrete examples, let's take the examples of length 4 and 40.
-Length 4 produces 16 bins, of which the maximum proportion is $0.2191$, whereas for length 40 with 105573 bins has a maximum proportion of a smaller absolute value $0.0024$.
-However, when we take these are ratios from uniform we get $\frac{0.2191}{\frac{1}{16}} = 0.2191 \cdot 16 = 3.5056$ and $\frac{0.00245}{\frac{1}{105573}} = 0.00245 \cdot 105573 = 258.65385$.
-In the case of length 40 the particular value corresponds to the string \texttt{['/', 'i', 'm', 'a', 'g']}, which as expected, is an extremely common string in today's media rich web experiences, especially when to compared to low frequency strings such as \texttt{['V', 'U', 'S', '5', 'W']} which is probably only appearing in cryptographic random identifiers.
-For the 4 bit case, the most common result is \texttt{0x6}, which also is expected since the \texttt{ascii} representation of the letters \texttt{[a-o]} are in the range $0x60 \leq x < 0x70$.
-To sum up, the smaller the patterns lead to more independence and so more even distributions. 
-
-\begin{wrapfigure}[26]{R}{0.5\textwidth}
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-    ylabel={Distrobution Bin Number $\times 10^3$},
-    xlabel={Pattern Length},
-    xmin=0, xmax=55,
-    ymin=0, ymax=110,
-    ytick={0,20,40,60,80,100},
-    xtick={0,10,20,30,40,50},
-    legend pos=outer north east,
-    ymajorgrids=true,
-    grid style=dashed,
-]
- 	
-\addplot[color=blue,mark=square]
-    coordinates {(4,0.016)(8,0.081)(16,3.310)(24,10.115)(32,16.471)(40,19.464)(48,19.863) };
-    \addlegendentry{10000}
-\addplot[color=pink,mark=square]
-    coordinates {(4,0.016)(8,0.082)(16,3.906)(24,16.443)(32,28.031)(40,33.393)(48,34.881) };
-    \addlegendentry{20000}
-\addplot[color=green,mark=square]
-    coordinates {(4,0.016)(8,0.089)(16,5.184)(24,63.276)(32,97.963)(40,105.573)(48,104.888) };
-    \addlegendentry{30000}
-\addplot[color=red,mark=square]
-    coordinates {(4,0.016)(8,0.256)(16,65.536)(24,1000) };
-    \addlegendentry{Exponential}
- 
-\end{axis}
-\end{tikzpicture}
-
-
-\begin{tikzpicture}
-\begin{axis}[
-    ylabel={Extention Factor},
-    xlabel={Pattern Length},
-    xmin=0, xmax=55,
-    ymin=0, ymax=8,
-    ytick={0,1,2,3,4,5,6,7,8},
-    xtick={0,10,20,30,40,50},
-    legend pos=north west,
-    ymajorgrids=true,
-    grid style=dashed,
-]
- 
-\addplot[color=blue,mark=square]
-    coordinates {(4,1.7)(8,2.1)(16,2.8)(24,3.6)(32,4.9)(40,6.2)(48,7.6) };
-    \addlegendentry{10000}
-\addplot[color=pink,mark=square]
-    coordinates {(4,1.7)(8,2.1)(16,2.6)(24,3.7)(32,5.0)(40,6.1)(48,7.9) };
-    \addlegendentry{20000}
-\addplot[color=green,mark=square]
-    coordinates {(4,1.6)(8,1.9)(16,2.8)(24,3.6)(32,4.8)(40,6.0)(48,6.6) };
-    \addlegendentry{30000}
- 
-\end{axis}
-\end{tikzpicture}
-
-
-\begin{tikzpicture}
-\begin{axis}[
-    ylabel={Max Splitting},
-    xlabel={Pattern Length},
-    xmin=0, xmax=55,
-    ymin=0, ymax=160,
-    ytick={0,50,100,150},
-    xtick={0,10,20,30,40,50},
-    legend pos=north west,
-    ymajorgrids=true,
-    grid style=dashed,
-]
-
-\addplot[color=blue,mark=square]
-    coordinates {(4,5)(8,14)(16,52)(24,101)(32,93)(40,88)(48,80) };
-   	\addlegendentry{10000}
-\addplot[color=pink,mark=square]
-    coordinates {(4,5)(8,14)(16,68)(24,88)(32,88)(40,95)(48,69) };
-	\addlegendentry{20000}
-\addplot[color=green,mark=square]
-    coordinates {(4,5)(8,19)(16,51)(24,100)(32,95)(40,99)(48,152) };
-    \addlegendentry{30000}
- 
-\end{axis}
-\end{tikzpicture}
-\end{wrapfigure}
-
-To investigate the effect of the reference sample size on these figures I extracted more network traffic so I had 3 different-sized datasets.
-
-The figure on histogram-bin-numbers shows how although each sample size does have diminishing returns, as pattern length increases, the maximum value reached does improve directly with the size of the sample. This is because although at small pattern sizes the samples are exhaustive, on larger patterns although the actual normal distribution may contain upto an exponential number of sequences in a fixed sample we only ever see a small portion of them. 
-
-I believe the largest sample produces such a large increase compared to the step from 10000 to 20000 due to the way the web crawler worked.
-As described in the implementation section, it starts at a small set of sites and ventures outwards by following links on the pages.
-Because of this, the number of sites increases but also the diversity of these sites increases in language, style and technologies (different web frameworks produce different request patterns).
-
-On larger samples the possible encoding output expansion is slightly less for larger pattern length than when using a smaller one. This is due to the increase in possible number of divisions of the distribution down to the larger number of bins giving a more evenly divided distribution.
 
 \pagebreak
 \section{Implementation}
@@ -622,8 +438,232 @@ I used the Cryptography implementation from the PyCrypto library. This provides 
 \pagebreak
 \section{Evalutation}
 
-\pagebreak
-\section{Other Solutions}
+\subsection{Evaluating Pattern Length Effects}\label{sec:gran}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+\hline
+\multirow{2}{*}{Pattern Length}&
+\multicolumn{3}{|c|}{Distrobution Bin Number}&
+\multicolumn{3}{|c|}{Max Splitting}&
+\multicolumn{3}{|c|}{Extension Factor}\\
+\cline{2-10}
+&10000&20000&30000&10000&20000&30000&10000&20000&30000\\
+\hline
+4 	& 16&16&16 				& 5&5&6 		& 1.7&1.7&1.6\\
+8 	& 81&82&89 				& 14&14&19		& 2.1&2.1&1.9\\
+16 	& 3310&3906&5184 		& 52&68&51 		& 2.8&2.6&2.8\\
+24 	& 10115&16443&63273 	& 101&88&100 	& 3.6&3.7&3.6\\
+32 	& 16471&28031&97963 	& 93&88&95 		& 4.9&5.0&4.8\\
+40 	& 19464&33393&105573 	& 88&95&99 		& 6.2&6.1&6.0\\
+48 	& 19863&34881&104888 	& 80&69&152 	& 7.6&7.9&6.6\\
+\hline
+\end{tabular}
+\caption{Effects of changing Pattern length}
+\label{tab:patlen}
+\end{table}
+
+Table \ref{tab:patlen} shows some trends that occur when the pattern length is altered. The statistics are gathered from analysis of one reference sample of normal URLs.
+
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[b]{.49\linewidth}
+\begin{tikzpicture}
+
+\begin{axis}[
+    ylabel={Extention Factor},
+    xlabel={Pattern Length},
+    xmin=0, xmax=55,
+    ymin=0, ymax=8,
+    ytick={0,1,2,3,4,5,6,7,8},
+    xtick={0,10,20,30,40,50},
+    legend pos=north west,
+    ymajorgrids=true,
+    grid style=dashed,
+]
+ 
+\addplot[color=blue,mark=square]
+    coordinates {(4,1.7)(8,2.1)(16,2.8)(24,3.6)(32,4.9)(40,6.2)(48,7.6) };
+ 
+\end{axis}
+
+\end{tikzpicture}
+\end{subfigure}
+\begin{subfigure}[b]{.49\linewidth}
+\begin{tikzpicture}
+
+\begin{axis}[
+    ylabel={Distrobution Bin Number $\times 10^3$},
+    xlabel={Pattern Length},
+    xmin=0, xmax=55,
+    ymin=0, ymax=20,
+    ytick={0,5,10,15,20},
+    xtick={0,10,20,30,40,50},
+    legend pos=north west,
+    ymajorgrids=true,
+    grid style=dashed,
+]
+ 
+\addplot[color=blue,mark=square]
+    coordinates {(4,0.016)(8,0.081)(16,3.310)(24,10.115)(32,16.471)(40,19.464)(48,19.863) };
+ 
+\end{axis}
+\end{tikzpicture}
+\end{subfigure}
+\end{figure}
+
+
+\begin{wrapfigure}{L}{0.5\textwidth}
+
+\begin{tikzpicture}
+\begin{axis}[
+    ylabel={Max Splitting},
+    xlabel={Pattern Length},
+    xmin=0, xmax=55,
+    ymin=0, ymax=110,
+    ytick={0,20,40,60,80,100},
+    xtick={0,10,20,30,40,50},
+    legend pos=north west,
+    ymajorgrids=true,
+    grid style=dashed,
+]
+ 
+\addplot[color=blue,mark=square]
+    coordinates {(4,5)(8,14)(16,52)(24,101)(32,93)(40,88)(48,80) };
+ 
+\end{axis}
+\end{tikzpicture}
+\caption{Pattern Length statistics on sample size $10000$}
+\end{wrapfigure}
+
+The expansion factor follows the following equation; let $s$ be the maximum splitting before errors, and $pl$ to be the patten length.
+$$|output| = |input| \times \left( \log_s 256 \times pl / 8 \right)$$ 
+This stems from the conversion of bases from $0x100=256$ in a character to $s$ divisions over the pattern of $pl$ bits and therefore $pl/8$ bytes. The equation shows the linear correlation between pattern length and expansion, though the graph shows the rate of inefficiency increases slightly with pattern size. This is due to the how well the bigger pattern distributions split in the equal portions. Initially, the splitting amount increases but after 24 bits (3 characters) it pivots and gradually decreases.  This is due to the increasing variance in bin size as the patterns get larger, causing the packing into divisions harder. I will discuss the techniques of packing in the implementation section. 
+
+The distribution bin number describes the number of non-empty bins in the histogram describing the distributions.
+At small numbers this is very low, since for sub-byte patterns the unstructured definition of \texttt{ascii} representations means any character distribution tends to produce all patterns of that length.
+At the byte length, looking at table \ref{tab:patlen}, it is clear not all character as created equal, since only a maximum of 89 different byte patterns are seen.
+In a purely random sample you would expect to see the number of bins used to increase exponentially, however, the graph shows this is not the case as the rate of increase slows.
+This could be since as the pattern length increases, the number of patterns in the sample that it has to draw from decreases.
+Also, the variation between histogram bin sizes widens since smaller patterns used in different permutations produce even spreading throughout the histogram even if the larger patterns the permutations make up are very uneven.
+To give concrete examples, let's take the examples of length 4 and 40.
+Length 4 produces 16 bins, of which the maximum proportion is $0.2191$, whereas for length 40 with 105573 bins has a maximum proportion of a smaller absolute value $0.0024$.
+However, when we take these are ratios from uniform we get $\frac{0.2191}{\frac{1}{16}} = 0.2191 \cdot 16 = 3.5056$ and $\frac{0.00245}{\frac{1}{105573}} = 0.00245 \cdot 105573 = 258.65385$.
+In the case of length 40 the particular value corresponds to the string \texttt{['/', 'i', 'm', 'a', 'g']}, which as expected, is an extremely common string in today's media rich web experiences, especially when to compared to low frequency strings such as \texttt{['V', 'U', 'S', '5', 'W']} which is probably only appearing in cryptographic random identifiers.
+For the 4 bit case, the most common result is \texttt{0x6}, which also is expected since the \texttt{ascii} representation of the letters \texttt{[a-o]} are in the range $0x60 \leq x < 0x70$.
+To sum up, the smaller the patterns lead to more independence and so more even distributions. 
+
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[b]{.49\linewidth}
+\begin{tikzpicture}
+
+\begin{axis}[
+    ylabel={Extention Factor},
+    xlabel={Pattern Length},
+    xmin=0, xmax=55,
+    ymin=0, ymax=8,
+    ytick={0,1,2,3,4,5,6,7,8},
+    xtick={0,10,20,30,40,50},
+    legend pos=north west,
+    ymajorgrids=true,
+    grid style=dashed,
+]
+ 
+\addplot[color=blue,mark=square]
+    coordinates {(4,1.7)(8,2.1)(16,2.8)(24,3.6)(32,4.9)(40,6.2)(48,7.6) };
+    \addlegendentry{10000}
+\addplot[color=pink,mark=square]
+    coordinates {(4,1.7)(8,2.1)(16,2.6)(24,3.7)(32,5.0)(40,6.1)(48,7.9) };
+    \addlegendentry{20000}
+\addplot[color=green,mark=square]
+    coordinates {(4,1.6)(8,1.9)(16,2.8)(24,3.6)(32,4.8)(40,6.0)(48,6.6) };
+    \addlegendentry{30000}
+ 
+\end{axis}
+
+\end{tikzpicture}
+\end{subfigure}
+\begin{subfigure}[b]{.49\linewidth}
+\begin{tikzpicture}
+
+
+
+\begin{axis}[
+    ylabel={Distrobution Bin Number $\times 10^3$},
+    xlabel={Pattern Length},
+    xmin=0, xmax=55,
+    ymin=0, ymax=110,
+    ytick={0,20,40,60,80,100},
+    xtick={0,10,20,30,40,50},
+    legend pos=outer north east,
+    ymajorgrids=true,
+    grid style=dashed,
+]
+ 	
+\addplot[color=blue,mark=square]
+    coordinates {(4,0.016)(8,0.081)(16,3.310)(24,10.115)(32,16.471)(40,19.464)(48,19.863) };
+    \addlegendentry{10000}
+\addplot[color=pink,mark=square]
+    coordinates {(4,0.016)(8,0.082)(16,3.906)(24,16.443)(32,28.031)(40,33.393)(48,34.881) };
+    \addlegendentry{20000}
+\addplot[color=green,mark=square]
+    coordinates {(4,0.016)(8,0.089)(16,5.184)(24,63.276)(32,97.963)(40,105.573)(48,104.888) };
+    \addlegendentry{30000}
+\addplot[color=red,mark=square]
+    coordinates {(4,0.016)(8,0.256)(16,65.536)(24,1000) };
+    \addlegendentry{Exponential}
+ 
+\end{axis}
+\end{tikzpicture}
+\end{subfigure}
+\end{figure}
+
+\begin{wrapfigure}[26]{R}{0.5\textwidth}
+\centering
+
+\begin{tikzpicture}
+\begin{axis}[
+    ylabel={Max Splitting},
+    xlabel={Pattern Length},
+    xmin=0, xmax=55,
+    ymin=0, ymax=160,
+    ytick={0,50,100,150},
+    xtick={0,10,20,30,40,50},
+    legend pos=north west,
+    ymajorgrids=true,
+    grid style=dashed,
+]
+
+\addplot[color=blue,mark=square]
+    coordinates {(4,5)(8,14)(16,52)(24,101)(32,93)(40,88)(48,80) };
+   	\addlegendentry{10000}
+\addplot[color=pink,mark=square]
+    coordinates {(4,5)(8,14)(16,68)(24,88)(32,88)(40,95)(48,69) };
+	\addlegendentry{20000}
+\addplot[color=green,mark=square]
+    coordinates {(4,5)(8,19)(16,51)(24,100)(32,95)(40,99)(48,152) };
+    \addlegendentry{30000}
+ 
+\end{axis}
+\end{tikzpicture}
+\end{wrapfigure}
+
+To investigate the effect of the reference sample size on these figures I extracted more network traffic so I had 3 different-sized datasets.
+
+The figure on histogram-bin-numbers shows how although each sample size does have diminishing returns, as pattern length increases, the maximum value reached does improve directly with the size of the sample. This is because although at small pattern sizes the samples are exhaustive, on larger patterns although the actual normal distribution may contain upto an exponential number of sequences in a fixed sample we only ever see a small portion of them. 
+
+I believe the largest sample produces such a large increase compared to the step from 10000 to 20000 due to the way the web crawler worked.
+As described in the implementation section, it starts at a small set of sites and ventures outwards by following links on the pages.
+Because of this, the number of sites increases but also the diversity of these sites increases in language, style and technologies (different web frameworks produce different request patterns).
+
+On larger samples the possible encoding output expansion is slightly less for larger pattern length than when using a smaller one. This is due to the increase in possible number of divisions of the distribution down to the larger number of bins giving a more evenly divided distribution.
+
+
+\subsection{Other Solutions}
 
 ObfsProxy simply encrypts the entire packet with a streaming cipher. Earlier versions used a fixed parameters so although expensive, decryption could be done to obtain the standard traffic but now even that is not possible since a key exchange produces ephemeral keys. This procedure produces ciphertexts that are computationally indistinguishable from a random string so intensive computational statistics would be able to differentiate this from a background distribution of standard traffic. Also, do to it's complete lack of structure it would not pass any protocol white-listing filters.
 
@@ -643,6 +683,10 @@ Description: It transforms Tor traffic flows so they look like Skype Video. See 
 Dust\\
 Description: It aims to provide a packet-based (rather than connection-based) DPI-resistant protocol. See its git repository.
 
+
+
+\pagebreak
+\section{Conclusion}
 
 \pagebreak
 \begingroup
