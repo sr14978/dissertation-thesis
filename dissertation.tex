@@ -47,8 +47,8 @@
 \usepackage{multirow}
 \usepackage{tabularx}
 
-\usepackage{lineno}
-\linenumbers
+%\usepackage{lineno}
+%\linenumbers
 
 \begin{document}
 
@@ -398,6 +398,19 @@ I will evaluate the difference in granularity in section \ref{sec:gran}.
 
 Other more less specific specific heuristics include \texttt{inter-slash-distance} and ways to sample pattern distribution from only a subset of the URL such as the \texttt{initial-pattern} or \texttt{random-pattern}. These less powerful measures can all be dealt with in the same way to parametrise an encoding.
 
+\subsection{Detection}
+
+For less obvious differences in heuristic values between normal and fake distributions more comprehensive comparison of the distributions are needed.
+
+\begin{itemize}
+\item chi squared 
+\item fischer test
+\item G-test
+\item Kullback-Leibler entropy measurement
+\item Deep Learning
+\item batch vs stream
+\end{itemize}
+
 \subsection{Inverse Transform Sampling}
 
 Rejection sampling is a technique for generating observations from a given distribution. It works by generating samples of a different distribution and then transforming them using a formula.
@@ -495,7 +508,7 @@ table {%
 
 
 
-\subsection{Invertibility}
+\subsection{Invertibility}\label{invertibility}
 
 To map the discrete input, un-encoded ciphertext values onto the continuous domain of $F^{-1}_{D_N}$ some quantisation must be done.
 However, the actual distribution structure does have an effect on the degree of quantisation (or more simply put, the amount of splitting) which can be done.
@@ -574,7 +587,11 @@ Another solution is to fix the whole scheme to only work on fixed sized blocks a
 
 \subsection{Formalising the Scheme}
 
+\subsubsection{Encryption}
 
+The DTE is an encrypt-then-encode framework. To ensure the same standards of encryption as in the FTE scheme DTE must also provide IND-CCA security. To ensure this I will use an authenticated encryption scheme i will use counter mode with HMAC using AES256 for encryption and SHA256 for authentication. Therefore, assuming the underlying block cipher - AES - is secure, this mode provides indistinguishability under a chosen ciphertext attack. This security guarantee is only for the encryption layer. 
+
+%Now prove the property holds for the whole scheme
 
 \section{Implementation}
 
@@ -646,28 +663,34 @@ Like the recording of reference material, the calculation of distribution histog
 
 \subsubsection{Exponential Scaling}
 
+As the length of the patterns increase, the number of frequency bins increases exponentially, and therefore, if they are backed by an fully allocated array the space needed to record the frequencies quickly becomes unmanageable.
+For instance, even at pattern size of four characters it will consume 4 GiB in memory.
+Next, we observe that very little of the large space containing the all the possible patterns is ever used, since the samples collected are very small in comparison.
 
+Therefore, instead of allocating giant chunk of contiguous memory, the system will use a hash table.
+This dynamic structure handles the allocation of memory to match the number of items actually stored.
+Since we can estimate the expected number of items to be used during the analysis, we can also pre-resize the hash table to avoid the expensive operation of resizing in operation to avoid collisions.
 
-\subsubsection{Smoothing}
+\subsection{Inverse Transform Function}
 
+As described in section \ref{invertibility}, the inverse transform function $F^{-1}_{D_N}$ maps values drawn from uniform random to values that have a distribution defined by a frequency histogram.
+To implement this, I first transformed this in to a cumulative frequency distribution, and then extracted the upper and lower bounds for each of the output bins which represent each heuristic value.
+Then, sampling consists of sampling uniformly over the range of the whole cumulative distribution, and finding in to which bin's bounds the value falls.
 
+This can be done by linear search but as the number of bins grows, this dominates the computation.
+Since the bounds are ordered we can replace the lookup with a binary search whose logarithmic complexity slows the increase of computational work.
 
-\subsection{Statistical Analysis}
+\subsection{Thresholding}
 
-\begin{enumerate}
-\item finding good binning methods
-\item Chi Square vs fischer test
-\item thresholding, approximating to normal
-\item library used
-\end{enumerate}
+The detection system's goal is to decide whether a sample of packets is from normally distributed traffic or from a stream of fake ciphertexts such as that is generated from an FTE proxy.
+It does this by calculating a corresponding statistic value for the batch of packets in question and applying a threshold to obtain the binary decision.
+The threshold is the point that has equal probability of belonging to each distribution and to calculate this, the distribution types and parameters must be decided.
+By the central limit theorem, we can model the statistic's value as belonging to a Gaussian distribution, that parameters of which can be estimated from a sample.
+I took a sample of 10 streams of normal and fake traffic to get examples from each population and calculated the sample mean and variance. I was then able to estimate the population mean and variance and construct the following equation to constrain the threshold's value.
 
-\subsection{Encryption}
+$$(\sigma_2-\sigma_1) x^2 + 2\cdot (\sigma_1*\mu_2 - \sigma_2*\mu_1) x +  (\sigma_2*\mu_1^2 - \sigma_1*\mu_2^2 - \sigma_1*\sigma_2*\log(\sigma_2/\sigma_1)) = 0$$
 
-The DTE is an encrypt-then-encode framework. To ensure the same standards of encryption as in the FTE scheme DTE must also provide IND-CCA security. To ensure this I will use an authenticated encryption scheme i will use counter mode with HMAC using AES256 for encryption and SHA256 for authentication. Therefore, assuming the underlying block cipher - AES - is secure, this mode provides indistinguishability under a chosen ciphertext attack. This security guarantee is only for the encryption layer. 
-
-%Now prove the property holds for the whole scheme
-
-I used the Cryptography implementation from the PyCrypto library. This provides an AES block cipher, SHA256 Hash in a Merkle-Damg$\mathring{a}$rd construction and counter mode framework. The IV is chosen randomly.
+This can be solved for x using the standard quadratic formula to obtain the statistic threshold.
 
 \subsection{Proxy Embedding}
 
@@ -708,6 +731,12 @@ This is placed in the encrypted-buffer.
 \item The SOCKS protocol headers are then used to pass on the original requests to the intended address.
 
 \end{enumerate}
+
+\subsection{Libraries}
+
+I used the Cryptography implementation from the PyCrypto library.This provides an AES block cipher, SHA256 Hash in a Merkle-Damg$\mathring{a}$rd construction and counter mode framework. The IV is chosen randomly.
+
+The statistical distribution comparison calculations are done by the SciPy Library, which provides a C++ back-end to complete the heavy lifting and improves the performance.
 
 % -----------------------------------------------------------------------------
 
@@ -897,7 +926,7 @@ To sum up, the smaller the patterns lead to more independence and so more even d
 \end{subfigure}
 \end{figure}
 
-\begin{wrapfigure}[26]{R}{0.5\textwidth}
+\begin{wrapfigure}[13]{R}{0.5\textwidth}
 \centering
 
 \begin{tikzpicture}
