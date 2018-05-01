@@ -126,7 +126,8 @@ browsing their normal sites on their normal web browser.\\
 FTE					&:		& Format Transforming Encryption\\
 DE-CENSOR			&:		& Distribution Encoding of Ciphertexts to Emulate Normal Surfing for Onion Routing\\
 Record Layer		&:		& Layer in the network stack that receives data from te application layer, encrypts it, fragments it to an appropriate size and sends it on to the Transport Layer.\\
-SOCKS				&:		& Socket Secure - Internet Proxy Protocol
+SOCKS				&:		& Socket Secure - Internet Proxy Protocol\\
+Statistical Indistinguishability&:& Cryptographic demand of DTE, for ciphertexts to be indistinguishable from the target distribution, by statistical methods.\\
 
 \end{tabularx}
 \end{quote}
@@ -425,23 +426,26 @@ To preform this transformation the encode stage of the encryption will draw samp
 
 \subsubsection{Syntax}
 Let $\mathcal{D}_1$ represent the message source distribution and $\mathcal{D}_2$ represent the target population distribution.
-$\mathcal{D}_2$ can be sampled to from to obtain a sample frequency distribution description using $n$ samples. Name this description $D$. 
 
-A DTE scheme $\mathcal{E}^D$ that targets the distribution $\mathcal{D}$ using the description $D$ can be defined as a 3-tuple: ($Kg^D$, $Enc^D$, $Dec^D$), where,
 
-$Kg^D :: () \xrightarrow{\$} (k_e,k_s)$, produces encryption and signing keys for a block cipher.
+A DTE scheme $\mathcal{E}^{\mathcal{D}_2}$ that targets the distribution $\mathcal{D}_2$ can be defined as a 3-tuple: ($Kg^{\mathcal{D}_2}$, $Enc^{\mathcal{D}_2}$, $Dec^{\mathcal{D}_2}$), where,
 
-$Enc^D :: ((k_e,k_s), M) \rightarrow C$, where $M$ is a concatenation of the messages in a stream, and $C$ is a concatenation of the ciphertexts produced. Over $\forall M \in Support(\mathcal{D}_1)$ this ciphertext stream looks like it is in  $Support(\mathcal{D}_2)$.
+$Kg^{\mathcal{D}_2} :: () \xrightarrow{\$} (k_e,k_s)$, produces a set of symmetric encryption and signing keys for a block cipher.
 
-$Dec^D :: ((k_e,k_s), C) \rightarrow M$, where $M$ is the original stream of messages the produced $C$.
+$Enc^{\mathcal{D}_2} :: ((k_e,k_s), M) \rightarrow C$, where $M$ is a concatenation of the messages in a stream, and $C$ is a concatenation of the ciphertexts produced. Over $\forall M \in Support_n(\mathcal{D}_1)$ this ciphertext stream looks like it is in  $Support_n(\mathcal{D}_2)$.
+
+$Dec^{\mathcal{D}_2} :: ((k_e,k_s), C) \rightarrow M$, where $M$ is the original stream of messages the produced $C$.
+
+Here, I am using $Support_n(\mathcal{D})$ to define a distribution of streams of length $n$ that are the concatenation of messages sampled from $\mathcal{D}$.
 
 \subsubsection{Security Demands}
 
-A DTE scheme $\mathcal{E}^D = (Kg^D, Enc^D, Dec^D)$ must uphold standard message privacy security, but also a new requirement - statistical indistinguishability.
+A DTE scheme $\mathcal{E}^{\mathcal{D}_2} = (Kg^{\mathcal{D}_2}, Enc^{\mathcal{D}_2}, Dec^{\mathcal{D}_2})$ must uphold standard message privacy security, but also a new requirement - statistical indistinguishability.
 
 \paragraph{Privacy}
 distinguish 
-I demand indistinguishability of ciphertexts under an adaptive chosen ciphertext attack. Standard modes of authenticated encryption such as the cipher block chaining and encrypt the HMAC mode of AES provides this level of security.
+I demand indistinguishability of ciphertexts under an adaptive chosen plaintext attack. Standard modes of authenticated encryption such as the cipher block chaining and encrypt the HMAC mode of AES provides higher levels of security.
+Though due to publicly known normal traffic distribution the produced ciphertexts are malleable, making chosen cipher text attacks always possible. 
 This must be inherited by the overall scheme to provide the standard assurances.
 
 \paragraph{Statistical Indistinguishability}
@@ -450,9 +454,15 @@ This is a new demand that I am defining to ensure the closeness of the output di
 This requirement does not refer to the computational indistinguishability that requires reduction to a hard known problem.
 Instead, it is asks that for any well behaving distribution comparison function $\Delta$,\footnote{though does not need to be symmetric, or obey the triangle inequality,}
 
-Over $ (k_e,k_s) \leftarrow Kg^D, M \in Support(\mathcal{D}_1), N \in Support(\mathcal{D}_2)$;
+Over $ (k_e,k_s) \leftarrow Kg^{\mathcal{D}_2}, M \in Support_n(\mathcal{D}_1), N \in Support_n(\mathcal{D}_2)$;
 
-Measurement of $\Delta \left(  Enc^D((k_e,k_s), M), N  \right)$ is small.
+Measurement of $\Delta \left(  Enc^{\mathcal{D}_2}((k_e,k_s), M), N  \right)$ is small.
+
+This quantification of \textit{small} is left up to the creator of the construction.
+It can refer to a negligible function in one of the parameters but does not need to.
+The exact value is down to the priorities of the application.
+Adversaries that are willing to tolerate that some ciphertexts will get detected at the expense of a simpler encoding will want to relax the requirement.
+Yet, in other settings, where even one detection would cause large detrimental effects, it makes sense that you would tighten the bound on this constraint.
 
 \section{Exploration of Techniques}
 
@@ -509,10 +519,10 @@ Large amounts of data are needed to train the system which to be done with reali
 
 \subsection{The Proposed Scheme}
 
-My proposed scheme works by generating encoded ciphertexts from a heuristic which can take a finite number of discrete values $\mathcal{H}$. For this, the scheme will use an inverse transform sampling due to its efficiency and ease of computation.
+My proposed scheme works by generating encoded ciphertexts from a heuristic which can take a finite number of discrete values $\mathcal{X}$. For this, the scheme will use an inverse transform sampling due to its efficiency and ease of computation.
 The heuristics follow a distribution $D_n$ defined by a frequency histogram, like shown in figure \ref{fig:dist_pat4}.
 Since this is discrete, forming the cumulative distribution is simply the case of iteratively adding the bin frequencies and linearly interpolating the intervals as shown in figure \ref{fig:cum_dist_pat4}.
-Since we have a finite number of intervals, the inverse can simply be the reverse lookup function $\mathcal{F}^{-1}_{D_N} :: [0,1) \rightarrow \mathcal{H}$.
+Since we have a finite number of intervals, the inverse can simply be the reverse lookup function $\mathcal{F}^{-1}_{D_N} :: [0,1) \rightarrow \mathcal{X}$.
 Now, assuming our input is uniformly random, sampling over the observations and applying this inverse transform $\mathcal{F}^{-1}_{D_N}$ will obtain values for our heuristics that are normally distributed.
 These values can then be used in the encoding to produced normally distributed ciphertexts.
 
@@ -604,10 +614,10 @@ To ensure that the encoding is invertible, as all encodings must be, we must ens
 
 Define:
 
-$$F^{-1}_{D_N} :: \mathbb{Z}_s \rightarrow \mathcal{H}$$
+$$F^{-1}_{D_N} :: \mathbb{Z}_s \rightarrow \mathcal{X}$$
 $$F^{-1}_{D_N}(x) = x' \xleftarrow{\$} [x, x+d); \mathcal{F}^{-1}_{D_N}(x')$$
 
-Surjectivity of $F^{-1}_{D_N}$ follows from the fact that $\mathcal{F}^{-1}_{D_N}$ is surjective by, $\forall y \in \mathcal{H}, \exists x' \in [0,1)\ st.\ \mathcal{F}^{-1}_{D_N}(x') = y$ and $ let\ x = \lfloor \frac{x'}{d} \rfloor$ so $x \in \mathbb{Z}_s$ and $F^{-1}_{D_N}(x) = y$ so surjective.
+Surjectivity of $F^{-1}_{D_N}$ follows from the fact that $\mathcal{F}^{-1}_{D_N}$ is surjective by, $\forall y \in \mathcal{X}, \exists x' \in [0,1)\ st.\ \mathcal{F}^{-1}_{D_N}(x') = y$ and $ let\ x = \lfloor \frac{x'}{d} \rfloor$ so $x \in \mathbb{Z}_s$ and $F^{-1}_{D_N}(x) = y$ so surjective.
 
 However, injectivity is not provable in general. It depends on the exact instance of the distribution histogram.
 In fact, it is very unlikely for no overlaps between output quantisation and input quantisation to occur.
@@ -635,9 +645,9 @@ Firstly, the correction of the boundaries of the inputs were moved to match the 
 The divisions started as non-overlapping and during the correction, this did not change, 
 $$\forall i \neq j \in \mathbb{Z}_s, \big[ B[i],B[i+1] \big) \cap \big[ B[j],B[j+1] \big) = \emptyset$$
 Also since the boundaries match, the pre-image of a output value is contained by only one input value,
-$$ \forall i \neq j \in \mathbb{Z}_s, \alpha,\beta \in \mathcal{H} \text{ such that } \alpha \in Img_{F^{-1}_{D_N}}(\big[ B[i],B[i+1] \big)) \text{ and } \beta \in Img_{F^{-1}_{D_N}}(\big[ B[j],B[j+1] \big))$$
+$$ \forall i \neq j \in \mathbb{Z}_s, \alpha,\beta \in \mathcal{X} \text{ such that } \alpha \in Img_{F^{-1}_{D_N}}(\big[ B[i],B[i+1] \big)) \text{ and } \beta \in Img_{F^{-1}_{D_N}}(\big[ B[j],B[j+1] \big))$$
 $$\text{ then } \alpha \neq \beta$$
-Therefore, if we take arbitrary $x, x' \in \mathbb{Z}_s, \text{ such that letting} \alpha = F^{-1}_{D_N}(x), \text{ and } \beta = F^{-1}_{D_N}(x'), \text{ then } \alpha = \beta \in \mathcal{H}$ then by the contrapositive above $x=x'$.
+Therefore, if we take arbitrary $i, j \in \mathbb{Z}_s, \text{ such that letting} \alpha = F^{-1}_{D_N}(i), \text{ and } \beta = F^{-1}_{D_N}(j), \text{ then } \alpha = \beta \in \mathcal{X}$ then by the contrapositive above $i=j$, and so injectivity holds.
 
 \subsection{Towards a Concrete Scheme}
 
@@ -674,18 +684,67 @@ Another solution is to fix the whole scheme to only work on fixed sized blocks a
 
 \subsection{Formalising the Construction}
 
-\subsubsection{Encryption}
+DE-CENSOR is an encrypt-then-encode framework, and so the encryption and decryption operations are made up of 2 stages each. Lets define these formally.
 
-The DTE is an encrypt-then-encode framework. To ensure the same standards of encryption as in the FTE scheme DTE must also provide IND-CCA security. To ensure this I will use an authenticated encryption scheme i will use counter mode with HMAC using AES256 for encryption and SHA256 for authentication. Therefore, assuming the underlying block cipher - AES - is secure, this mode provides indistinguishability under a chosen ciphertext attack. This security guarantee is only for the encryption layer. 
+$encrypt :: ( (k_e, k_s), M ) \rightarrow C$ is the encryption function of the authenticated encryption scheme. 
 
-TODO: Now prove the property holds for the whole scheme
+$decrypt :: ( (k_e, k_s), C ) \rightarrow M$ is the decryption function of the authenticated encryption scheme.
 
-\subsubsection{Distinguishably}
+Let, $H$ be a description of each heuristic and $D$ its value's frequency distribution.
+Then we can encapsulate $\mathcal{D}_2$, as $\mathcal{H} = \{(H_0,D_0), \cdots , (H_m,D_m)\}$ containing the information about each of the $m$ heuristics used in the encoding.
 
-\begin{itemize}
-\item Adversary classifications from 'the parrot is dead'
-\item closeness of distributions
-\end{itemize}
+$encode^{\mathcal{H}} :: C \rightarrow N$, is the function that uses the heuristic distributions to transform ciphertexts $C$ in to normal traffic patterns $N$.
+
+$decode^{\mathcal{H}} :: N \rightarrow C$, is the function that again uses the heuristic distributions, but now transform normal traffic $N$ back in to ciphertexts $C$.
+
+Now we can use these to implement the DTE specification.
+
+\begin{tabularx}{\textwidth}{ r c X }
+$Kg^{\mathcal{D}_2}$ &:	&
+$(k_e, k_s) \xleftarrow{\$} \{0,1\}^n$, for key length $n$.
+\\
+
+$Enc^{\mathcal{D}_2}((k_e,k_s), M)$ &:	&
+$encode^\mathcal{H}( encrypt( (k_e,k_s), M ) )$
+\\
+
+$Dec^{\mathcal{D}_2}((k_e,k_s), N)$ &:	&
+$decrypt( (k_e,k_s), decode^\mathcal{H}( N ) )$
+\\
+
+\end{tabularx}
+
+
+\subsubsection{Privacy}
+
+To ensure the DTE demand of privacy the construction must provide IND-CPA security.
+To ensure this, it will use an authenticated encryption scheme.
+It will implement a cipher block chaining mode with HMAC using AES256 for encryption and SHA256 for authentication.
+Therefore, assuming the underlying block cipher - AES - is secure, this mode provides indistinguishability under a chosen ciphertext attack.
+
+This security guarantee is only for the encryption layer, however, since the encoding only has access to the IND-CPA ciphertext no information leakage is possible.
+
+\subsubsection{Statistical Distinguishably}
+
+
+The construction will use the encryption scheme outlined in the privacy section.
+For this proof we simplify the system to remove the boundary correction of $F^{-1}_{D_N}$.
+For this construction requirement, we rely on the IND-\$ security of the encryption scheme.
+This means that, 
+
+$$ encrypt \left( (k_e, k_s), Support_n(\mathcal{D}_1 \right) ) \sim  U_n$$ 
+
+The discrete inverse transform sampling function $F^{-1}_{D_N}$ samples randomly within the division.
+Furthermore, since the division is uniformly selected by the uniform distribution generation by the encryption, the input to the continuous function $\mathcal{F}^{-1}_{D_N}$ is a continuous random real inside the domain.
+Therefore, by the definition of $\mathcal{F}^{-1}_{D_N}$, it will generate heuristic values that follow the distribution in normal traffic.
+
+So, by hybrid argument,
+
+$$ encode^{\mathcal{D}_2} \left( encrypt \left( (k_e, k_s), Support_n(\mathcal{D}_1) \right) \right) \sim  encode \left( U_n \right) \sim \mathcal{D}_2$$
+
+Therefore, any comparison function $\Delta$ that is based on the 
+
+$\Delta \left(  Enc^{\mathcal{D}_2}((k_e,k_s), M), N  \right)$
 
 \chapter{Implementation}
 

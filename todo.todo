@@ -22,10 +22,11 @@ Heuristics:
 ✔ Use in a scheme @done(2018-04-30 15:50)
 ✔ Prove correctness @done(2018-04-30 15:50)
 ✔ concrete scheme @done(2018-04-30 20:24)
-☐ formalising construction
 ✔ chi square vs fisher test @done(2018-05-01 14:08)
 ✔ encryption @done(2018-05-01 11:18)
-☐ proof of security
+✔ formalising construction @done(2018-05-02 00:31)
+✔ proof of security @done(2018-05-02 00:31)
+✔ proof of distiguishing @done(2018-05-02 00:31)
 
 Implementation:
   ✔ intro @done(2018-04-30 15:51) @project(Implementation)
