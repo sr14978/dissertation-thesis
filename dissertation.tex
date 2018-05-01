@@ -85,9 +85,19 @@
 
 % -----------------------------------------------------------------------------
 
-\chapter{Executive Summary}
+\chapter{Abstract}
 
-My research hypothesis is that statistical methods could be used by network based adversaries to distinguish between the use of format transforming encryption schemes and normal traffic. I also hypothesis that an practical replacement scheme will be able to produce innocuous ciphertexts whose distribution has undetectable divergence from the distribution of normal traffic.
+There is currently an arms race between network based traffic censors and schemes to bypass their detection and blocking mechanisms. 
+Deep packet inspection can provide valuable information to system administrators managing network traffic, by informing protocol use and content.
+However, some use of these tools, especially on a state-wide scale is controversial since it can be used to snoop on citizens and block content to forward a political agenda.
+
+Currently, the majority of the protocol detection schemes in use are based on regular expression parsers and so there has been work to produce schemes that exploit vulnerabilities this fact by formatting ciphertexts to match these definitions.
+These have had success in practice at supporting arbitrary web access for users in oppressive regimes with the aim of keeping the World Wide Web a free and open platform.
+Currently, these systems are working, however, censors' abilities and techniques for detection are improving all the time. So, looking to the future, I am analysing a potential avenue for detection and pre-emptively finding a solution.
+
+\subsubsection{Research Hypotheses}
+
+My research hypothesis is that statistical methods could be used by network based adversaries to distinguish between the use of format transforming encryption schemes and normal traffic. I also hypothesise that a practical replacement scheme will be able to produce innocuous ciphertexts whose distribution has undetectable divergence from the distribution of normal traffic.
 
 \subsubsection{Research Goals}
 
@@ -96,30 +106,6 @@ My research hypothesis is that statistical methods could be used by network base
 -\item Build a statistical tool for distinguishing emulated from normal traffic.
 -\item Build a new scheme that is able to overcome this detection.
 \end{itemize}
-
-\vspace{1cm} 
-{\bf A compulsory section, of at most $1$ page} 
-
-\noindent
-This section should pr\'{e}cis the project context, aims and objectives,
-and main contributions (e.g., deliverables) and achievements; the same 
-section may be called an abstract elsewhere.  The goal is to ensure the 
-reader is clear about what the topic is, what you have done within this 
-topic, {\em and} what your view of the outcome is.
-
-The former aspects should be guided by your specification: essentially 
-this section is a (very) short version of what is typically the first 
-chapter.  Note that for research-type projects, this {\bf must} include 
-a clear research hypothesis.  This will obviously differ significantly
-for each project, but an example might be as follows:
-
-\begin{quote}
-My research hypothesis is that a suitable genetic algorithm will yield
-more accurate results (when applied to the standard ACME data set) than 
-the algorithm proposed by Jones and Smith, while also executing in less
-time.
-\end{quote}
-
 
 % -----------------------------------------------------------------------------
 
