@@ -22,8 +22,8 @@ Heuristics:
 ✔ Prove correctness @done(2018-04-30 15:50)
 ✔ concrete scheme @done(2018-04-30 20:24)
 ☐ formalising
-☐ chi square vs fisher test
-☐ encryption
+✔ chi square vs fisher test @done(2018-05-01 14:08)
+✔ encryption @done(2018-05-01 11:18)
 ☐ proof of security
 
 Implementation:
@@ -33,7 +33,7 @@ Implementation:
   ✔ Inverse function implementation @done(2018-04-30 23:52) @project(Implementation)
   ✔ thresholding @done(2018-05-01 01:00) @project(Implementation)
   ✔ embedding in a proxy @done(2018-04-30 23:52) @project(Implementation)
-  ☐ Diagram
+  ✔ Diagram @done(2018-05-01 11:16) @project(Implementation)
 
 Evaluation:
   ✔ pattern length effects @done(2018-05-01 01:00) @project(Evaluation)

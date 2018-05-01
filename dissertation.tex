@@ -402,28 +402,61 @@ Other more less specific specific heuristics include \texttt{inter-slash-distanc
 
 For less obvious differences in heuristic values between normal and fake distributions more comprehensive comparison of the distributions are needed.
 
-\begin{itemize}
-\item chi squared 
-\item fischer test
-\item G-test
-\item Kullback-Leibler entropy measurement
-\item Deep Learning
-\item batch vs stream
-\end{itemize}
+For testing distributions that are know to follow fixed-shape but parametrised models, such as a Gaussian, the Z-test can be used by testing the difference in means test statistic.
+The T-test is more appropriate for small sample sizes, where the population's standard deviation is hard to estimate since the Z-test relies on this to calculate the significance level.
+Although, due to the central limit theorem, these measures could be used, the arbitrary structure of the distributions in question it could result in false positives in the measurements if only the means of the samples were taken in to consideration.
 
-\subsection{Inverse Transform Sampling}
+An exact test, such Fisher's exact test, will calculate the exact probability of obtaining each observation in the sample.
+Assuming the independence of the observations the overall probability can then be computed and then compared with a significance level threshold.
+However, in this situation, the independence assumption is unfounded and furthermore, the computational cost of this method is large, so for large sizes of our samples, other tests are recommended.
 
-Rejection sampling is a technique for generating observations from a given distribution. It works by generating samples of a different distribution and then transforming them using a formula.
+The Chi-square test and G-test are more appropriate for these large observation counts. In both of these tests, a test statistic is calculated and its value is then compared with the chi-square distribution to estimate the probability of obtaining that value. 
+The subtle difference between them, is that the Chi-square test's statistic is the squared differences of each frequency bin, whereas the G-test calculates the sum of log differences.
+Therefore, the chi-squared test penalises a larger difference more heavily that multiple smaller ones, whereas the G-test forgives these large differences by a log scale, so the opposite is true.
+
+There is also a class of tests that measure the divergence between two distributions.
+These are not distance measurements since they do not obey the triangle inequality however, they are useful for binary comparison.
+The divergence calculation, that Kullback and Leibler outline in their foundational paper, is a measure of entropy between distributions~\cite{dist}. 
+This measurement deals with the Shannon Entropy of the systems and quantifies the information gain needed to transform from one distribution to the other and is actually related to the G-test by,
+$$G = 2 \Sigma_i O_i \cdot \ln{\frac{O_i}{E_i}} = 2N \Sigma_i o_i \cdot \ln{\frac{o_i}{e_i}}$$,
+where $O_i$ and $E_i$ are the observed and expected frequencies when $N$ observations is made and $o_i$ and $e_i$ are the observed and expected proportions.
+However, it does have problems in application, such as asymmetry and possible infinite values.
+In response to this, Jensen and Shannon took a different tack for their divergence measure, which instead measures the similarity between the distributions. This measure is symmetric and since it measures shared information it can only produce finite values.
+
+
+
+\subsection{Sampling Methods}
+
+\subsubsection{Rejection sampling}
+
+Rejection sampling is a technique for generating observations from a given distribution. 
+It works by first sampling over the two dimensional space of the proposed frequency density distribution and rejecting those that do not lie below the line.
 A classic, well-known, real-life example of this is the Buffon Needle experiment, in which the participant randomly drops needles on to a sheet of paper with evenly distributed parallel bars drawn across it.
 The needles that overlap a bar are counted verses those who don't and this proportion can be used to estimate pi as $\pi \approx \frac{2l}{t \cdot P}$ where $l$ is the length of the needles, $t$ is the gap between bars and $P$ is the proportion.
 In this case, the first distribution is 3 dimensional; two spatial dimensions and one angular, and the second mapped distributions is binomial.
 The transformation formula uses some elementary calculus and involves $pi$, so by knowing the outcome of the experiment, one can work backwards to estimate its value.
+However, the major downfall of this method is that the efficiency is greatly affected by the closeness of the two distributions, as more samples have to be rejected.
 
-One type of rejection sampling is called inverse transform sampling which is commonly used for generating random numbers from arbitrary distributions.
+\subsubsection{Inverse Transform Sampling}
+
+Another more efficient sampling method is called inverse transform sampling, which is commonly used for generating random numbers from arbitrary distributions.
 It is simple and efficient and can be used to generate values from the Normal distribution when given values from the uniform sources that are gathered by computer's random generation implementation.
+It works by generating samples of a different distribution and then transforming them using a formula.
 However, it works by calculating the inverse of the cumulative frequency distribution function so only works on distributions where this is invertible.
-My proposed scheme works by generating encoded ciphertexts from a heuristic which can take a finite number of discrete values $\mathcal{H}$.
-This heuristic follows the distribution $D_n$ defined by a frequency histogram, like shown in figure \ref{fig:dist_pat4}.
+
+\subsubsection{Fully Connected Neural Networks}
+
+Fully connected neural networks with a single hidden layer are theoretically able to model any continuous function.
+Therefore, they should be able to convert distributions.
+To test this, in early 2018, Horger et al. wrote a paper on training neural nets to generate samples from arbitrary distrobutions~\cite{deepl}.
+They trained the fully connected neural net to map uniformly generated inputs to a chosen probability density function by minimising Jensen-Shannon divergence.
+Their model was able to produce results that have comparable goodness of fit to other classical methods and after training was competitive in performance.
+Large amounts of data are needed to train the system which to be done with realistic performance, needs special hardware to cope with the parallelism. Although, in the not so distant future this may become ubiquitous. 
+
+\subsection{The Proposed Scheme}
+
+My proposed scheme works by generating encoded ciphertexts from a heuristic which can take a finite number of discrete values $\mathcal{H}$. For this, the scheme will use an inverse transform sampling due to its efficiency and ease of computation.
+The heuristics follow a distribution $D_n$ defined by a frequency histogram, like shown in figure \ref{fig:dist_pat4}.
 Since this is discrete, forming the cumulative distribution is simply the case of iteratively adding the bin frequencies and linearly interpolating the intervals as shown in figure \ref{fig:cum_dist_pat4}.
 Since we have a finite number of intervals, the inverse can simply be the reverse lookup function $\mathcal{F}^{-1}_{D_N} :: [0,1) \rightarrow \mathcal{H}$.
 Now, assuming our input is uniformly random, sampling over the observations and applying this inverse transform $\mathcal{F}^{-1}_{D_N}$ will obtain values for our heuristics that are normally distributed.
@@ -741,13 +774,13 @@ This is placed in the encrypted-buffer.
 
 See figure \ref{fig:imp-diag} for an overview of the process.
 
-\begin{figure}
-\begin{subfigure}[b]{\textwidth}
+\begin{figure}[b]
+\begin{subfigure}{\textwidth}
 \includegraphics[scale=0.9]{diagram-enc}
 \caption{Encoding and Sending Mechanism}
 \end{subfigure}
 
-\begin{subfigure}[b]{\textwidth}
+\begin{subfigure}{\textwidth}
 \includegraphics[scale=0.9]{diagram-dec}
 \caption{Receiving and Decoding Mechanism}
 \end{subfigure}
