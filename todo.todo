@@ -16,12 +16,13 @@ Heuristics:
   ✔ length distiguisher @done(2018-04-30 15:50) @project(Heuristics)
   ✔ pattern distiguisher @done(2018-04-30 15:50) @project(Heuristics)
 
+✔ Formalising DTE @done(2018-05-01 21:06)
 ✔ Inverse Transform Sampling @done(2018-04-30 15:50)
 ✔ Invertibility @done(2018-04-30 15:50)
 ✔ Use in a scheme @done(2018-04-30 15:50)
 ✔ Prove correctness @done(2018-04-30 15:50)
 ✔ concrete scheme @done(2018-04-30 20:24)
-☐ formalising
+☐ formalising construction
 ✔ chi square vs fisher test @done(2018-05-01 14:08)
 ✔ encryption @done(2018-05-01 11:18)
 ☐ proof of security

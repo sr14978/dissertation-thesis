@@ -235,7 +235,7 @@ After language was invented to share knowledge, humans soon needed a way hide it
  \item deniable encryption
 \end{itemize}
 
-\chapter{Previous Work}
+\chapter{Previous Work}\label{prev_work}
 
 \section{Format Preserving Encryption}
 
@@ -317,7 +317,7 @@ $\hookleftarrow$
 
 %Instead must use advanced mechanisms (discussed in Section 7) in settings with adversarial users.
 
-\section{Attacking FTE}
+\section{Attacking FTE}\label{attacking_fte}
 
 Although FTE produces validly formatted ciphertexts which satisfy many current filtering systems, the ciphertexts look in no way normal.
 Informally, this is in the same way auto generated C source code looks very different to any C code that a human would write.
@@ -373,11 +373,9 @@ This could be done on a small running window basis and when triggered could add 
 This is like what happens in currently deployed keyword filtering systems such as in China. 
 
 Another heuristic for defining the distribution is pattern frequency.
-This can be done at varying levels of granularity to give varying results.
-The obvious level of abstraction is at the character level, which if used to base an emulation from, will only produce strings containing valid characters, since they are are what is extracted from normal traffic.
-Since patterns are recorded and generated independently, any lower level of granularity could produce byte values for non valid characters such as control characters.
-This makes detection easy for a censor, as these values are not allowed in the protocol, so they can reject without even considering their frequency of use in normal traffic.
-Longer patterns reduced independence since larger chunks are taken in context, however the complexity increases dramatically, as per our exponential calculation previously.
+This can be done at varying levels of granularity; the obvious level of abstraction being the character level. However, there are pros and cons of changing the measured pattern length.
+Short pattern sizes such as a couple of bits are extremely quick but do not provide much deep insight into the higher level patterns of the traffic.
+Longer patterns reduced independence since larger chunks are taken in context and so can catch more complex patterns, however the complexity increases dramatically, as per our exponential calculation previously.
 
 Other more less specific specific heuristics include \texttt{inter-slash-distance} and ways to extract pattern distribution information from only a subset of the URL such as the \texttt{initial-pattern} or \texttt{random-pattern}. These less powerful measures can all be dealt with in the same way to parametrise an encoding.
 
@@ -421,20 +419,64 @@ I discuss a method of calculating this threshold from positive and negative samp
 
 \chapter{Distribution Transforming Encryption}
 
-My scheme will try and form ciphertexts that are comparable to a stream of normal browser HTTP traffic by transforming the distribution to match. 
+Informally, my scheme will produce ciphertexts that look the same as a stream of normal brower HTTP traffic.
+It has a encrypt-then-encode structure as first a plaintext is encrypted and then this non-normally distributed ciphertext is encoded to transform it to a ciphertext drawn from the normal traffic distribution.
+To preform this transformation the encode stage of the encryption will draw samples from a pre-recorded reference distribution to emulate normal packets.
 
-To do this, there must be a way to encapsulate not just the valid language but its frequency distribution.
-Sadly, augmenting the finite state machine produced by the regular expression with weights does not produce the desired effect.
-Adding weights to the DFA's state transitions would still produce a graph that could be ranked using a slightly altered algorithm.
+\subsubsection{Syntax}
+Let $\mathcal{D}_1$ represent the message source distribution and $\mathcal{D}_2$ represent the target population distribution.
+$\mathcal{D}_2$ can be sampled to from to obtain a sample frequency distribution description using $n$ samples. Name this description $D$. 
+
+A DTE scheme $\mathcal{E}^D$ that targets the distribution $\mathcal{D}$ using the description $D$ can be defined as a 3-tuple: ($Kg^D$, $Enc^D$, $Dec^D$), where,
+
+$Kg^D :: () \xrightarrow{\$} (k_e,k_s)$, produces encryption and signing keys for a block cipher.
+
+$Enc^D :: ((k_e,k_s), M) \rightarrow C$, where $M$ is a concatenation of the messages in a stream, and $C$ is a concatenation of the ciphertexts produced. Over $\forall M \in Support(\mathcal{D}_1)$ this ciphertext stream looks like it is in  $Support(\mathcal{D}_2)$.
+
+$Dec^D :: ((k_e,k_s), C) \rightarrow M$, where $M$ is the original stream of messages the produced $C$.
+
+\subsubsection{Security Demands}
+
+A DTE scheme $\mathcal{E}^D = (Kg^D, Enc^D, Dec^D)$ must uphold standard message privacy security, but also a new requirement - statistical indistinguishability.
+
+\paragraph{Privacy}
+distinguish 
+I demand indistinguishability of ciphertexts under an adaptive chosen ciphertext attack. Standard modes of authenticated encryption such as the cipher block chaining and encrypt the HMAC mode of AES provides this level of security.
+This must be inherited by the overall scheme to provide the standard assurances.
+
+\paragraph{Statistical Indistinguishability}
+
+This is a new demand that I am defining to ensure the closeness of the output distribution to the target distribution.
+This requirement does not refer to the computational indistinguishability that requires reduction to a hard known problem.
+Instead, it is asks that for any well behaving distribution comparison function $\Delta$,\footnote{though does not need to be symmetric, or obey the triangle inequality,}
+
+Over $ (k_e,k_s) \leftarrow Kg^D, M \in Support(\mathcal{D}_1), N \in Support(\mathcal{D}_2)$;
+
+Measurement of $\Delta \left(  Enc^D((k_e,k_s), M), N  \right)$ is small.
+
+\section{Exploration of Techniques}
+
+To create this DTE scheme, there must be a way to encapsulate not just the valid language but its frequency distribution.
+Firstly, I looked to the finite state machine produced by the regular expressions as used in FTE. Sadly, augmenting the node with weights according to the visiting frequency does not produce the desired effect.
+The adding of these weights to the DFA's state transitions would still produce a graph that could be ranked using a slightly altered algorithm.
 However, these weights would not be meaningful, since they would not be taking in to consideration the previous path through transition graph and therefore previous symbols in the stream.
 In some graphs, where every different input stream parses through a different subset of the DFA states, this approach is valid.
 However, efficient DFAs do not do this since it has exponential blow up, and specifically not the DFAs for the languages that we are targeting.
 
-I also looked in to ways of obtaining the structure of normal traffic using tools such as sequitur~\cite{sequitur} to infer a grammar, but this has the same problems. 
+I also looked in to ways of obtaining the structure of normal traffic using tools such as sequitur~\cite{sequitur} to infer a grammar, but this too has the same problems. 
 
-Longer patterns have pros and cons; more character dependence, leading to more realistic URLs to the eye, but the complexity is increased dramatically, as per our exponential calculation previously.
-If multiple character patterns are used, sequences of semantically correct content appear such as words and data structures like query string parameters.
-I will evaluate the difference in granularity in section \ref{sec:gran}.
+As discussed in section \ref{attacking_fte} about attacking FTE, since the distribution of normal traffic is highly unstructured describing it in full is intractable, for the censor and here for the DTE scheme.
+Therefore, the suggestion was to instead concentrate of the distribution of values of certain heuristics which describe the packets.
+That idea can also be applied here, to generate packets that when tested against those heuristics will match the normal traffic distribution.
+
+Different heuristics were discussed; such as lengths and pattern frequencies.
+Pattern frequency analysis can be done at varying levels of granularity to give varying results.
+The obvious level of abstraction is at the character level, which if used to base an emulation from, will only produce strings containing valid characters, since they are are what is extracted from normal traffic.
+Since patterns are recorded and generated independently, any lower level of granularity could produce byte values for non valid characters such as control characters.
+This makes detection easy for a censor, as these values are not allowed in the protocol, so they can reject without even considering their frequency of use in normal traffic.
+Longer patterns reduced independence since larger chunks are taken in context, however the complexity increases dramatically, as per our exponential calculation previously.
+Longer patterns have pros and cons; more character dependence, leading to more realistic URLs to the eye. Sequences of semantically correct content appear such as words and data structures like query string parameters. On the other hand, the complexity is increased dramatically, as per our exponential calculation previously.
+I will evaluate the effects of differences in granularity in section \ref{sec:gran}.
 
 
 \subsection{Sampling Methods}
@@ -630,7 +672,7 @@ To counter this, another level of encryption could be done with another set of k
 Another solution is to fix the whole scheme to only work on fixed sized blocks as input. TO enforece this messages can be padded before encryption using a secure padding scheme such as defined in ISO 10126~\cite{iso-pad}.
 
 
-\subsection{Formalising the Scheme}
+\subsection{Formalising the Construction}
 
 \subsubsection{Encryption}
 
@@ -645,14 +687,14 @@ TODO: Now prove the property holds for the whole scheme
 \item closeness of distributions
 \end{itemize}
 
-\section{Implementation}
+\chapter{Implementation}
 
 I have implemented the code for the censor and the de-censor scheme. The censor implementation consists of a measurement program that calculates the statistical similarity of batches of paths to a pre-recorded reference histogram of normal traffic. It compares the statistic to a threshold pre-calculated to separate normal from malicious requests. The de-censor scheme takes in messages, encrypts them and then encodes them using the selected emulator, that outputs an expanded ciphertext but one that is distributed according to it's reference histogram. This can be the same reference distribution as the censor, but a high success rate is also possible using a separately recorded histogram of the same normally distributed background traffic. This is important since practically, it would not be possible to extract the used distribution from in-use instances of the tool.
 
 
 All the code was written in \texttt{python2.7} for quick prototyping but for performance gains the core could be re-written in \texttt{C/C++} to remove the overheads of the python interpreter. I conducted my implementation and testing on Ubuntu 16.04 on VMware virtual machines running on a low powered i5 Intel VT enabled laptop.
 
-\subsection{Collection}
+\section{Collection}
 
 Packet collection is used for both parties, since both the emulator and censor need to record a reference distribution to work against and the censor is also required to read the packets for classification. Since both my censor and de-censors are running on Ubuntu machines I used the PyShark a python wrapper around the Tshark non-interactive command-line tool. Tshark is also able to parse and filter the packets like currently deployed DPI systems. I used this feature to extract the packets I cared about using the filter in figure \ref{fig:filter}.
 
@@ -674,7 +716,7 @@ To collect real web traffic data, I built a web-crawler using the FOSS Selenium 
 
 I crawled recursively over the Alexa top 50 sites~\cite{alexa} that support unencrypted traffic. This gave me a sample of 10,000 paths to create reference distribution.
 
-\subsection{Histogram creation}
+\section{Histogram creation}
 
 Like the recording of reference material, the calculation of distribution histograms is not time critical since they can be done offline. The process is straightforward frequency binning to count the occurrences of each option. I tried several methods as explained below.
 
@@ -713,7 +755,7 @@ Like the recording of reference material, the calculation of distribution histog
 
 \textbf{Random Letter} - like the previous this uses a limited sample by randomises it's location to see if this improved on the above results.
 
-\subsubsection{Exponential Scaling}
+\subsection{Exponential Scaling}
 
 As the length of the patterns increase, the number of frequency bins increases exponentially, and therefore, if they are backed by an fully allocated array the space needed to record the frequencies quickly becomes unmanageable.
 For instance, even at pattern size of four characters it will consume 4 GiB in memory.
@@ -723,7 +765,7 @@ Therefore, instead of allocating giant chunk of contiguous memory, the system wi
 This dynamic structure handles the allocation of memory to match the number of items actually stored.
 Since we can estimate the expected number of items to be used during the analysis, we can also pre-resize the hash table to avoid the expensive operation of resizing in operation to avoid collisions.
 
-\subsection{Inverse Transform Function}
+\section{Inverse Transform Function}
 
 As described in section \ref{invertibility}, the inverse transform function $F^{-1}_{D_N}$ maps values drawn from uniform random to values that have a distribution defined by a frequency histogram.
 To implement this, I first transformed this in to a cumulative frequency distribution, and then extracted the upper and lower bounds for each of the output bins which represent each heuristic value.
@@ -732,7 +774,7 @@ Then, sampling consists of sampling uniformly over the range of the whole cumula
 This can be done by linear search but as the number of bins grows, this dominates the computation.
 Since the bounds are ordered we can replace the lookup with a binary search whose logarithmic complexity slows the increase of computational work.
 
-\subsection{Thresholding}\label{sec:thresholding}
+\section{Thresholding}\label{sec:thresholding}
 
 The detection system's goal is to decide whether a sample of packets is from normally distributed traffic or from a stream of fake ciphertexts such as that is generated from an FTE proxy.
 It does this by calculating a corresponding statistic value for the batch of packets in question and applying a threshold to obtain the binary decision.
@@ -744,7 +786,7 @@ $$(\sigma_2-\sigma_1) x^2 + 2\cdot (\sigma_1*\mu_2 - \sigma_2*\mu_1) x +  (\sigm
 
 This can be solved for x using the standard quadratic formula to obtain the statistic threshold.
 
-\subsection{Proxy Embedding}
+\section{Proxy Embedding}
 
 I embedded the DE-CENSOR scheme inside the same proxy framework as FTE.
 This enables point to point innocuous channel communication using a client-server model.
@@ -754,7 +796,7 @@ The server, decodes and unencrypts the data and follows then SOCKS protocol to f
 The keys and distributions must be pre-shared to allow the original traffic to be recovered, though I've included an example distribution as the default.
 The encoding happens inside a custom DE-CENSOR record layer which works on a series of buffers to transform the data before it is sent.
 
-\subsubsection{Encoding}
+\subsection{Encoding}
 
 \begin{enumerate}
 \item Firstly, data is placed into a plaintext buffer as it arrives.
@@ -769,7 +811,7 @@ This is placed in the encrypted-buffer.
 \item These paths are wrapped into a HTTP GET packet which is then sent across the network over a unencrypted TCP channel to the listening proxy server.
 \end{enumerate}
 
-\subsubsection{Decoding}
+\subsection{Decoding}
 
 \begin{enumerate}
 \item As the server receives them, HTTP packets are placed into a packet-buffer.
@@ -800,7 +842,7 @@ See figure \ref{fig:imp-diag} for an overview of the process.
 \label{fig:imp-diag}
 \end{figure}
 
-\subsection{Libraries}
+\section{Libraries}
 
 I used the Cryptography implementation from the PyCrypto library.This provides an AES block cipher, SHA256 Hash in a Merkle-Damg$\mathring{a}$rd construction and counter mode framework. The IV is chosen randomly.
 
