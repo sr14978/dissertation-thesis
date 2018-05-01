@@ -323,8 +323,22 @@ Although FTE produces validly formatted ciphertexts which satisfy many current f
 Informally, this is in the same way auto generated C source code looks very different to any C code that a human would write.
 This means that statistical analysis such as deep learning techniques, will discover that these streams are in fact fake.
 
-In fact, however you encode it, to fully define the probability density function for a bit stream of even a fixed length $n$, you need exponential space.
-For a concrete example, let's calculate the space requirement for a block of payload of size $10$ bytes long.
+To do this however, the problem comes in defining the distribution of normal traffic.
+Many distributions can be defined easily, even those over countably infinite or continuous domains.
+The key to the tractable definitions of these distributions is the structured shape that the frequency density graphs have.
+This means that the frequency values can be defined using a formula.
+For example, the Gaussian's probability density function (PDF) $\phi$ has the classic bell curve shape and following succinct definition.
+
+$$\phi (x) = \frac{1}{\sqrt{2\pi}}e^{\frac{1}{2}x^2}, f(x) = \frac{1}{\sqrt{2\pi\sigma^2}}e^{\frac{1}{2}(x-\mu)^2}$$
+
+Furthermore, the Gaussian can also be used as a parametrised distribution $f$ to produce uncountably more succinctly defined continuous distributions over the choices of $\sigma$ and $\mu$.
+
+However, as seen in figure \ref{fig:length_dists} the normal traffic distribution does not seem to follow a neatly defined distribution.
+Therefore, this distribution must be completely defined by values for every possible observable outcome.
+We can fix a maximum length of the output space as practically the network protocols have packet size limits. 
+
+However you encode it, to fully define the probability density function for a bit stream of even a reasonable fixed length $n$, you need intractable exponential space.
+For a concrete example, let's calculate the space requirement for storing the distribution of the possible values a block of payload of size $10$ bytes long could take.
 Assume a 4 byte fixed point or floating point value is used to store the proportions, depending on the variation of the values.
 The storage size would be an intractable $4*(256^10) = 4*(1024^8) = 4$ yobi bytes.
 
@@ -348,6 +362,7 @@ Even a uniform random distribution is quite different.
 \label{fig:uniform_length_dist}
 \end{subfigure}
 \caption{Length Distrbutions}
+\label{fig:length_dists}
 \end{figure}
 
 In this case, the probability of the packet being exactly 256 bytes is overwhelmingly greater for the FTE scheme than for normal traffic.
@@ -390,6 +405,19 @@ $$G = 2 \Sigma_i O_i \cdot \ln{\frac{O_i}{E_i}} = 2N \Sigma_i o_i \cdot \ln{\fra
 where $O_i$ and $E_i$ are the observed and expected frequencies when $N$ observations is made and $o_i$ and $e_i$ are the observed and expected proportions.
 However, it does have problems in application, such as asymmetry and possible infinite values.
 In response to this, Jensen and Shannon took a different tack for their divergence measure, which instead measures the similarity between the distributions. This measure is symmetric and since it measures shared information it can only produce finite values.
+
+\subsection{Bringing it Together}
+
+We have seen that the standard implementation of FTE, is glaringly obvious to even casual detectors through its fixed length of output ciphertexts.
+Although, this system could be updated to output several sizes of ciphertext, the pre-computation needed is different for each length value, so to add more than a couple of variations becomes massively inefficient.
+This makes the detection slightly harder, and so forces more test samples to be taken, but even so the same targeted attack to check for those specific length will be successful.
+
+In a more generic attack, using other heuristics, statistical and divergence tests can be used to measure how close the sample test to be tested resembles normal traffic.
+The Kullback-Leibler divergence test is commonly used in experimental designs and since its asymmetry is not an issue in this setting the proposed system will adopt it to measure the distance between the observed test distribution and pre-recorded reference distribution.
+
+Deciding whether this divergence value is significant enough to trigger the detection can be done by comparison to a threshold.
+I discuss a method of calculating this threshold from positive and negative samples in section \ref{sec:thresholding}. However, this threshold can be adjusted by the censor to vary the false positive, true negative rate as applicable for their situation.
+
 
 \chapter{Distribution Transforming Encryption}
 
@@ -704,7 +732,7 @@ Then, sampling consists of sampling uniformly over the range of the whole cumula
 This can be done by linear search but as the number of bins grows, this dominates the computation.
 Since the bounds are ordered we can replace the lookup with a binary search whose logarithmic complexity slows the increase of computational work.
 
-\subsection{Thresholding}
+\subsection{Thresholding}\label{sec:thresholding}
 
 The detection system's goal is to decide whether a sample of packets is from normally distributed traffic or from a stream of fake ciphertexts such as that is generated from an FTE proxy.
 It does this by calculating a corresponding statistic value for the batch of packets in question and applying a threshold to obtain the binary decision.
