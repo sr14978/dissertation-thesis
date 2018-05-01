@@ -1,0 +1,46 @@
+Sections left to write::
+
+☐ Introduction
+✔ Motivation - rights @done(2018-04-30 15:50)
+✔ Motivation - technical @done(2018-04-30 15:50)
+☐ Cryptographic Background
+✔ Format Preserving Encryption @done(2018-04-30 15:50)
+✔ Format Transforming Encryption @done(2018-04-30 15:50)
+
+Distribution Transforming Encryption:
+  ✔ downfall of FTE @done(2018-04-30 15:50) @project(Distribution Transforming Encryption)
+  ✔ ways to encapsulate distrobutions @done(2018-04-30 15:50) @project(Distribution Transforming Encryption)
+  ✔ intractibility @done(2018-04-30 15:50) @project(Distribution Transforming Encryption)
+
+Heuristics:
+  ✔ length distiguisher @done(2018-04-30 15:50) @project(Heuristics)
+  ✔ pattern distiguisher @done(2018-04-30 15:50) @project(Heuristics)
+
+✔ Inverse Transform Sampling @done(2018-04-30 15:50)
+✔ Invertibility @done(2018-04-30 15:50)
+✔ Use in a scheme @done(2018-04-30 15:50)
+✔ Prove correctness @done(2018-04-30 15:50)
+✔ concrete scheme @done(2018-04-30 20:24)
+☐ formalising
+☐ chi square vs fisher test
+☐ encryption
+☐ proof of security
+
+Implementation:
+  ✔ intro @done(2018-04-30 15:51) @project(Implementation)
+  ✔ Collection @done(2018-04-30 15:51) @project(Implementation)
+  ✔ Histogram creation @done(2018-04-30 23:31) @project(Implementation)
+  ✔ Inverse function implementation @done(2018-04-30 23:52) @project(Implementation)
+  ✔ thresholding @done(2018-05-01 01:00) @project(Implementation)
+  ✔ embedding in a proxy @done(2018-04-30 23:52) @project(Implementation)
+  ☐ Diagram
+
+Evaluation:
+  ✔ pattern length effects @done(2018-05-01 01:00) @project(Evaluation)
+  ☐ throughput
+  ☐ other techniques - stream based vs batch based
+
+Conclusion:
+  ☐ run through
+  ☐ rate success
+  ☐ future work

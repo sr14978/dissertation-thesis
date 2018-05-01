@@ -591,7 +591,14 @@ Another solution is to fix the whole scheme to only work on fixed sized blocks a
 
 The DTE is an encrypt-then-encode framework. To ensure the same standards of encryption as in the FTE scheme DTE must also provide IND-CCA security. To ensure this I will use an authenticated encryption scheme i will use counter mode with HMAC using AES256 for encryption and SHA256 for authentication. Therefore, assuming the underlying block cipher - AES - is secure, this mode provides indistinguishability under a chosen ciphertext attack. This security guarantee is only for the encryption layer. 
 
-%Now prove the property holds for the whole scheme
+TODO: Now prove the property holds for the whole scheme
+
+\subsubsection{Distinguishably}
+
+\begin{itemize}
+\item Adversary classifications from 'the parrot is dead'
+\item closeness of distributions
+\end{itemize}
 
 \section{Implementation}
 
