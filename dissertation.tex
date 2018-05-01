@@ -216,7 +216,7 @@ In this chapter I have explained how there are motivations for wanting to access
 
 % -----------------------------------------------------------------------------
 
-\chapter{Cryptographic Background}
+\chapter{Classical Cryptographic Background}
 \label{chap:technical}
 
 After language was invented to share knowledge, humans soon needed a way hide it from those whom it was not intended. The first schemes used word or letter substitutions or the shuffling of characters to make the meaning of a message hard to obtain. These techniques are still used as the basic building blocks today; for example in the AES block cipher, a very popular encryption scheme, of which there are hardware implementations baked in to many of the major computer chips. Early schemes however, relied on the secrecy of the method to protect the privacy of the message which meant that they cannot be reused by others. This lead to the introduction of parametrised constructions that use a key to alter the encryption such as the Vigen\`ere cipher. Modern schemes obey Kerkoff's principle; that the security of the system only depends on the security of the key, allowing the same encryption method to be used by all.
@@ -235,10 +235,7 @@ After language was invented to share knowledge, humans soon needed a way hide it
  \item deniable encryption
 \end{itemize}
 
-% -----------------------------------------------------------------------------
-
-\chapter{Project Execution}
-\label{chap:execution}
+\chapter{Previous Work}
 
 \section{Format Preserving Encryption}
 
@@ -320,21 +317,11 @@ $\hookleftarrow$
 
 %Instead must use advanced mechanisms (discussed in Section 7) in settings with adversarial users.
 
-\section{Distribution Transforming Encryption}
+\section{Attacking FTE}
 
 Although FTE produces validly formatted ciphertexts which satisfy many current filtering systems, the ciphertexts look in no way normal.
 Informally, this is in the same way auto generated C source code looks very different to any C code that a human would write.
 This means that statistical analysis such as deep learning techniques, will discover that these streams are in fact fake.
-My scheme will try and form ciphertexts that are comparable to a stream of normal browser HTTP traffic by transforming the distribution to match. 
-
-To do this, there must be a way to encapsulate not just the valid language but its frequency distribution.
-Sadly, augmenting the finite state machine produced by the regular expression with weights does not produce the desired effect.
-Adding weights to the DFA's state transitions would still produce a graph that could be ranked using a slightly altered algorithm.
-However, these weights would not be meaningful, since they would not be taking in to consideration the previous path through transition graph and therefore previous symbols in the stream.
-In some graphs, where every different input stream parses through a different subset of the DFA states, this approach is valid.
-However, efficient DFAs do not do this since it has exponential blow up, and specifically not the DFAs for the languages that we are targeting.
-
-I also looked in to ways of obtaining the structure of normal traffic using tools such as sequitur~\cite{sequitur} to infer a grammar, but this has the same problems. 
 
 In fact, however you encode it, to fully define the probability density function for a bit stream of even a fixed length $n$, you need exponential space.
 For a concrete example, let's calculate the space requirement for a block of payload of size $10$ bytes long.
@@ -375,11 +362,9 @@ This can be done at varying levels of granularity to give varying results.
 The obvious level of abstraction is at the character level, which if used to base an emulation from, will only produce strings containing valid characters, since they are are what is extracted from normal traffic.
 Since patterns are recorded and generated independently, any lower level of granularity could produce byte values for non valid characters such as control characters.
 This makes detection easy for a censor, as these values are not allowed in the protocol, so they can reject without even considering their frequency of use in normal traffic.
-Longer patterns have pros and cons; more character dependence, leading to more realistic URLs to the eye, but the complexity is increased dramatically, as per our exponential calculation previously.
-If multiple character patterns are used, sequences of semantically correct content appear such as words and data structures like query string parameters.
-I will evaluate the difference in granularity in section \ref{sec:gran}.
+Longer patterns reduced independence since larger chunks are taken in context, however the complexity increases dramatically, as per our exponential calculation previously.
 
-Other more less specific specific heuristics include \texttt{inter-slash-distance} and ways to sample pattern distribution from only a subset of the URL such as the \texttt{initial-pattern} or \texttt{random-pattern}. These less powerful measures can all be dealt with in the same way to parametrise an encoding.
+Other more less specific specific heuristics include \texttt{inter-slash-distance} and ways to extract pattern distribution information from only a subset of the URL such as the \texttt{initial-pattern} or \texttt{random-pattern}. These less powerful measures can all be dealt with in the same way to parametrise an encoding.
 
 \subsection{Detection}
 
@@ -406,6 +391,22 @@ where $O_i$ and $E_i$ are the observed and expected frequencies when $N$ observa
 However, it does have problems in application, such as asymmetry and possible infinite values.
 In response to this, Jensen and Shannon took a different tack for their divergence measure, which instead measures the similarity between the distributions. This measure is symmetric and since it measures shared information it can only produce finite values.
 
+\chapter{Distribution Transforming Encryption}
+
+My scheme will try and form ciphertexts that are comparable to a stream of normal browser HTTP traffic by transforming the distribution to match. 
+
+To do this, there must be a way to encapsulate not just the valid language but its frequency distribution.
+Sadly, augmenting the finite state machine produced by the regular expression with weights does not produce the desired effect.
+Adding weights to the DFA's state transitions would still produce a graph that could be ranked using a slightly altered algorithm.
+However, these weights would not be meaningful, since they would not be taking in to consideration the previous path through transition graph and therefore previous symbols in the stream.
+In some graphs, where every different input stream parses through a different subset of the DFA states, this approach is valid.
+However, efficient DFAs do not do this since it has exponential blow up, and specifically not the DFAs for the languages that we are targeting.
+
+I also looked in to ways of obtaining the structure of normal traffic using tools such as sequitur~\cite{sequitur} to infer a grammar, but this has the same problems. 
+
+Longer patterns have pros and cons; more character dependence, leading to more realistic URLs to the eye, but the complexity is increased dramatically, as per our exponential calculation previously.
+If multiple character patterns are used, sequences of semantically correct content appear such as words and data structures like query string parameters.
+I will evaluate the difference in granularity in section \ref{sec:gran}.
 
 
 \subsection{Sampling Methods}
