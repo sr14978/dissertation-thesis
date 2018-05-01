@@ -739,6 +739,22 @@ This is placed in the encrypted-buffer.
 
 \end{enumerate}
 
+See figure \ref{fig:imp-diag} for an overview of the process.
+
+\begin{figure}
+\begin{subfigure}[b]{\textwidth}
+\includegraphics[scale=0.9]{diagram-enc}
+\caption{Encoding and Sending Mechanism}
+\end{subfigure}
+
+\begin{subfigure}[b]{\textwidth}
+\includegraphics[scale=0.9]{diagram-dec}
+\caption{Receiving and Decoding Mechanism}
+\end{subfigure}
+\caption{Implementation Diagrams}
+\label{fig:imp-diag}
+\end{figure}
+
 \subsection{Libraries}
 
 I used the Cryptography implementation from the PyCrypto library.This provides an AES block cipher, SHA256 Hash in a Merkle-Damg$\mathring{a}$rd construction and counter mode framework. The IV is chosen randomly.
