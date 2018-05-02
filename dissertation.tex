@@ -796,7 +796,39 @@ To ensure this, it will use an authenticated encryption scheme.
 It will implement a cipher block chaining mode with HMAC using AES256 for encryption and SHA256 for authentication.
 Therefore, assuming the underlying block cipher -- AES -- is secure, this mode provides indistinguishability under a chosen ciphertext attack.
 
-This security guarantee is only for the encryption layer, however, since the encoding only has access to the IND-CPA ciphertext no information leakage is possible.
+This security guarantee is only for the encryption layer, however, since the encoding only has access to the IND-CPA ciphertext no information leakage about the plaintext is possible.
+Therefore a reduction of IND-CPA security of the encryption layer can be reduced to the IND-CPA security of the whole scheme. 
+
+Here is the reduction:
+
+Assume the existence of $\mathcal{A}$ to be the adversary that can distinguish ciphertexts of DE-CENSOR scheme $\mathcal{E}^\mathcal{D}$ with access to a plaintext oracle.
+
+Define an adversary $\mathcal{B}$ to be the adversary that can distinguish ciphertexts of the underlying encryption scheme by,
+
+\begin{itemize}
+
+
+\item The game is randomly initialised: $(k_e, k_s) \xleftarrow{\$} Kg^{|k|}$ and $b \xleftarrow{\$} \{0,1\}$
+
+\item To produce $m_0, m_1$, $\mathcal{B}$ simply calls  $\mathcal{A}$ and returns the same plaintexts, since they have the same input domain.
+
+\item The game then returns $C = encrypt((k_e, k_s), m_b)$
+
+\item To distinguish, $\mathcal{B}$ encodes $C$ with $encode^\mathcal{D}$, using the public distribution description $\mathcal{D}$ to produce a normally distributed ciphertext $N$. $\mathcal{B}$ then runs $\mathcal{A}$ with $N$ to get $b^*$ and returns $b^*$. $\mathcal{B}$ is able to answer the oracle encryption queries of $\mathcal{A}$ for $m'$ by using its own encryption oracle to obtain $C' = encrypt( (k_e, k_s), m')$ and again using the public distribution description $\mathcal{D}$ to encode $m'$ with $encode^\mathcal{D}$ and returning.
+
+\item $\mathcal{B}$ wins iff $b* = b$
+
+\end{itemize}
+
+Since, $\mathcal{B}$ wins whenever, $\mathcal{A}$ wins then.
+
+$$Adv_\mathcal{B}^{IND-CPA} \geq Adv_\mathcal{A}^{IND-CPA}$$
+
+Therefore, since the encryption scheme is IND-CPA secure,
+
+$$Adv_\mathcal{A}^{IND-CPA} \leq negl(|k|)$$
+
+where $negl$ is a negligible function and $|k|$ is the length of the keys.
 
 \subsubsection{Statistical Distinguishably}
 
@@ -810,15 +842,15 @@ $$ encrypt \left( (k_e, k_s), Support_n(\mathcal{D}_1 \right) ) \sim  U_n$$
 
 The discrete inverse transform sampling function $F^{-1}_{D_N}$ samples randomly within the division.
 Furthermore, since the division is uniformly selected by the uniform distribution generation by the encryption, the input to the continuous function $\mathcal{F}^{-1}_{D_N}$ is a continuous random real inside the domain.
-Therefore, by the definition of $\mathcal{F}^{-1}_{D_N}$, it will generate heuristic values that follow the distribution in normal traffic.
+Therefore, by the definition of $\mathcal{F}^{-1}_{D_N}$, it will generate heuristic values that follow the distribution in normal traffic of $\mathcal{H}$.
 
 So, by hybrid argument,
 
-$$ encode^{\mathcal{D}_2} \left( encrypt \left( (k_e, k_s), Support_n(\mathcal{D}_1) \right) \right) \sim  encode \left( U_n \right) \sim \mathcal{D}_2$$
+$$ encode^{\mathcal{D}_2} \left( encrypt \left( (k_e, k_s), Support_n(\mathcal{D}_1) \right) \right) \sim  encode \left( U_n \right) \sim \mathcal{H}$$
 
-Therefore, any comparison function $\Delta$ that is based on the 
+Therefore, any comparison function $\Delta$ that is based on the heuristics $\mathcal{D}_2 = \mathcal{H}$,
 
-$\Delta \left(  Enc^{\mathcal{D}_2}((k_e,k_s), M), N  \right)$
+$\Delta \left(  Enc^{\mathcal{D}_2}((k_e,k_s), M), N  \right) = 0$
 
 \chapter{Implementation}
 
