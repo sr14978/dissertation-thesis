@@ -1,7 +1,7 @@
 % The document class supplies options to control rendering of some standard
-% features in the result.  The goal is for uniform style, so some attention 
+% features in the result.  The goal is for uniform style, so some attention
 % to detail is *vital* with all fields.  Each field (i.e., text inside the
-% curly braces below, so the MEng text inside {MEng} for instance) should 
+% curly braces below, so the MEng text inside {MEng} for instance) should
 % take into account the following:
 %
 % - author name       should be formatted as "FirstName LastName"
@@ -56,7 +56,7 @@
 % =============================================================================
 
 % This macro creates the standard UoB title page by using information drawn
-% from the document class (meaning it is vital you select the correct degree 
+% from the document class (meaning it is vital you select the correct degree
 % title and so on).
 
 \maketitle
@@ -72,7 +72,7 @@
 
 \makedecl
 
-% LaTeX automatically generates a table of contents, plus associated lists 
+% LaTeX automatically generates a table of contents, plus associated lists
 % of figures, tables and algorithms.  The former is a compulsory part of the
 % dissertation, but if you do not require the latter they can be suppressed
 % by simply commenting out the associated macro.
@@ -107,9 +107,12 @@ My research hypothesis is that statistical methods could be used by network base
 
 \chapter*{Definitions and Acronyms}
 
-\vspace{1cm} 
-Novel 
+\vspace{1cm}
+
 \begin{tabularx}{\textwidth}{ r c X }
+
+\multicolumn{3}{c}{Novel}\\
+&&\\
 FTE					&:		& Format Transforming Encryption\\
 DTE					&:		& Distribution Transforming Encryption\\
 Normal distribution &:		& Laplace-Gauss distribution\\
@@ -118,10 +121,10 @@ DE-CENSOR			&:		& Distribution Encoding of Ciphertexts to Emulate Normal Surfing
 Record Layer		&:		& Layer in the network stack that receives data from te application layer, encrypts it, fragments it to an appropriate size and sends it on to the Transport Layer.\\
 SOCKS				&:		& Socket Secure -- Internet Proxy Protocol\\
 Statistical Indistinguishability&:& Cryptographic demand of DTE, for ciphertexts to be indistinguishable from the target distribution, by statistical methods.\\
-
-\end{tabularx}
-
-\begin{tabularx}{\textwidth}{ r c X }
+&&\\
+&&\\
+\multicolumn{3}{c}{Standard}\\
+&&\\
 AES                 &:		& Advanced Encryption Standard\\
 DES                 &:		& Data Encryption Standard\\
 DFA					&:		& Deterministic Finite Automaton\\
@@ -133,14 +136,14 @@ NSA					&:		& National Security Agency of the United States\\
 \chapter*{Acknowledgements}
 
 {\bf An optional section, of at most $1$ page}
-\vspace{1cm} 
+\vspace{1cm}
 
 \noindent
 It is common practice (although totally optional) to acknowledge any
 third-party advice, contribution or influence you have found useful
-during your work.  Examples include support from friends or family, 
-the input of your Supervisor and/or Advisor, external organisations 
-or persons who  have supplied resources of some kind (e.g., funding, 
+during your work.  Examples include support from friends or family,
+the input of your Supervisor and/or Advisor, external organisations
+or persons who  have supplied resources of some kind (e.g., funding,
 advice or time).
 % =============================================================================
 
@@ -192,7 +195,7 @@ However, censors' abilities and techniques for detection are improving all the t
 During this thesis, I explore the statistical analysis techniques that can be used to distinguish traffic produced using an FTE proxy from normal traffic.
 This begins with discovering a way to practically encapsulate a distribution like that of normal traffic, and then discusses how to compare two distributions.
 I then formalise a new type of encryption scheme to counter these detection techniques, called Distribution Transforming Encryption (DTE), by defining its syntax and security requirements.
-Next, I explore how to sample from arbitrary distributions to produce normal-looking ciphertexts and then define my concrete scheme -- DE-CENSOR -- using my chosen method. 
+Next, I explore how to sample from arbitrary distributions to produce normal-looking ciphertexts and then define my concrete scheme -- DE-CENSOR -- using my chosen method.
 After proving the security of my construction, I discuss building an implementation and evaluate the practicality and performance of using the scheme in a proxy situation.
 
 
@@ -202,16 +205,16 @@ After proving the security of my construction, I discuss building an implementat
 \label{chap:context}
 
 Tim Berners-Lee said that since its conception, the World Wide Web has been built with the principles of openness and privacy~\cite{gard}.
-These key values, that also lie at the heart of democracy, can ensure that if a website is made available on web, anyone can connect to it -- no matter who they are or where they live. 
+These key values, that also lie at the heart of democracy, can ensure that if a website is made available on web, anyone can connect to it -- no matter who they are or where they live.
 Traditionally, the Internet has been built as a distributed entity, to share the technological burden, but also to share responsibility and provide options -- the very concept of a network can provide many routes for information to move from source to destination.
 
 However, as organisations throughout the world realised the Internet's importance, in a bid to try to control it, they caused a trend of centralisation.
 For instance many VOIP systems are no longer pure peer-to-peer systems but route all traffic through a central server.
 Large Internet service providers control the backbone of the Internet and are in charge of handling the movement of information around the world.
 The world has become reliant on search engines to help us navigate the expanse of knowledge available to us, but this role is dominated by few big entities.
-Therefore, the internet today, especially for certain sub-networks in some parts of the world, is under the control of just a few powerful actors. 
+Therefore, the internet today, especially for certain sub-networks in some parts of the world, is under the control of just a few powerful actors.
 
-Furthermore, although the Internet started as a place of openness and accpectance of all, recent policies have been made which challenge this status quo; certain content on the internet is now subject to censorship laws in some places like the United Kingdom or China. The motivations behind this censorship can be well-meaning, for example, the blocking of illegal content such as child pornography with the intention of protecting the innocent lives of children. A further attempt to reduce damage to people's lives was the implementation of search engine de-listing of personal content petitioned by the right-to-be-forgotten movement~\cite{rtbf}. However, this decision sparked much controversy since people believed that this deletion of history could lower the quality of the Web. 
+Furthermore, although the Internet started as a place of openness and accpectance of all, recent policies have been made which challenge this status quo; certain content on the internet is now subject to censorship laws in some places like the United Kingdom or China. The motivations behind this censorship can be well-meaning, for example, the blocking of illegal content such as child pornography with the intention of protecting the innocent lives of children. A further attempt to reduce damage to people's lives was the implementation of search engine de-listing of personal content petitioned by the right-to-be-forgotten movement~\cite{rtbf}. However, this decision sparked much controversy since people believed that this deletion of history could lower the quality of the Web.
 
 However, other cases of censorship are on a much larger scale and are not universally accepted as positive. One example is certain nation states blocking access to content that they deem to be inciting opposition to their political standpoints. This can involve blanket restrictions to foreign websites or restricting sites which may be hosted inside the nation, but are deemed to perpetuate negative views. Many countries ban hate-speech, or exclude it from their freedom of speech laws~\cite{hate} and some countries have Libel rules~\cite{libel} which ban spreading of false information. However, there are a number of nations that actually hide information about certain world events or ideologies from their citizens, depriving their civil rights~\cite{chincensor}. This is dangerous for the world as it creates environments that can breed hatred directed at whomever the censors wants.
 
@@ -227,9 +230,9 @@ Informally, the Internet consists of each party's computer equipment connected t
 Communications are packet based and are directed along the connections according to the Internet Protocol (IP)~\cite{ip4}.
 This protocol header defines the destination of the packet for the purposes of determining the most appropriate route to follow.
 It also contains the address of the source so that error messages can be directed, to the right place, appropriately.
-Among other information, like version numbers and flags, there is also a field that tells the intermediary machinery when to delete the message, but this is only to handle cases where the destination is unreachable. 
+Among other information, like version numbers and flags, there is also a field that tells the intermediary machinery when to delete the message, but this is only to handle cases where the destination is unreachable.
 
-The second type of network surveillance and censorship sits at these intermediate points in the network and deals with how these packets are handled. By default, IP, and the transport layer on top of it (TCP) does not encrypt or sign the payload data. Therefore, it is possible for the intermediary parties to read and tamper with the packets and their payloads before they are sent or even dropped from the network. 
+The second type of network surveillance and censorship sits at these intermediate points in the network and deals with how these packets are handled. By default, IP, and the transport layer on top of it (TCP) does not encrypt or sign the payload data. Therefore, it is possible for the intermediary parties to read and tamper with the packets and their payloads before they are sent or even dropped from the network.
 
 From their observations of the Chinese Internet filtering systems, Zittrain and Edelman deduced several methods that were being used~\cite{edelman2005empirical}.
 Filtering on the IP address of a resource can be done by analysing the destination field of the packet. This is good for blocking direct access to static sites since it is one of the simplest and therefore fastest to implement, though it relies on comprehensive black or white listing coordination.
@@ -263,7 +266,7 @@ The use of obfuscation and FTE (described in section \ref{sec:FTE}) bridges have
 
 \section{Summary}
 
-In this chapter, I have explained how there are motivations for wanting to access online resources with out the controllers of the network being able to determine the content of what you are accessing. I have discussed TOR's roll in this but also, that access to the TOR network is limited and that even TOR bridges are vulnerable since the traffic patterns are identifiable. Therefore, there is a need for encodings that cause misclassification of TOR traffic to other innocuous protocols. 
+In this chapter, I have explained how there are motivations for wanting to access online resources with out the controllers of the network being able to determine the content of what you are accessing. I have discussed TOR's roll in this but also, that access to the TOR network is limited and that even TOR bridges are vulnerable since the traffic patterns are identifiable. Therefore, there is a need for encodings that cause misclassification of TOR traffic to other innocuous protocols.
 
 % -----------------------------------------------------------------------------
 
@@ -295,7 +298,7 @@ A blockcipher is a set of keyed permutations each of a fixed uniform length $n$ 
 These constructions, encrypt plaintexts of length $n$ into ciphertexts of length $n$ so to build a cipher that works over arbitrary length data, they need to be combined in some fashion.
 There are bad ways of doing this such as electronic code book mode (ECB), which suffers from block independence so certain patterns in the plaintext are obvious in the ciphertext.
 There are also good ways, such as cipher block chaining (CBC) which XORs the previous ciphertext into the next plaintext to make all ciphertext blocks dependent on all previous plaintext blocks.
-This has performance implications since to decode one block you have to decode all previous blocks in the message so there are other modes tailored to that but, this also means the last block is a calculation that depends on all other blocks. 
+This has performance implications since to decode one block you have to decode all previous blocks in the message so there are other modes tailored to that but, this also means the last block is a calculation that depends on all other blocks.
 
 This same mode can then be used with a different key to \textit{encrypt} the ciphertext, only keeping the last block. This last block can then be sent with the ciphertext as proof that the ciphertext is not changed while in transit, since recalculation at the destination should result in the same message authentication code (MAC).
 A third party could replace or edit the ciphertext, but without the second key, they can't reproduce the correct corresponding MAC.
@@ -310,7 +313,7 @@ This means that the decrypt key can be kept private but the encrypt key can be m
 We name these keys; private and public respectively.
 The way the schemes work is based on a trap door function which is easy to compute in the encryption direction but the inversion for decryption is hard unless you know the private key.
 The major difference here is that you can calculate the private key from just the public key, but the system is built such that it would take a lot of computation and so if infeasible in real life.
-This partially solves the problem of key distribution, since it is all right to send the public in the clear, however, there is now a problem of ensuring the key a sending party is using to encrypt is the correct one. 
+This partially solves the problem of key distribution, since it is all right to send the public in the clear, however, there is now a problem of ensuring the key a sending party is using to encrypt is the correct one.
 This authentication problem can be solved by more asymmetric cryptography called signatures which are the asymmetric version of MACs.
 
 Although many symmetric encryption schemes produce ciphertexts that are indistinguishable from random bits, asymmetric schemes do not.
@@ -324,7 +327,7 @@ Most examples of this are just security through obscurity such as invisible ink 
 Honey encryption which we introduced in 2014 by Juels et al.~\cite{honey} has a similar tone to steganography, though instead of the resulting encoding appearing like innocuous data, it involves as ciphertext that can be decrypted to the original message or into an innocuous one.
 The approach was actually targeted for situations with low entropy keys, such that brute force attacks are possible. To counter this, the definition enforces that for any number of incorrect keys the scheme produces plausible-looking but bogus plaintexts.
 
-Though similar, my distribution transforming encryption, like the format transforming encryption, is not exactly a steganographic scheme since the data is not embedded inside innocuous other innocuous data, but it is the innocuous data. This distinction means that it is more general and more efficient since well-looking cover traffic does not need to be produced to encode each new message. 
+Though similar, my distribution transforming encryption, like the format transforming encryption, is not exactly a steganographic scheme since the data is not embedded inside innocuous other innocuous data, but it is the innocuous data. This distinction means that it is more general and more efficient since well-looking cover traffic does not need to be produced to encode each new message.
 
 
 \chapter{Previous Work}\label{prev_work}
@@ -336,11 +339,11 @@ They have already produced several schemes that claim to help.
 
 \paragraph{ObfsProxy} simply encrypts the entire packet with a streaming cipher. Earlier versions used fixed parameters so although expensive, decryption could be done to obtain the standard traffic but now even that is not possible since a key exchange produces ephemeral keys. This procedure produces ciphertexts that are computationally indistinguishable from a random string so intensive computational statistics would be able to differentiate this from a background distribution of standard traffic. Also, due to its complete lack of structure, it would not pass any protocol white-listing filters.
 
-\paragraph{StegoTorus} is a system that uses carefully handcrafted embeddings for ciphertexts. In the HTTP mode, it selects randomly for pre-recorded traces and hides the chopped up ciphertext inside Javascript, PDF and SWF files and header fields like Cookies. Since, the masquerading protocol is HTTP, blocking encrypted protocols will not stop this. However, it relies on distributing large volumes of these traces or everyone recording their own, otherwise, censors could just block all of them specifically. This means the overhead in communication but mainly storage of traces is large 
+\paragraph{StegoTorus} is a system that uses carefully handcrafted embeddings for ciphertexts. In the HTTP mode, it selects randomly for pre-recorded traces and hides the chopped up ciphertext inside Javascript, PDF and SWF files and header fields like Cookies. Since, the masquerading protocol is HTTP, blocking encrypted protocols will not stop this. However, it relies on distributing large volumes of these traces or everyone recording their own, otherwise, censors could just block all of them specifically. This means the overhead in communication but mainly storage of traces is large
 
 \paragraph{SkypeMorph} transforms Tor traffic so it looks like a Skype Video Call.
 In a review of TOR transports Houmansadr et al. find that since its imitation of the Skype protocol is incomplete, a low-cost, passive attack that can always detect this encoding~\cite{parot}.
-To be fair, the Skype ecosystem is very complicated as it deals with dependencies between multiple sub-protocols in different streams, talking to Skype directory servers and the VOIP recipient. Houmansadr suggests that one solution would be to run the whole Skype stack and then encode the data in the audio stream, with careful consideration of the lossy transmission. This, however, adds a complicated and intensive overhead to the communication. 
+To be fair, the Skype ecosystem is very complicated as it deals with dependencies between multiple sub-protocols in different streams, talking to Skype directory servers and the VOIP recipient. Houmansadr suggests that one solution would be to run the whole Skype stack and then encode the data in the audio stream, with careful consideration of the lossy transmission. This, however, adds a complicated and intensive overhead to the communication.
 
 \paragraph{In summary,} although, each of these systems is being successfully used today, they each have floors that could be attacked in the future, which inhibit them from being universal solutions. Therefore, as invited by the TOR community, new systems are needed.
 
@@ -375,7 +378,7 @@ $$ rank(N,X) =
 \left\{
     \begin{array}{ll}
         rank_N(X)  & \mbox{if } \vert X \vert = N\\
-        \bot & \mbox{otherwise} 
+        \bot & \mbox{otherwise}
     \end{array}
 \right.
 $$
@@ -385,7 +388,7 @@ $$ unrank(N,i) =
 \left\{
     \begin{array}{ll}
         rank_N^{-1}(i)  & \mbox{if } i \in \mathbb{Z}_{\mathcal{X}_N}\\
-        \bot & \mbox{otherwise} 
+        \bot & \mbox{otherwise}
     \end{array}
 \right.
 $$
@@ -454,7 +457,7 @@ Furthermore, the Gaussian can also be used as a parametrised distribution $f$ to
 
 However, as seen in figure \ref{fig:length_dists} the normal traffic distribution does not seem to follow a neatly defined distribution.
 Therefore, this distribution must be completely defined by values for every possible observable outcome.
-We can fix a maximum length of the output space as practically the network protocols have packet size limits. 
+We can fix a maximum length of the output space as practically the network protocols have packet size limits.
 
 However you encode it, to fully define the probability density function for a bit stream of even a reasonable fixed length $n$, you need intractable exponential space.
 For a concrete example, let us calculate the space requirement for storing the distribution of the possible values of a block of the payload of size $10$ bytes long could take.
@@ -489,7 +492,7 @@ Of course, legitimate packets may also be this length so filtering them all out 
 This might be okay if when the TCP layer re-sent the replacement for the missing, blocked data it would be of a different length and would be let through but in fact, it sends an exact copy each time.
 Therefore, to amplify the probability of not catching false positives, the system must take a sample from the stream and check them all as a batch.
 This could be done on a small running window basis and when triggered could add the IP address to a temporary ban.
-This is like what happens in currently deployed keyword filtering systems such as in China. 
+This is like what happens in currently deployed keyword filtering systems such as in China.
 
 Another heuristic for defining the distribution is pattern frequency.
 This can be done at varying levels of granularity; the obvious level of abstraction is the character level. However, there are pros and cons of changing the measured pattern length.
@@ -510,13 +513,13 @@ An exact test, such Fisher's exact test, will calculate the exact probability of
 Assuming the independence of the observations the overall probability can then be computed and then compared with a significance level threshold.
 However, in this situation, the independence assumption is unfounded and furthermore, the computational cost of this method is large, so for large sizes of our samples, other tests are recommended.
 
-The Chi-square test and G-test are more appropriate for these large observation counts. In both of these tests, a test statistic is calculated and its value is then compared with the chi-square distribution to estimate the probability of obtaining that value. 
+The Chi-square test and G-test are more appropriate for these large observation counts. In both of these tests, a test statistic is calculated and its value is then compared with the chi-square distribution to estimate the probability of obtaining that value.
 The subtle difference between them is that the Chi-square test's statistic is the squared differences of each frequency bin, whereas the G-test calculates the sum of log differences.
 Therefore, the chi-squared test penalises a larger difference more heavily than multiple smaller ones, whereas the G-test forgives these large differences by a log scale, so the opposite is true.
 
 There is also a class of tests that measure the divergence between two distributions.
 These are not distance measurements since they do not obey the triangle inequality, however, they are useful for binary comparison.
-The divergence calculation, that Kullback and Leibler outline in their foundational paper, is a measure of entropy between distributions~\cite{dist}. 
+The divergence calculation, that Kullback and Leibler outline in their foundational paper, is a measure of entropy between distributions~\cite{dist}.
 This measurement deals with the Shannon Entropy of the systems and quantifies the information gain needed to transform from one distribution to the other and is actually related to the G-test by,
 $$G = 2 \Sigma_i O_i \cdot \ln{\frac{O_i}{E_i}} = 2N \Sigma_i o_i \cdot \ln{\frac{o_i}{e_i}}$$,
 where $O_i$ and $E_i$ are the observed and expected frequencies when $N$ observations is made and $o_i$ and $e_i$ are the observed and expected proportions.
@@ -561,9 +564,9 @@ Here, I am using $Support_n(\mathcal{D})$ to define a distribution of streams of
 A DTE scheme $\mathcal{E}^{\mathcal{D}_2} = (Kg^{\mathcal{D}_2}, Enc^{\mathcal{D}_2}, Dec^{\mathcal{D}_2})$ must uphold standard message privacy security, but also a new requirement -- statistical indistinguishability.
 
 \paragraph{Privacy}
- 
+
 I demand indistinguishability of ciphertexts under an adaptive chosen plaintext attack. Standard modes of authenticated encryption such as the cipher block chaining and encrypt the HMAC mode of AES provides higher levels of security.
-Though due to publicly known normal traffic distribution the produced ciphertexts are malleable, making chosen ciphertext attacks always possible. 
+Though due to publicly known normal traffic distribution the produced ciphertexts are malleable, making chosen ciphertext attacks always possible.
 This must be inherited by the overall scheme to provide the standard assurances.
 
 \paragraph{Statistical Indistinguishability}
@@ -590,7 +593,7 @@ However, these weights would not be meaningful, since they would not be taking i
 In some graphs, where every different input stream parses through a different subset of the DFA states, this approach is valid.
 However, efficient DFAs do not do this since it has an exponential blow up, and specifically not the DFAs for the languages that we are targeting.
 
-I also looked into ways of obtaining the structure of normal traffic using tools such as sequitur~\cite{sequitur} to infer a grammar, but this too has the same problems. 
+I also looked into ways of obtaining the structure of normal traffic using tools such as sequitur~\cite{sequitur} to infer a grammar, but this too has the same problems.
 
 As discussed in section \ref{attacking_fte} about attacking FTE, since the distribution of normal traffic is highly unstructured describing it in full is intractable, for the censor and here for the DTE scheme.
 Therefore, the suggestion was to instead concentrate on the distribution of values of certain heuristics which describe the packets.
@@ -610,7 +613,7 @@ I will evaluate the effects of differences in granularity in section \ref{sec:gr
 
 \subsubsection{Rejection sampling}
 
-Rejection sampling is a technique for generating observations from a given distribution. 
+Rejection sampling is a technique for generating observations from a given distribution.
 It works by first sampling over the two-dimensional space of the proposed frequency density distribution and rejecting those that do not lie below the line.
 A classic, well-known, real-life example of this is the Buffon Needle experiment, in which the participant randomly drops needles on to a sheet of paper with evenly distributed parallel bars drawn across it.
 The needles that overlap a bar are counted versus those who do not and this proportion can be used to estimate pi as $\pi \approx \frac{2l}{t \cdot P}$ where $l$ is the length of the needles, $t$ is the gap between bars and $P$ is the proportion.
@@ -632,7 +635,7 @@ Therefore, they should be able to convert distributions.
 To test this, in early 2018, Horger et al. wrote a paper on training neural nets to generate samples from arbitrary distrobutions~\cite{deepl}.
 They trained the fully connected neural net to map uniformly generated inputs to a chosen probability density function by minimising Jensen-Shannon divergence.
 Their model was able to produce results that have comparable goodness of fit to other classical methods and after training was competitive in performance.
-Large amounts of data are needed to train the system, which if is to be done with realistic performance, needs special hardware to cope with the parallelism. Although, in the not so distant future this may become ubiquitous. 
+Large amounts of data are needed to train the system, which if is to be done with realistic performance, needs special hardware to cope with the parallelism. Although, in the not so distant future this may become ubiquitous.
 
 \subsection{The Proposed Scheme}
 
@@ -759,7 +762,7 @@ $$F^{-1}_{D_N}(x) = x' \xleftarrow{\$} [B[x], B[x+1]); \mathcal{F}^{-1}_{D_N}(x'
 This new function still is surjective by roughly the same proof as before but its injectivity also holds.
 Proof:
 Firstly, the correction moved the boundaries of the inputs to match the boundaries of the outputs.
-The divisions started as non-overlapping and during the correction, this did not change, 
+The divisions started as non-overlapping and during the correction, this did not change,
 $$\forall i \neq j \in \mathbb{Z}_s, \big[ B[i],B[i+1] \big) \cap \big[ B[j],B[j+1] \big) = \emptyset$$
 Also since the boundaries match, the pre-image of a output value is contained by only one input value,
 $$ \forall i \neq j \in \mathbb{Z}_s, \alpha,\beta \in \mathcal{X} \text{ such that } \alpha \in Img_{F^{-1}_{D_N}}(\big[ B[i],B[i+1] \big)) \text{ and } \beta \in Img_{F^{-1}_{D_N}}(\big[ B[j],B[j+1] \big))$$
@@ -770,7 +773,7 @@ Therefore, if we take arbitrary $i, j \in \mathbb{Z}_s, \text{ such that letting
 
 The two most promising heuristics for encapsulating the traffic's distribution are length and pattern frequency.
 I am targeting length to demonstrate the advantage of my scheme over FTE. Pattern frequency over the whole ciphertext will also fool statistical analysis looking for the more specific heuristics that I mentioned earlier such as \texttt{inter-slash-distance} and \texttt{initial-pattern}.
-Therefore, I chose to encapsulate both of these in my scheme. 
+Therefore, I chose to encapsulate both of these in my scheme.
 
 A simplification I have made is, like the FTE scheme, to restrict the encoding to only worrying about the path of an HTTP GET request.
 The scheme cannot work on the packet as a whole since the pattern independence of the scheme would not be able to produce the correct legal formatting.
@@ -780,7 +783,7 @@ However, each heuristic would be dealt with in the same way, so to limit the sco
 The mechanics of the scheme will use the same structure as FTE. First, an authenticated encryption scheme is used to encrypt the original data using a symmetric key.
 This is then passed to the emulator encoding module, which uses the length and pattern heuristic distributions to produce normally distributed ciphertexts.
 The un-distributed encryption is constructed from an IV, encrypted blocks, and an HMAC. Therefore, over a choice of random encryption and signing keys, it is indistinguishable from random.
-Therefore, no matter what the underlying data is the uniform distributions that our encodings rely on is upheld. 
+Therefore, no matter what the underlying data is the uniform distributions that our encodings rely on is upheld.
 The inverse operation must use the same key and heuristic distributions, so can invert each encoding layer and then decrypt using a standard cipher.
 I refer to this scheme as DE-CENSOR: a Distribution Encoding of Ciphertexts to Emulate Normal Surfing while Onion Routing.
 
@@ -805,7 +808,7 @@ DE-CENSOR is an encrypt-then-encode framework, and so the encryption and decrypt
 
 $\mathcal{E}_{crypt} = (encrypt, decrypt) $ is the underlying encryption scheme.
 
-$encrypt :: ( (k_e, k_s), M ) \rightarrow C$ is the encryption function of the authenticated encryption scheme. 
+$encrypt :: ( (k_e, k_s), M ) \rightarrow C$ is the encryption function of the authenticated encryption scheme.
 
 $decrypt :: ( (k_e, k_s), C ) \rightarrow M$ is the decryption function of the authenticated encryption scheme.
 
@@ -844,7 +847,7 @@ Therefore for the underlying encryption scheme: $\mathcal{E}_{crypt}$, it will i
 Therefore, assuming the underlying block cipher -- AES -- is secure, this mode provides indistinguishability under a chosen plaintext attack.
 
 This security guarantee is only for the encryption layer, however, since the encoding only has access to the IND-CPA ciphertext, no information leakage about the plaintext is possible.
-Therefore a reduction of IND-CPA security of the encryption layer can be reduced to the IND-CPA security of the whole scheme. 
+Therefore a reduction of IND-CPA security of the encryption layer can be reduced to the IND-CPA security of the whole scheme.
 
 Here is the reduction:
 
@@ -899,9 +902,9 @@ Therefore, if a scheme is built that,
 we have a scheme whose ciphertexts are also indistinguishable from random.
 The underlying encryption scheme of DE-CENSOR: $\mathcal{E}_{crypt}$ is one of these schemes.
 
-This means that, 
+This means that,
 
-$$ encrypt \left( (k_e, k_s), Support_n(\mathcal{D}_1 \right) ) \sim  U_n$$ 
+$$ encrypt \left( (k_e, k_s), Support_n(\mathcal{D}_1 \right) ) \sim  U_n$$
 
 The discrete inverse transform sampling function $F^{-1}_{D_N}$ samples randomly within the division.
 Furthermore, since the division is uniformly selected by the uniform distribution generation by the encryption, the input to the continuous function $\mathcal{F}^{-1}_{D_N}$ is a continuous random real inside the domain.
@@ -934,10 +937,10 @@ http && http.request.method == "GET"
 \label{fig:filter}
 \end{figure}
 
-The filter shows that we only targeted GET requests. This is because HTTP is a very one-sided protocol with most of the content moving from the web server to the client and therefore it is harder to hide messages inside the requests. The response encoding should be more straightforward. GET requests as opposed to POST requests take up a larger proportion of web traffic and so are the obvious choice. 
+The filter shows that we only targeted GET requests. This is because HTTP is a very one-sided protocol with most of the content moving from the web server to the client and therefore it is harder to hide messages inside the requests. The response encoding should be more straightforward. GET requests as opposed to POST requests take up a larger proportion of web traffic and so are the obvious choice.
 
 In this experiment, I have fixed all other parameters apart from the path. This is a proof of principle
-of the sides of communication to forge due to its normally low data size. Files returned from servers are usually much less structured 
+of the sides of communication to forge due to its normally low data size. Files returned from servers are usually much less structured
 
 To collect real web traffic data, I built a web-crawler using the FOSS Selenium web automation framework. To gather a realistic distribution I needed to emulate the whole browser environment since X amount of the requests from modern sites are dynamics initiated from inside the scripts.
 % graph
@@ -1034,7 +1037,7 @@ This is placed in the encrypted-buffer.
 
 \item The length encoding stage then transforms these encrypted fixed length messages into blocks of normally distributed lengths for the length-buffer.
 
-\item Each length of message data is then picked by the pattern encoder one at a time, where it undergoes the final transformation into a normally distributed GET-request paths. 
+\item Each length of message data is then picked by the pattern encoder one at a time, where it undergoes the final transformation into a normally distributed GET-request paths.
 
 \item These paths are wrapped into an HTTP GET packet which is then sent across the network over an unencrypted TCP channel to the listening proxy server.
 \end{enumerate}
@@ -1133,10 +1136,10 @@ Table \ref{tab:patlen} shows some trends that occur when the pattern length is a
     ymajorgrids=true,
     grid style=dashed,
 ]
- 
+
 \addplot[color=blue,mark=square]
     coordinates {(4,1.7)(8,2.1)(16,2.8)(24,3.6)(32,4.9)(40,6.2)(48,7.6) };
- 
+
 \end{axis}
 
 \end{tikzpicture}
@@ -1155,10 +1158,10 @@ Table \ref{tab:patlen} shows some trends that occur when the pattern length is a
     ymajorgrids=true,
     grid style=dashed,
 ]
- 
+
 \addplot[color=blue,mark=square]
     coordinates {(4,0.016)(8,0.081)(16,3.310)(24,10.115)(32,16.471)(40,19.464)(48,19.863) };
- 
+
 \end{axis}
 \end{tikzpicture}
 \end{subfigure}
@@ -1175,10 +1178,10 @@ Table \ref{tab:patlen} shows some trends that occur when the pattern length is a
     ymajorgrids=true,
     grid style=dashed,
 ]
- 
+
 \addplot[color=blue,mark=square]
     coordinates {(4,5)(8,14)(16,52)(24,101)(32,93)(40,88)(48,80) };
- 
+
 \end{axis}
 \end{tikzpicture}
 \end{subfigure}
@@ -1193,8 +1196,8 @@ Table \ref{tab:patlen} shows some trends that occur when the pattern length is a
 %\end{wrapfigure}
 
 The expansion factor follows the following equation; let $s$ be the maximum splitting before errors, and $pl$ to be the pattern length.
-$$|output| = |input| \times \left( \log_s 256 \times pl / 8 \right)$$ 
-This stems from the conversion of bases from $0x100=256$ in a character to $s$ divisions over the pattern of $pl$ bits and therefore $pl/8$ bytes. The equation shows the linear correlation between pattern length and expansion, though the graph shows the rate of inefficiency increases slightly with pattern size. This is due to the how well the bigger pattern distributions split into the equal portions. Initially, the splitting amount increases but after 24 bits (3 characters) it pivots and gradually decreases.  This is due to the increasing variance in bin size as the patterns get larger, causing the packing into divisions harder. I will discuss the techniques of packing in the implementation section. 
+$$|output| = |input| \times \left( \log_s 256 \times pl / 8 \right)$$
+This stems from the conversion of bases from $0x100=256$ in a character to $s$ divisions over the pattern of $pl$ bits and therefore $pl/8$ bytes. The equation shows the linear correlation between pattern length and expansion, though the graph shows the rate of inefficiency increases slightly with pattern size. This is due to the how well the bigger pattern distributions split into the equal portions. Initially, the splitting amount increases but after 24 bits (3 characters) it pivots and gradually decreases.  This is due to the increasing variance in bin size as the patterns get larger, causing the packing into divisions harder. I will discuss the techniques of packing in the implementation section.
 
 The distribution bin number describes the number of non-empty bins in the histogram describing the distributions.
 For small pattern, this is very low, since for sub-byte patterns the unstructured definition of \texttt{ascii} representations means any character distribution tends to produce all patterns of that length.
@@ -1229,7 +1232,7 @@ To sum up, the smaller the patterns lead to more independence and so more even d
     ymajorgrids=true,
     grid style=dashed,
 ]
- 
+
 \addplot[color=blue,mark=square]
     coordinates {(4,1.7)(8,2.1)(16,2.8)(24,3.6)(32,4.9)(40,6.2)(48,7.6) };
     \addlegendentry{10000}
@@ -1239,7 +1242,7 @@ To sum up, the smaller the patterns lead to more independence and so more even d
 \addplot[color=green,mark=square]
     coordinates {(4,1.6)(8,1.9)(16,2.8)(24,3.6)(32,4.8)(40,6.0)(48,6.6) };
     \addlegendentry{30000}
- 
+
 \end{axis}
 
 \end{tikzpicture}
@@ -1260,7 +1263,7 @@ To sum up, the smaller the patterns lead to more independence and so more even d
     ymajorgrids=true,
     grid style=dashed,
 ]
- 	
+
 \addplot[color=blue,mark=square]
     coordinates {(4,0.016)(8,0.081)(16,3.310)(24,10.115)(32,16.471)(40,19.464)(48,19.863) };
     \addlegendentry{10000}
@@ -1273,7 +1276,7 @@ To sum up, the smaller the patterns lead to more independence and so more even d
 \addplot[color=red,mark=square]
     coordinates {(4,0.016)(8,0.256)(16,65.536)(24,1000) };
     \addlegendentry{$e^x$}
- 
+
 \end{axis}
 \end{tikzpicture}
 \end{subfigure}
@@ -1301,7 +1304,7 @@ To sum up, the smaller the patterns lead to more independence and so more even d
 \addplot[color=green,mark=square]
     coordinates {(4,5)(8,19)(16,51)(24,100)(32,95)(40,99)(48,152) };
     \addlegendentry{30000}
- 
+
 \end{axis}
 \end{tikzpicture}
 \end{subfigure}
@@ -1312,7 +1315,7 @@ To sum up, the smaller the patterns lead to more independence and so more even d
 \subsubsection{Larger Samples}
 
 To investigate the effect of the reference sample size on these figures, I extracted more network traffic so I could compare 3 different-sized datasets.
-The figure on histogram-bin-numbers shows how, although each sample size does have diminishing returns, as pattern length increases, the maximum value reached does improve directly with the size of the sample. This is because although at small pattern sizes the samples are exhaustive, on larger patterns although the actual normal distribution may contain up to an exponential number of sequences in a fixed sample we only ever see a small portion of them. 
+The figure on histogram-bin-numbers shows how, although each sample size does have diminishing returns, as pattern length increases, the maximum value reached does improve directly with the size of the sample. This is because although at small pattern sizes the samples are exhaustive, on larger patterns although the actual normal distribution may contain up to an exponential number of sequences in a fixed sample we only ever see a small portion of them.
 
 I believe the largest sample produces such a large increase compared to the step from 10000 to 20000 due to the way the web crawler worked.
 As described in the implementation section, it starts with a small set of sites and ventures outwards by following links on the pages.
@@ -1361,30 +1364,30 @@ Fisher's exact test		& 0			& good\\
 \chapter{Conclusion}
 \label{chap:conclusion}
 
-{\bf A compulsory chapter,     of roughly $5$ pages} 
-\vspace{1cm} 
+{\bf A compulsory chapter,     of roughly $5$ pages}
+\vspace{1cm}
 
 \noindent
-The concluding chapter of a dissertation is often underutilised because it 
+The concluding chapter of a dissertation is often underutilised because it
 is too often left too close to the deadline: it is important to allocation
 enough attention.  Ideally, the chapter will consist of three parts:
 
 \begin{enumerate}
 \item (Re)summarise the main contributions and achievements, in essence
       summing up the content.
-\item Clearly state the current project status (e.g., ``X is working, Y 
-      is not'') and evaluate what has been achieved with respect to the 
-      initial aims and objectives (e.g., ``I completed aim X outlined 
-      previously, the evidence for this is within Chapter Y'').  There 
-      is no problem including aims which were not completed, but it is 
+\item Clearly state the current project status (e.g., ``X is working, Y
+      is not'') and evaluate what has been achieved with respect to the
+      initial aims and objectives (e.g., ``I completed aim X outlined
+      previously, the evidence for this is within Chapter Y'').  There
+      is no problem including aims which were not completed, but it is
       important to evaluate and/or justify why this is the case.
 \item Outline any open problems or future plans.  Rather than treat this
-      only as an exercise in what you {\em could} have done given more 
+      only as an exercise in what you {\em could} have done given more
       time, try to focus on any unexplored options or interesting outcomes
-      (e.g., ``my experiment for X gave counter-intuitive results, this 
-      could be because Y and would form an interesting area for further 
+      (e.g., ``my experiment for X gave counter-intuitive results, this
+      could be because Y and would form an interesting area for further
       study'' or ``users found feature Z of my software difficult to use,
-      which is obvious in hindsight but not during at design stage; to 
+      which is obvious in hindsight but not during at design stage; to
       resolve this, I could clearly apply the technique of Smith [7]'').
 \end{enumerate}
 
@@ -1394,10 +1397,10 @@ enough attention.  Ideally, the chapter will consist of three parts:
 % typically populated with just the bibliography.  LaTeX deals with these
 % in one of two ways, namely
 %
-% - inline, which roughly means the author specifies entries using the 
+% - inline, which roughly means the author specifies entries using the
 %   \bibitem macro and typesets them manually, or
 % - using BiBTeX, which means entries are contained in a separate file
-%   (which is essentially a databased) then inported; this is the 
+%   (which is essentially a databased) then inported; this is the
 %   approach used below, with the databased being dissertation.bib.
 %
 % Either way, the each entry has a key (or identifier) which can be used
@@ -1409,7 +1412,7 @@ enough attention.  Ideally, the chapter will consist of three parts:
 
 % -----------------------------------------------------------------------------
 
-% The dissertation concludes with a set of (optional) appendicies; these are 
+% The dissertation concludes with a set of (optional) appendicies; these are
 % the same as chapters in a sense, but once signaled as being appendicies via
 % the associated macro, LaTeX manages them appropriatly.
 
@@ -1418,14 +1421,14 @@ enough attention.  Ideally, the chapter will consist of three parts:
 \chapter{An Example Appendix}
 \label{appx:example}
 
-Content which is not central to, but may enhance the dissertation can be 
+Content which is not central to, but may enhance the dissertation can be
 included in one or more appendices; examples include, but are not limited
 to
 
 \begin{itemize}
-\item lengthy mathematical proofs, numerical or graphical results which 
+\item lengthy mathematical proofs, numerical or graphical results which
       are summarised in the main body,
-\item sample or example calculations, 
+\item sample or example calculations,
       and
 \item results of user studies or questionnaires.
 \end{itemize}
