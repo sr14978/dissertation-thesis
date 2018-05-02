@@ -272,6 +272,8 @@ In this chapter I have explained how there are motivations for wanting to access
 \label{chap:technical}
 
 After language was invented to share knowledge, humans soon needed a way hide it from those whom it was not intended. The first schemes used word or letter substitutions or the shuffling of characters to make the meaning of a message hard to obtain. These techniques are still used as the basic building blocks today; for example in the AES block cipher, a very popular encryption scheme, of which there are hardware implementations baked in to many of the major computer chips. Early schemes however, relied on the secrecy of the method to protect the privacy of the message which meant that they cannot be reused by others. This lead to the introduction of parametrised constructions that use a key to alter the encryption such as the Vigen\`ere cipher. Modern schemes obey Kerkoff's principle; that the security of the system only depends on the security of the key, allowing the same encryption method to be used by all.
+
+
 \begin{itemize}
  \item security through obscurity
  \item perfect security -- information-theoretic
@@ -760,12 +762,16 @@ Another solution is to fix the whole scheme to only work on fixed sized blocks a
 
 DE-CENSOR is an encrypt-then-encode framework, and so the encryption and decryption operations are made up of 2 stages each. Lets define these formally.
 
+$\mathcal{E}_{crypt} = (encrypt, decrypt) $ is the underlying encryption scheme.
+
 $encrypt :: ( (k_e, k_s), M ) \rightarrow C$ is the encryption function of the authenticated encryption scheme. 
 
 $decrypt :: ( (k_e, k_s), C ) \rightarrow M$ is the decryption function of the authenticated encryption scheme.
 
 Let, $H$ be a description of each heuristic and $D$ its value's frequency distribution.
 Then we can encapsulate $\mathcal{D}_2$, as $\mathcal{H} = \{(H_0,D_0), \cdots , (H_m,D_m)\}$ containing the information about each of the $m$ heuristics used in the encoding.
+
+$\mathcal{E}_{code}{\mathcal{H}} = (encode^{\mathcal{H}}, decode^{\mathcal{H}}) $ is the underlying encoding scheme.
 
 $encode^{\mathcal{H}} :: C \rightarrow N$, is the function that uses the heuristic distributions to transform ciphertexts $C$ in to normal traffic patterns $N$.
 
@@ -793,10 +799,10 @@ $decrypt( (k_e,k_s), decode^\mathcal{H}( N ) )$
 
 To ensure the DTE demand of privacy the construction must provide IND-CPA security.
 To ensure this, it will use an authenticated encryption scheme.
-It will implement a cipher block chaining mode with HMAC using AES256 for encryption and SHA256 for authentication.
-Therefore, assuming the underlying block cipher -- AES -- is secure, this mode provides indistinguishability under a chosen ciphertext attack.
+Therefore for the underlying encryption scheme: $\mathcal{E}_{crypt}$, it will implement a cipher block chaining mode with HMAC using AES256 for encryption and SHA256 for authentication.
+Therefore, assuming the underlying block cipher -- AES -- is secure, this mode provides indistinguishability under a chosen plaintext attack.
 
-This security guarantee is only for the encryption layer, however, since the encoding only has access to the IND-CPA ciphertext no information leakage about the plaintext is possible.
+This security guarantee is only for the encryption layer, however, since the encoding only has access to the IND-CPA ciphertext, no information leakage about the plaintext is possible.
 Therefore a reduction of IND-CPA security of the encryption layer can be reduced to the IND-CPA security of the whole scheme. 
 
 Here is the reduction:
@@ -833,9 +839,23 @@ where $negl$ is a negligible function and $|k|$ is the length of the keys.
 \subsubsection{Statistical Distinguishably}
 
 
-The construction will use the encryption scheme outlined in the privacy section.
-For this proof we simplify the system to remove the boundary correction of $F^{-1}_{D_N}$.
-For this construction requirement, we rely on the IND-\$ security of the encryption scheme.
+The construction will use the encryption scheme $\mathcal{E}_{crypt}$, as outlined in the privacy section.
+For this proof we will only consider the simpler system with the boundary correction of $F^{-1}_{D_N}$ removed.
+
+Also, for this construction requirement, we rely on a notion of security defined in Rogaway's paper called IND\$-CPA which ensures indistinguishability from random bits under an adaptive chosen-plaintext-and-IV attack~\cite{ind_dollar}.
+This abstraction, of lifting the IV initialisation from the mode of operation such as CBC to the user, produces a deterministic scheme.
+However, using a scheme that is IND\$-CPA means that if the $IV$ is treated as a nonce -- a value, like a counter, that is used at most once within a session -- the output bits are indistinguishable from random.
+
+Therefore, if a scheme is built that,
+\begin{itemize}
+\item Chooses the $IV$ also from random
+\item Uses an IND\$-CPA scheme with the random $IV$ to encryption $M$ to $C$
+\item returns $IV || C$
+\end{itemize}
+
+we have a scheme whose ciphertexts are also indistinguishable from random.
+The underlying encryption scheme of DE-CENSOR: $\mathcal{E}_{crypt}$ is one of these schemes.
+
 This means that, 
 
 $$ encrypt \left( (k_e, k_s), Support_n(\mathcal{D}_1 \right) ) \sim  U_n$$ 
