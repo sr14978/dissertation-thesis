@@ -30,7 +30,7 @@
                 % the dissertation subtitle (which can    be blank)
                   subtitle={The DE-CENSOR Scheme},
                 % the dissertation     type
-                      type={research},
+                      type={Research},
                 % the year of submission
                       year={2018} ]{dissertation}
 
@@ -98,14 +98,14 @@ My research hypothesis is that statistical methods could be used by network base
 
 \begin{itemize}
 \item Critically discuss the downfalls of using an FTE system to encode ciphertexts.
-\item Build a statistical tool for distinguishing emulated from normal traffic.
+\item Build a statistical tool for distinguishing fake traffic produced by FTE from normal traffic.
 \item Define a new cryptographic primitive -- DTE -- which enforces an arbitrary distribution onto ciphertexts.
 \item Construct a new scheme -- DE-CENSOR -- that instantiates this new primitive to overcome this detection.
 \end{itemize}
 
 % -----------------------------------------------------------------------------
 
-\chapter*{Definitions and Acronyms}
+\chapter{Definitions and Acronyms}
 
 \vspace{1cm}
 
@@ -118,7 +118,7 @@ DTE					&:		& Distribution Transforming Encryption\\
 Normal distribution &:		& Laplace-Gauss distribution\\
 normal traffic		&:		& Traffic generated from a normal person browsing their normal sites on their normal web browser.\\
 DE-CENSOR			&:		& Distribution Encoding of Ciphertexts to Emulate Normal Surfing for Onion Routing\\
-Record Layer		&:		& Layer in the network stack that receives data from te application layer, encrypts it, fragments it to an appropriate size and sends it on to the Transport Layer.\\
+Record Layer		&:		& Layer in the network stack that receives data from the application layer, encrypts it, fragments it to an appropriate size and sends it on to the Transport Layer.\\
 SOCKS				&:		& Socket Secure -- Internet Proxy Protocol\\
 Statistical Indistinguishability&:& Cryptographic demand of DTE, for ciphertexts to be indistinguishable from the target distribution, by statistical methods.\\
 &&\\
@@ -165,36 +165,35 @@ advice or time).
 \chapter{Introduction}
 \label{chap:intro}
 
-There is a strong belief among the creators and users of the Web, worldwide, that it should be a space of freedom and expression, built for the many, not for the few.
+There is a strong belief among the creators and users of the Web across the globe, that it should be a space of freedom and expression, built for the many, not for the few.
 People globally, now use the Internet as their main source of information.
-It allows citizens that are otherwise cut off, by geographical or physical factors, a voice and access to the massive, growing pool of knowledge that the world is sharing.
-In this way, it is a big driver for equality in the world, since it should provide equal access to resources, such as online learning.
-There are economic as advantages as well as these social ones, providing a free, competitive space for business to collaborate and grow.
+It allows citizens who are otherwise cut off, by geographical or physical factors, a voice and access to the ever increasing pool of shared public knowledge.
+In this way, it is a big driver for equality across the world, as it can provide equal access to resources, such as online learning.
+There are economic as advantages as well as these social ones, providing a unencumbered, competitive space for businesses to collaborate and grow.
 
-However, some information, which possibly may be unfactual, can if shared, unfairly damage people's lives.
-These may be breaches of privacy right or violations of state laws, but there are other, more universal issues to consider. There is, for instance, a fairly unanimous consensus that child pornography is a bad thing and if access to it can be blocked this would be certainly beneficial to society.
-In response to this Laws have been made to force websites and Internet Service Providers (ISPs) to block this type of content.
+Conversely, the sharing of personal or false information, which might be in breach of privacy rights or against the law, could be unpleasant, misleading or even harmful to people’s lives.
+It is widely accepted that blocking on-line access to child pornography would be beneficial to society and this is now a legal requirement in many countries: forcing websites and Internet Service Providers (ISPs) to block this type of content.
 
-However, this type of blocking can be taken further, with ISPs blocking the content they do not want others to see. Examples of this are the state-sponsored, censorship regimes of Iran and China, who block content of the Web in a bit to further their government's political agendas.
+However, this type of blocking can be taken further, with ISPs blocking the content they do not want others to see. Examples of this are the state-sponsored, censorship regimes of Iran and China, who block content of the Web in a bid to further their government's political agendas.
 
-Therefore, there is currently an arms race between these network-based Internet traffic censors and schemes to bypass their detection and blocking mechanisms.
-Techniques called deep packet inspection can provide valuable information to system administrators managing network traffic, by informing protocol use and traffic content.
-However, some use of these tools, especially on a state-wide scale is controversial since it can be used to snoop on citizens and block content as stated previously.
+Therefore, there is currently an arms race between these network-based Internet traffic censors, and schemes to bypass their detection and blocking mechanisms.
+A technique called deep packet inspection can provide valuable information to system administrators managing network traffic, by informing protocol use and traffic content.
+However, use of some of these tools, especially on a state-wide scale, is controversial since it can be used to snoop on citizens and block content -- as stated previously.
 
-One of the cores, proven systems for avoiding censorship is The Onion Router (TOR).
-Although originally built, to primarily provide anonymity of users to the sites that they visit, it has now become important in also providing anonymity of users to network-based surveillance.
+One of the core and proven systems for avoiding censorship is The Onion Router (TOR).
+Although originally built to primarily provide anonymity of users to the sites that they visit, it has now become important in also providing users with anonymity to network-based surveillance.
 However, because of this, censors such as Iran and China have resorted to blocking the entire protocol.
 Therefore, users cannot access the TOR network directly.
-To get around this problem, the concept of bridges have been implemented to hide the traffics destination, but even still this does not hide the protocol.
+To get around this problem, the concept of bridges have been implemented to hide the traffics destination, but even still this does not hide the protocol sufficiently.
 
-Currently, the majority of the protocol detection schemes in use, are based on regular expression parsers.
-Therefore, there has been work to produce schemes that exploit this fact by; in the case of obfs4~\cite{obfs4} removing all formatting to avoid black-list detection, or in the case of Format Transforming Encryption (FTE) formatting the ciphertexts to match the definitions of white-listed protocols.
-These have had success in practice at supporting arbitrary web access for users in oppressive regimes and currently, these systems are working.
+Currently, the majority of the protocol detection schemes in use are based on regular expression parsers.
+As a result, there has been work to produce schemes that exploit this fact by: in the case of obfs4~\cite{obfs4} removing all formatting to avoid black-list detection; or in the case of Format Transforming Encryption (FTE) formatting the ciphertexts to match the definitions of white-listed protocols.
+These have had success in practice at supporting arbitrary web access for users in oppressive regimes and, currently, these systems are working.
 However, censors' abilities and techniques for detection are improving all the time. So, looking to the future, I am analysing a potential avenue for detection and pre-emptively finding a solution.
 
 During this thesis, I explore the statistical analysis techniques that can be used to distinguish traffic produced using an FTE proxy from normal traffic.
-This begins with discovering a way to practically encapsulate a distribution like that of normal traffic, and then discusses how to compare two distributions.
-I then formalise a new type of encryption scheme to counter these detection techniques, called Distribution Transforming Encryption (DTE), by defining its syntax and security requirements.
+This begins with discovering a way to practically define a description of an arbitrary distribution like that of normal traffic, and then discusses techniques of how to compare two of these distributions.
+Then, I formalise a new type of encryption scheme to counter these detection techniques, called Distribution Transforming Encryption (DTE), by defining its syntax and security requirements.
 Next, I explore how to sample from arbitrary distributions to produce normal-looking ciphertexts and then define my concrete scheme -- DE-CENSOR -- using my chosen method.
 After proving the security of my construction, I discuss building an implementation and evaluate the practicality and performance of using the scheme in a proxy situation.
 
