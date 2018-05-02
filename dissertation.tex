@@ -302,17 +302,15 @@ They have already produces several schemes that claim to help.
 In a review of TOR transports Houmansadr et al. find that since its imitation of the Skype protocol is incomplete, a low-cost, passive attack that can always detect this encoding~\cite{parot}.
 To be fair, the Skype ecosystem is very complicated as it deals with dependencies between multiple sub-protocols in different streams, talking to Skype directory servers and the VOIP recipient. Houmansadr suggests that one solution would be to run the whole Skype stack and then encode the data in the audio stream, with careful consideration of the lossy transmission. This however, adds a complicated and intensive overhead to the communication. 
 
-meek\\
-Description: Is a transport that uses HTTP for carrying bytes and TLS for obfuscation. Traffic is relayed through a third-party server (Google App Engine). It uses a trick to talk to the third party so that it looks like it is talking to an unblocked server.
-
-ScrambleSuit\\
-Description: Is a pluggable transport that protects against follow-up probing attacks and is also capable of changing its network fingerprint (packet length distribution, inter-arrival times, etc.).
-Language: Python
-
-
-
-Dust\\
-Description: It aims to provide a packet-based (rather than connection-based) DPI-resistant protocol. See its git repository.
+%meek\\
+%Description: Is a transport that uses HTTP for carrying bytes and TLS for obfuscation. Traffic is relayed through a third-party server (Google App Engine). It uses a trick to talk to the third party so that it looks like it is talking to an unblocked server.
+%
+%ScrambleSuit\\
+%Description: Is a pluggable transport that protects against follow-up probing attacks and is also capable of changing its network fingerprint (packet length distribution, inter-arrival times, etc.).
+%Language: Python
+%
+%Dust\\
+%Description: It aims to provide a packet-based (rather than connection-based) DPI-resistant protocol. See its git repository.
 
 
 
@@ -540,7 +538,7 @@ The exact value is down to the priorities of the application.
 Adversaries that are willing to tolerate that some ciphertexts will get detected at the expense of a simpler encoding will want to relax the requirement.
 Yet, in other settings, where even one detection would cause large detrimental effects, it makes sense that you would tighten the bound on this constraint.
 
-\section{Exploration of Techniques}
+\section{Exploration of Techniques}\label{exploration_of_techniques}
 
 To create this DTE scheme, there must be a way to encapsulate not just the valid language but its frequency distribution.
 Firstly, I looked to the finite state machine produced by the regular expressions as used in FTE. Sadly, augmenting the node with weights according to the visiting frequency does not produce the desired effect.
@@ -988,7 +986,15 @@ The statistical distribution comparison calculations are done by the SciPy Libra
 \chapter{Critical Evaluation}
 \label{chap:evaluation}
 
+After building the proposed scheme, I conducted some experiments to test its performance in a practical situation.
+Firstly, I will test and explain how adjusting a heuristic parameter affects spaces requirements and ciphertext expansion.
+Secondly, I will evaluate the scheme for its statistical indistinguishability property to ensure it holds when the boundary tweak is applied.
+
 \section{Evaluating Pattern Length Effects}\label{sec:gran}
+
+As disused in section \ref{exploration_of_techniques}, pattern frequency can be used as a good heuristic to describe normal traffic.
+It also discusses that this can be done at varying levels of granularity.
+Here I will observe the practical outcomes that occur when the pattern length is varied between four bits (half a byte) and forty eight bits (six characters).
 
 \begin{table}[h]
 \centering
@@ -1061,11 +1067,7 @@ Table \ref{tab:patlen} shows some trends that occur when the pattern length is a
 \end{axis}
 \end{tikzpicture}
 \end{subfigure}
-\end{figure}
-
-
-\begin{wrapfigure}{L}{0.5\textwidth}
-
+\begin{subfigure}[b]{.49\linewidth}
 \begin{tikzpicture}
 \begin{axis}[
     ylabel={Max Splitting},
@@ -1084,8 +1086,16 @@ Table \ref{tab:patlen} shows some trends that occur when the pattern length is a
  
 \end{axis}
 \end{tikzpicture}
+\end{subfigure}
 \caption{Pattern Length statistics on sample size $10000$}
-\end{wrapfigure}
+\end{figure}
+
+
+%\begin{wrapfigure}{L}{0.5\textwidth}
+%
+%
+%\caption{Pattern Length statistics on sample size $10000$}
+%\end{wrapfigure}
 
 The expansion factor follows the following equation; let $s$ be the maximum splitting before errors, and $pl$ to be the patten length.
 $$|output| = |input| \times \left( \log_s 256 \times pl / 8 \right)$$ 
@@ -1099,11 +1109,14 @@ This could be since as the pattern length increases, the number of patterns in t
 Also, the variation between histogram bin sizes widens since smaller patterns used in different permutations produce even spreading throughout the histogram even if the larger patterns the permutations make up are very uneven.
 To give concrete examples, let us take the examples of length 4 and 40.
 Length 4 produces 16 bins, of which the maximum proportion is $0.2191$, whereas for length 40 with 105573 bins has a maximum proportion of a smaller absolute value $0.0024$.
-However, when we take these are ratios from uniform we get $\frac{0.2191}{\frac{1}{16}} = 0.2191 \cdot 16 = 3.5056$ and $\frac{0.00245}{\frac{1}{105573}} = 0.00245 \cdot 105573 = 258.65385$.
-In the case of length 40 the particular value corresponds to the string \texttt{[`/', `i', `m', `a', `g']}, which as expected, is an extremely common string in today's media rich web experiences, especially when to compared to low frequency strings such as \texttt{[`V', `U', `S', `5', `W']} which is probably only appearing in cryptographic random identifiers.
+However, when we interpret these values as ratios from uniform we get,
+$$0.2191 / {\frac{1}{16}} = 0.2191 \cdot 16 = 3.5056$$
+and
+$${0.00245} / {\frac{1}{105573}} = 0.00245 \cdot 105573 = 258.65385$$
+which shows the much larger disparity in the larger pattern size bins.
+In the case of length 40, the particular value corresponds to the string \texttt{[`/', `i', `m', `a', `g']}, which as expected, is semantically meaningful as an extremely common string in today's media rich web experiences. Compare that to the low frequency strings such as \texttt{[`V', `U', `S', `5', `W']}, which are probably only appearing in cryptographic random identifiers that sites sometimes use to pass tokens from one entity to another like in the Oauth2 protocol.
 For the 4 bit case, the most common result is \texttt{0x6}, which also is expected since the \texttt{ascii} representation of the letters \texttt{[a-o]} are in the range $0x60 \leq x < 0x70$.
-To sum up, the smaller the patterns lead to more independence and so more even distributions. 
-
+To sum up, the smaller the patterns lead to more independence and so more even distributions, but this makes them easier to forge as they are closer to uniform.
 
 \begin{figure}[h]
 \centering
@@ -1164,16 +1177,13 @@ To sum up, the smaller the patterns lead to more independence and so more even d
     \addlegendentry{30000}
 \addplot[color=red,mark=square]
     coordinates {(4,0.016)(8,0.256)(16,65.536)(24,1000) };
-    \addlegendentry{Exponential}
+    \addlegendentry{$e^x$}
  
 \end{axis}
 \end{tikzpicture}
 \end{subfigure}
-\end{figure}
 
-\begin{wrapfigure}[13]{R}{0.5\textwidth}
-\centering
-
+\begin{subfigure}[b]{.49\linewidth}
 \begin{tikzpicture}
 \begin{axis}[
     ylabel={Max Splitting},
@@ -1199,11 +1209,15 @@ To sum up, the smaller the patterns lead to more independence and so more even d
  
 \end{axis}
 \end{tikzpicture}
-\end{wrapfigure}
+\end{subfigure}
+\caption{Pattern Length statistics on sample sizes $\{10000, 20000, 30000\}$}
+\end{figure}
 
-To investigate the effect of the reference sample size on these figures I extracted more network traffic so I had 3 different-sized datasets.
 
-The figure on histogram-bin-numbers shows how although each sample size does have diminishing returns, as pattern length increases, the maximum value reached does improve directly with the size of the sample. This is because although at small pattern sizes the samples are exhaustive, on larger patterns although the actual normal distribution may contain upto an exponential number of sequences in a fixed sample we only ever see a small portion of them. 
+\subsubsection{Larger Samples}
+
+To investigate the effect of the reference sample size on these figures, I extracted more network traffic so I could compare 3 different-sized datasets.
+The figure on histogram-bin-numbers shows how, although each sample size does have diminishing returns, as pattern length increases, the maximum value reached does improve directly with the size of the sample. This is because although at small pattern sizes the samples are exhaustive, on larger patterns although the actual normal distribution may contain upto an exponential number of sequences in a fixed sample we only ever see a small portion of them. 
 
 I believe the largest sample produces such a large increase compared to the step from 10000 to 20000 due to the way the web crawler worked.
 As described in the implementation section, it starts at a small set of sites and ventures outwards by following links on the pages.
@@ -1211,6 +1225,41 @@ Because of this, the number of sites increases but also the diversity of these s
 
 On larger samples the possible encoding output expansion is slightly less for larger pattern length than when using a smaller one. This is due to the increase in possible number of divisions of the distribution down to the larger number of bins giving a more evenly divided distribution.
 
+\subsubsection{Summary}
+
+In summary, for all sample sizes, shorter patterns produce lower ciphertext expansion overheads, in fact, the relationship is linear.
+However, we have seen that longer pattern lengths do produce more context aware characters and so lead to higher quality distributions.
+Therefore, there is a application specific trade-off that deployers of the scheme must consider.
+Also, as expected, larger samples produce a higher fidelity distribution.
+This does increase the space requirement of the scheme, but time performance should not be affected to the same extent due to the sub linear complexity of the binary search.
+
+\section{Statistical Indistinguishability}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|}
+
+\hline
+
+Test					& Value		& Result\\
+
+\hline
+
+Chi-square				& 0			& good\\
+
+G-test					& 0			& good\\
+
+Kullback-Leibler		& 0			& good\\
+
+Jensen-Shannon			& 0			& good\\
+
+Fisher's exact test		& 0			& good\\
+
+\hline
+
+\end{tabular}
+
+\end{table}
 
 % -----------------------------------------------------------------------------
 
@@ -1289,6 +1338,7 @@ to
 \noindent
 Note that in line with most research conferences, the marking panel is not
 obliged to read such appendices.
+\
 
 % =============================================================================
 

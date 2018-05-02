@@ -1,10 +1,10 @@
 Sections left to write:
 ✔ Abstract @done(2018-05-02 01:22)
-☐ Introduction
+✔ Introduction @done(2018-05-02 13:24)
 ✔ Motivation - rights @done(2018-04-30 15:50)
 ✔ Motivation - technical @done(2018-04-30 15:50)
 ☐ Cryptographic Background
-☐ other tor tranport techniques
+✔ other tor tranport techniques @done(2018-05-02 13:51)
 ✔ Format Preserving Encryption @done(2018-04-30 15:50)
 ✔ Format Transforming Encryption @done(2018-04-30 15:50)
 
@@ -39,8 +39,7 @@ Implementation:
   ✔ Diagram @done(2018-05-01 11:16) @project(Implementation)
 
 Evaluation:
-  ✔ pattern length effects @done(2018-05-01 01:00) @project(Evaluation)
-  ☐ throughput - qualatively - use a browser
+  ✔ pattern length effects @done(2018-05-02 14:49) @project(Evaluation)
   ☐ using different measurements
 
 Conclusion:
