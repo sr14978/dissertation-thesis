@@ -85,15 +85,10 @@
 
 % -----------------------------------------------------------------------------
 
-\chapter{Abstract}
+\chapter*{Abstract}
 
-There is currently an arms race between network based traffic censors and schemes to bypass their detection and blocking mechanisms. 
-Deep packet inspection can provide valuable information to system administrators managing network traffic, by informing protocol use and content.
-However, some use of these tools, especially on a state-wide scale is controversial since it can be used to snoop on citizens and block content to forward a political agenda.
-
-Currently, the majority of the protocol detection schemes in use are based on regular expression parsers and so there has been work to produce schemes that exploit vulnerabilities this fact by formatting ciphertexts to match these definitions.
-These have had success in practice at supporting arbitrary web access for users in oppressive regimes with the aim of keeping the World Wide Web a free and open platform.
-Currently, these systems are working, however, censors' abilities and techniques for detection are improving all the time. So, looking to the future, I am analysing a potential avenue for detection and pre-emptively finding a solution.
+\paragraph{Format transforming encryption} is an extension of standard encryption that enforces a format onto the ciphertexts.
+This can be used to force misclassification of networking protocols by contemporary deep packet inspection tools.
 
 \subsubsection{Research Hypotheses}
 
@@ -103,8 +98,9 @@ My research hypothesis is that statistical methods could be used by network base
 
 \begin{itemize}
 \item Critically discuss the downfalls of using an FTE system to encode ciphertexts.
--\item Build a statistical tool for distinguishing emulated from normal traffic.
--\item Build a new scheme that is able to overcome this detection.
+\item Build a statistical tool for distinguishing emulated from normal traffic.
+\item Define a new cryptographic primitive - DTE - which forces a distribution onto ciphertexts.
+\item Construct a new scheme - DE-CENSOR - that instantiates this new primitive to overcome this detection.
 \end{itemize}
 
 % -----------------------------------------------------------------------------
@@ -124,6 +120,7 @@ Normal distribution &:		& Laplace-Gauss distribution
 normal traffic		&:		& Traffic generated from a normal person
 browsing their normal sites on their normal web browser.\\
 FTE					&:		& Format Transforming Encryption\\
+DTE					&:		& Distribution Transforming Encryption\\
 DE-CENSOR			&:		& Distribution Encoding of Ciphertexts to Emulate Normal Surfing for Onion Routing\\
 Record Layer		&:		& Layer in the network stack that receives data from te application layer, encrypts it, fragments it to an appropriate size and sends it on to the Transport Layer.\\
 SOCKS				&:		& Socket Secure - Internet Proxy Protocol\\
@@ -163,7 +160,35 @@ advice or time).
 
 % -----------------------------------------------------------------------------
 
-\chapter{Motivations}
+\chapter{Introduction}
+\label{chap:intro}
+
+There is currently an arms race between network based traffic censors and schemes to bypass their detection and blocking mechanisms. 
+Deep packet inspection can provide valuable information to system administrators managing network traffic, by informing protocol use and content.
+However, some use of these tools, especially on a state-wide scale is controversial since it can be used to snoop on citizens and block content to forward a political agenda.
+
+Currently, the majority of the protocol detection schemes in use are based on regular expression parsers and so there has been work to produce schemes that exploit vulnerabilities this fact by formatting ciphertexts to match these definitions.
+These have had success in practice at supporting arbitrary web access for users in oppressive regimes with the aim of keeping the World Wide Web a free and open platform.
+Currently, these systems are working, however, censors' abilities and techniques for detection are improving all the time. So, looking to the future, I am analysing a potential avenue for detection and pre-emptively finding a solution.
+
+\begin{itemize}
+\item internet
+\item censorship
+\item tor
+\item fte
+\item problems with FTE
+\item this thesis
+\begin{itemize}
+\item attack fte
+\item new cryptographic primative
+\item implementation of such
+\end{itemize}
+\end{itemize}
+
+
+% -----------------------------------------------------------------------------
+
+\chapter{Motivation}
 \label{chap:context}
 
 Tim Berners-Lee said that since its conception, the World Wide Web has been built with the principles of openness and privacy~\cite{gard}. These key values, that also lie at the heart of democracy, can ensure that if a website is made available on web, anyone can connect to it - no matter who they are or where they live. 
@@ -199,7 +224,7 @@ Finally, packet inspection has become very common place. This can be content bas
 
 The packet inspection and classification is also done on a protocol basis. Censors are usually tolerant to users accessing webpages over HTTP or video calling over VOIP protocols, however, protocols that allow the transfer of data in a opaque way such as VPN tunnelling, The Onion Router and TLS (less so) are often blocked completely.
 
-\section{The Onion Router}
+\section{A Possible Solution: The Onion Router}
 
 One of the most effective tools for evading network surveillance is The Onion Router (TOR) which not only hides the contents of packets like TLS, but also obfuscates their destination. It does this by maintaining a opaque network which decorrelates the movement of packets in and out. As a result, it is hard to work out where traffic that enters the network at an entry node will exit, and then therefore what its final destination is. To realise this, each packet is encrypted three times (on top of standard TLS encryption) and, as the packet moves through the network, a layer of encryption is removed at each relay node. This means, as it mixes with other packets, it is hard to identify and match what is arriving with what is sent on. Paths through the network are randomly allocated and keys are exchanged securely using a Diffe-Helman protocol. This is done one node at a time through the existing link such that nodes only know the identities of their predecessor and successor in the chain. 
 
@@ -237,6 +262,33 @@ After language was invented to share knowledge, humans soon needed a way hide it
 \end{itemize}
 
 \chapter{Previous Work}\label{prev_work}
+
+\section{TOR Transports}
+
+The TOR community understand the necessity for disguising the TOR protocol as innocuous traffic.
+They have already produces several schemes that claim to help.
+
+\paragraph{ObfsProxy} simply encrypts the entire packet with a streaming cipher. Earlier versions used a fixed parameters so although expensive, decryption could be done to obtain the standard traffic but now even that is not possible since a key exchange produces ephemeral keys. This procedure produces ciphertexts that are computationally indistinguishable from a random string so intensive computational statistics would be able to differentiate this from a background distribution of standard traffic. Also, do to it's complete lack of structure it would not pass any protocol white-listing filters.
+
+\paragraph{StegoTorus} is a system that uses carefully hand crafted embeddings for ciphertexts. In the HTTP mode, it selects randomly for pre-recorded traces and hides the chopped up ciphertext inside Javascript, PDF and SWF files and header fields like Cookies. Since, the masquerading protocol is HTTP, blocking encrypted protocols will not stop this. However, it relies on distributing large volumes of these traces or everyone recording their own, otherwise censors could just block all of them specifically. This means the overhead in communication but mainly storage of traces is large 
+
+\paragraph{SkypeMorph} transforms Tor traffic so it looks like a Skype Video Call.
+In a review of TOR transports Houmansadr et al. find that since its imitation of the Skype protocol is incomplete, a low-cost, passive attack that can always detect this encoding~\cite{parot}.
+To be fair, the Skype ecosystem is very complicated as it deals with dependencies between multiple sub-protocols in different streams, talking to Skype directory servers and the VOIP recipient. Houmansadr suggests that one solution would be to run the whole Skype stack and then encode the data in the audio stream, with careful consideration of the lossy transmission. This however, adds a complicated and intensive overhead to the communication. 
+
+meek\\
+Description: Is a transport that uses HTTP for carrying bytes and TLS for obfuscation. Traffic is relayed through a third-party server (Google App Engine). It uses a trick to talk to the third party so that it looks like it is talking to an unblocked server.
+
+ScrambleSuit\\
+Description: Is a pluggable transport that protects against follow-up probing attacks and is also capable of changing its network fingerprint (packet length distribution, inter-arrival times, etc.).
+Language: Python
+
+
+
+Dust\\
+Description: It aims to provide a packet-based (rather than connection-based) DPI-resistant protocol. See its git repository.
+
+
 
 \section{Format Preserving Encryption}
 
@@ -454,9 +506,7 @@ This is a new demand that I am defining to ensure the closeness of the output di
 This requirement does not refer to the computational indistinguishability that requires reduction to a hard known problem.
 Instead, it is asks that for any well behaving distribution comparison function $\Delta$,\footnote{though does not need to be symmetric, or obey the triangle inequality,}
 
-Over $ (k_e,k_s) \leftarrow Kg^{\mathcal{D}_2}, M \in Support_n(\mathcal{D}_1), N \in Support_n(\mathcal{D}_2)$;
-
-Measurement of $\Delta \left(  Enc^{\mathcal{D}_2}((k_e,k_s), M), N  \right)$ is small.
+Over $ (k_e,k_s) \leftarrow Kg^{\mathcal{D}_2}, M \in Support_n(\mathcal{D}_1), N \in Support_n(\mathcal{D}_2)$; Measurement of $\Delta \left(  Enc^{\mathcal{D}_2}((k_e,k_s), M), N  \right)$ is small.
 
 This quantification of \textit{small} is left up to the creator of the construction.
 It can refer to a negligible function in one of the parameters but does not need to.
@@ -1134,27 +1184,6 @@ As described in the implementation section, it starts at a small set of sites an
 Because of this, the number of sites increases but also the diversity of these sites increases in language, style and technologies (different web frameworks produce different request patterns).
 
 On larger samples the possible encoding output expansion is slightly less for larger pattern length than when using a smaller one. This is due to the increase in possible number of divisions of the distribution down to the larger number of bins giving a more evenly divided distribution.
-
-
-\subsection{Other Solutions}
-
-ObfsProxy simply encrypts the entire packet with a streaming cipher. Earlier versions used a fixed parameters so although expensive, decryption could be done to obtain the standard traffic but now even that is not possible since a key exchange produces ephemeral keys. This procedure produces ciphertexts that are computationally indistinguishable from a random string so intensive computational statistics would be able to differentiate this from a background distribution of standard traffic. Also, do to it's complete lack of structure it would not pass any protocol white-listing filters.
-
-StegoTorus is a system that uses carefully hand crafted embeddings for ciphertexts. In the HTTP mode, it selects randomly for pre-recorded traces and hides the chopped up ciphertext inside Javascript, PDF and SWF files and header fields like Cookies. Since, the masquerading protocol is HTTP, blocking encrypted protocols will not stop this. However, it relies on distributing large volumes of these traces or everyone recording their own, otherwise censors could just block all of them specifically. This means the overhead in communication but mainly storage of traces is large 
-
-
-meek\\
-Description: Is a transport that uses HTTP for carrying bytes and TLS for obfuscation. Traffic is relayed through a third-party server (Google App Engine). It uses a trick to talk to the third party so that it looks like it is talking to an unblocked server.
-
-ScrambleSuit\\
-Description: Is a pluggable transport that protects against follow-up probing attacks and is also capable of changing its network fingerprint (packet length distribution, inter-arrival times, etc.).
-Language: Python
-
-SkypeMorph\\
-Description: It transforms Tor traffic flows so they look like Skype Video. See its source code and design paper.
-
-Dust\\
-Description: It aims to provide a packet-based (rather than connection-based) DPI-resistant protocol. See its git repository.
 
 
 % -----------------------------------------------------------------------------
