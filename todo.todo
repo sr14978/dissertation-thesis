@@ -3,7 +3,7 @@ Sections left to write:
 ✔ Introduction @done(2018-05-02 13:24)
 ✔ Motivation - rights @done(2018-04-30 15:50)
 ✔ Motivation - technical @done(2018-04-30 15:50)
-☐ Cryptographic Background
+✔ Cryptographic Background @done(2018-05-02 20:49)
 ✔ other tor tranport techniques @done(2018-05-02 13:51)
 ✔ Format Preserving Encryption @done(2018-04-30 15:50)
 ✔ Format Transforming Encryption @done(2018-04-30 15:50)
