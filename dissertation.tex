@@ -99,8 +99,8 @@ My research hypothesis is that statistical methods could be used by network base
 \begin{itemize}
 \item Critically discuss the downfalls of using an FTE system to encode ciphertexts.
 \item Build a statistical tool for distinguishing emulated from normal traffic.
-\item Define a new cryptographic primitive - DTE - which forces a distribution onto ciphertexts.
-\item Construct a new scheme - DE-CENSOR - that instantiates this new primitive to overcome this detection.
+\item Define a new cryptographic primitive -- DTE -- which forces a distribution onto ciphertexts.
+\item Construct a new scheme -- DE-CENSOR -- that instantiates this new primitive to overcome this detection.
 \end{itemize}
 
 % -----------------------------------------------------------------------------
@@ -123,7 +123,7 @@ FTE					&:		& Format Transforming Encryption\\
 DTE					&:		& Distribution Transforming Encryption\\
 DE-CENSOR			&:		& Distribution Encoding of Ciphertexts to Emulate Normal Surfing for Onion Routing\\
 Record Layer		&:		& Layer in the network stack that receives data from te application layer, encrypts it, fragments it to an appropriate size and sends it on to the Transport Layer.\\
-SOCKS				&:		& Socket Secure - Internet Proxy Protocol\\
+SOCKS				&:		& Socket Secure -- Internet Proxy Protocol\\
 Statistical Indistinguishability&:& Cryptographic demand of DTE, for ciphertexts to be indistinguishable from the target distribution, by statistical methods.\\
 
 \end{tabularx}
@@ -171,6 +171,8 @@ Currently, the majority of the protocol detection schemes in use are based on re
 These have had success in practice at supporting arbitrary web access for users in oppressive regimes with the aim of keeping the World Wide Web a free and open platform.
 Currently, these systems are working, however, censors' abilities and techniques for detection are improving all the time. So, looking to the future, I am analysing a potential avenue for detection and pre-emptively finding a solution.
 
+
+
 \begin{itemize}
 \item internet
 \item censorship
@@ -192,8 +194,8 @@ Currently, these systems are working, however, censors' abilities and techniques
 \label{chap:context}
 
 Tim Berners-Lee said that since its conception, the World Wide Web has been built with the principles of openness and privacy~\cite{gard}.
-These key values, that also lie at the heart of democracy, can ensure that if a website is made available on web, anyone can connect to it - no matter who they are or where they live. 
-Traditionally, the Internet has been built as a distributed entity, to share the technological burden, but also to share responsibility and provide options - the very concept of a network can provide many routes for information to move from source to destination.
+These key values, that also lie at the heart of democracy, can ensure that if a website is made available on web, anyone can connect to it -- no matter who they are or where they live. 
+Traditionally, the Internet has been built as a distributed entity, to share the technological burden, but also to share responsibility and provide options -- the very concept of a network can provide many routes for information to move from source to destination.
 
 However, as organisations throughout the world realised the Internet's importance, in a bid to try to control it, they caused a trend of centralisation.
 For instance many VOIP systems are no longer pure peer-to-peer systems but route all traffic through a central server.
@@ -226,9 +228,9 @@ Filtering on the IP address of a resource can be done by analysing the destinati
 
 The most common method of blocking is for the routers to drop these black-listed packets, but as Clayton et al. found in their practical experiments~\cite{clayton2006ignoring}, for protocols that communicate in a streaming fashion over time, the network machinery sends TCP reset packets to both parties to interrupt the session and stop communication. This type of attack can be easily countered by ignoring all reset packets since, due to how the system is architectured, the original packets are allowed through. They also observed a less frequent technique which was the injection of a forged packet with random synchronisation numbers. When this reaches the destination, the server detects the incorrect value and validly triggers the sending of a reset packet. Now, if the reset packets are ignored then the two real endpoints become out of sync and the communication breaks down. Luckily, as it stands, the forged packets are poor imitations and so are easily detectable.
 
-Another method used in practice is DNS poisoning, which involves incorrectly resolving URLs to redirect users either to a censorship notice or just a random - and useless - address. This only affects the use of URLs and so the use of raw IP address is completely unaffected, although many sites use them internally so it creates difficulty and work for users through setting up of a local host file.
+Another method used in practice is DNS poisoning, which involves incorrectly resolving URLs to redirect users either to a censorship notice or just a random -- and useless -- address. This only affects the use of URLs and so the use of raw IP address is completely unaffected, although many sites use them internally so it creates difficulty and work for users through setting up of a local host file.
 
-Finally, packet inspection has become very common place. This can be content based detection such as searching for trigger words in HTTP request paths, or in the HTML content returned. A good example of this is search terms included the query parameters of  search engine requests. Although these snooping attacks only apply to clear unencrypted HTTP traffic and using an encrypted  TLS transport layer hides all this information, sites that do encrypt, risk having the whole site IP blocked as above. This happened to Wikipedia in China when the site switched to enforcing HTTPS on all traffic. When the site did this, the Golden Shield Project - in charge of China's network surveillance - could no longer selectively block the specific culprit pages, instead, a blanket ban on the service was enforced.
+Finally, packet inspection has become very common place. This can be content based detection such as searching for trigger words in HTTP request paths, or in the HTML content returned. A good example of this is search terms included the query parameters of  search engine requests. Although these snooping attacks only apply to clear unencrypted HTTP traffic and using an encrypted  TLS transport layer hides all this information, sites that do encrypt, risk having the whole site IP blocked as above. This happened to Wikipedia in China when the site switched to enforcing HTTPS on all traffic. When the site did this, the Golden Shield Project -- in charge of China's network surveillance -- could no longer selectively block the specific culprit pages, instead, a blanket ban on the service was enforced.
 
 The packet inspection and classification is also done on a protocol basis. Censors are usually tolerant to users accessing webpages over HTTP or video calling over VOIP protocols, however, protocols that allow the transfer of data in a opaque way such as VPN tunnelling, The Onion Router and TLS (less so) are often blocked completely.
 
@@ -248,7 +250,7 @@ Therefore, simple, targeted attacks could easily detect TOR packets.
 There has been some improvement to adjust its fingerprint to match TLS as much as possible. However, this could not be done completely, so more had to be done.
 
 Tor works by allowing users to connect to one of the publicly known entry guard relays. However, since these IP addresses are publicly known, they are easily detected and interfered with by network censor systems. As mentioned, one way this is done is by sending reset packets to both parties telling them to close the TCP stream.
-To circumvent this, users instead connect to private bridges in uncensored zones - such as the United States - so that the indented destination of the packets is hidden. However, with protocol fingerprinting by deep packet inspection (DPI) and the use of active probes, censors can still catch these unlisted bridges in under fifteen minutes of use!
+To circumvent this, users instead connect to private bridges in uncensored zones -- such as the United States -- so that the indented destination of the packets is hidden. However, with protocol fingerprinting by deep packet inspection (DPI) and the use of active probes, censors can still catch these unlisted bridges in under fifteen minutes of use!
 The use of obfuscation and FTE (described in section \ref{sec:FTE}) bridges have been able to fool these DPI systems for now since they fool the common protocol classification systems which use regular expressions. However, as deep learning becomes more prevalent it is known that this will not be enough.
 
 \section{Summary}
@@ -263,9 +265,9 @@ In this chapter I have explained how there are motivations for wanting to access
 After language was invented to share knowledge, humans soon needed a way hide it from those whom it was not intended. The first schemes used word or letter substitutions or the shuffling of characters to make the meaning of a message hard to obtain. These techniques are still used as the basic building blocks today; for example in the AES block cipher, a very popular encryption scheme, of which there are hardware implementations baked in to many of the major computer chips. Early schemes however, relied on the secrecy of the method to protect the privacy of the message which meant that they cannot be reused by others. This lead to the introduction of parametrised constructions that use a key to alter the encryption such as the Vigen\`ere cipher. Modern schemes obey Kerkoff's principle; that the security of the system only depends on the security of the key, allowing the same encryption method to be used by all.
 \begin{itemize}
  \item security through obscurity
- \item perfect security - information-theoretic
+ \item perfect security -- information-theoretic
  \item conditional security
- \item ciphertexts - formatting
+ \item ciphertexts -- formatting
  \item block ciphers
 \end{itemize}
 
@@ -313,7 +315,7 @@ The field has become a highly practical one, with companies such as Voltage movi
 
 To keep up with the work in industry, Bellare et al. wrote a comprehensive paper~\cite{fpe} that formally defines the goals of FTE. They did this in the form of adversary based games. They redefine the standard Pseudo Random Permutation (PRP) Security game which challenges an adversary to distinguish the encryption scheme from a random permutation. The paper also gives weaker notions they think are more appropriate. Single Point Indistinguishably (SPI) requires the adversary to be unable to distinguish between the encryption of any chosen plaintext from the specified language and a randomly selected ciphertext of the same language. The Message Recovery (MR) game gives the adversary the frequency distribution of plaintexts and asks for a decryption of a the ciphertext of a randomly selected item from the plaintext space. The adversary is given adaptive access to an encryption and verification oracle. Finally they define Message Privacy (MP) as the inability of an adversary to compute a function of a plaintext given the ciphertext; Note in this game the adversary can select the function it hopes it will have most success with. They state the following strength hierarchy for these games, showing PRP does give us the Message Recovery property we ultimately want.
 $$ PRP \implies SPI \implies MP \implies MR $$
-The first implication is trivial since a random function will produce a random element when given the message. The last implications is also trivial since MR is just a special case of MP - where the function is fixed to be the identity. For the proof of $ SPI \implies MP $ the paper shows how an adversary $B$ for SPI can be constructed using an adversary $A$ for MP with sufficiently large advantage. In this construction $B$ is able to run $A$ and satisfy it's calls to the encryption oracle using its own oracle in turn.
+The first implication is trivial since a random function will produce a random element when given the message. The last implications is also trivial since MR is just a special case of MP -- where the function is fixed to be the identity. For the proof of $ SPI \implies MP $ the paper shows how an adversary $B$ for SPI can be constructed using an adversary $A$ for MP with sufficiently large advantage. In this construction $B$ is able to run $A$ and satisfy it's calls to the encryption oracle using its own oracle in turn.
 
 \subsection{Rank and Encrypt}
 
@@ -355,7 +357,7 @@ They show in their paper that FTE leaves these systems vulnerable to protocol mi
 
 Formally, the scheme takes a formatting regular expression grammar $\mathcal{F}$ and lets $L(\mathcal{F})$ be the language defined by it. Then, using an existing authenticated encryption scheme $Enc_k$, the original message $M$ is encrypted and the unformatted ciphertext $Y$ is interpreted as an element of $\mathbb{Z}_{\vert L(\mathcal{F}) \vert}$. The encoding function $unrank :: \mathbb{Z}_{\vert L(\mathcal{F}) \vert} \rightarrow L(\mathcal{F})$ is then used to format it to specification. To make \texttt{unrank} and it's inverse, decryption counterpart \texttt{rank} efficient the same precomputation is done as by Bellare and only a subset of the formatted language with fixed length is used. This is optimisation is key to be able to use this in practice. This turns the use of the scheme in to a block cipher used in Electronic Code Book mode. However, this lack of diffusion does not lead to pattern leakage since a random IV is used for each large block.
 
-They have implemented this scheme and integrated it in to a TOR transport. Although, the regex based parameters make the scheme flexible so any protocol (described by a regular expression) can be targeted they have focused on hiding inside the HTTP protocol. To be precise they use the regular expression in figure \ref{fig:http-regex}. This hides the ciphertext inside the path of a \texttt{GET} request but due to the lack of structure - any alpha-numeric string - the packets aren't visually convincing as seen in figure \ref{fig:http-ex}.
+They have implemented this scheme and integrated it in to a TOR transport. Although, the regex based parameters make the scheme flexible so any protocol (described by a regular expression) can be targeted they have focused on hiding inside the HTTP protocol. To be precise they use the regular expression in figure \ref{fig:http-regex}. This hides the ciphertext inside the path of a \texttt{GET} request but due to the lack of structure -- any alpha-numeric string -- the packets aren't visually convincing as seen in figure \ref{fig:http-ex}.
 
 Although as a TOR proxy, the FTE scheme has had success in bypassing China's Golden Shield Project (GSP) censorship mechanisms as is listed as a official TOR transport.
 
@@ -412,7 +414,7 @@ The storage size would be an intractable $4*(256^10) = 4*(1024^8) = 4$ yobi byte
 
 \subsection{Heuristic based Distributions}
 
-Therefore, obviously simpler distribution descriptions were needed - i.e. heuristics.
+Therefore, obviously simpler distribution descriptions were needed -- i.e. heuristics.
 The first target is to design a distinguisher for the existing FTE scheme from normal traffic.
 The first heuristic was targeted at the fixed width that Dyer scheme produces.
 It can be clearly seen in figure \ref{fig:fake_length_dist} that compared to normal traffic the difference is obvious.
@@ -487,9 +489,9 @@ I discuss a method of calculating this threshold from positive and negative samp
 
 \chapter{Distribution Transforming Encryption}
 
-Informally, my scheme will produce ciphertexts that look the same as a stream of normal brower HTTP traffic.
-It has a encrypt-then-encode structure as first a plaintext is encrypted and then this non-normally distributed ciphertext is encoded to transform it to a ciphertext drawn from the normal traffic distribution.
-To preform this transformation the encode stage of the encryption will draw samples from a pre-recorded reference distribution to emulate normal packets.
+Informally, my scheme will produce ciphertexts that look the same as a stream of normal browser HTTP traffic.
+In practice, the scheme will draw samples from a pre-recorded reference distribution to emulate the target distribution.
+This encoding can be flexible to target different frequency distributions, for instance to hide inside different protocols, but I will define a DTE scheme to target a fixed distribution.
 
 \subsubsection{Syntax}
 Let $\mathcal{D}_1$ represent the message source distribution and $\mathcal{D}_2$ represent the target population distribution.
@@ -507,10 +509,10 @@ Here, I am using $Support_n(\mathcal{D})$ to define a distribution of streams of
 
 \subsubsection{Security Demands}
 
-A DTE scheme $\mathcal{E}^{\mathcal{D}_2} = (Kg^{\mathcal{D}_2}, Enc^{\mathcal{D}_2}, Dec^{\mathcal{D}_2})$ must uphold standard message privacy security, but also a new requirement - statistical indistinguishability.
+A DTE scheme $\mathcal{E}^{\mathcal{D}_2} = (Kg^{\mathcal{D}_2}, Enc^{\mathcal{D}_2}, Dec^{\mathcal{D}_2})$ must uphold standard message privacy security, but also a new requirement -- statistical indistinguishability.
 
 \paragraph{Privacy}
-distinguish 
+ 
 I demand indistinguishability of ciphertexts under an adaptive chosen plaintext attack. Standard modes of authenticated encryption such as the cipher block chaining and encrypt the HMAC mode of AES provides higher levels of security.
 Though due to publicly known normal traffic distribution the produced ciphertexts are malleable, making chosen cipher text attacks always possible. 
 This must be inherited by the overall scheme to provide the standard assurances.
@@ -785,7 +787,7 @@ $decrypt( (k_e,k_s), decode^\mathcal{H}( N ) )$
 To ensure the DTE demand of privacy the construction must provide IND-CPA security.
 To ensure this, it will use an authenticated encryption scheme.
 It will implement a cipher block chaining mode with HMAC using AES256 for encryption and SHA256 for authentication.
-Therefore, assuming the underlying block cipher - AES - is secure, this mode provides indistinguishability under a chosen ciphertext attack.
+Therefore, assuming the underlying block cipher -- AES -- is secure, this mode provides indistinguishability under a chosen ciphertext attack.
 
 This security guarantee is only for the encryption layer, however, since the encoding only has access to the IND-CPA ciphertext no information leakage is possible.
 
@@ -871,13 +873,13 @@ Like the recording of reference material, the calculation of distribution histog
 	\caption{Distribution Histographs}\label{fig:hists}
 \end{figure}
 
-\textbf{Path length} - this was targeted at the FTE scheme that used a fixed length. It shows very few examples would be needed to differentiate the origins.
+\textbf{Path length} -- this was targeted at the FTE scheme that used a fixed length. It shows very few examples would be needed to differentiate the origins.
 
-\textbf{Character distribution} - This graph exibits the underlying encryption schemes uniform randomness, whereas in real traffic not all characters are created equally.
+\textbf{Character distribution} -- This graph exhibits the underlying encryption schemes uniform randomness, whereas in real traffic not all characters are created equally.
 
-\textbf{First Letter} - This method was attempted to see if the same distinguishing effect would be possible only using a fixed subset of the URL.
+\textbf{First Letter} -- This method was attempted to see if the same distinguishing effect would be possible only using a fixed subset of the URL.
 
-\textbf{Random Letter} - like the previous this uses a limited sample by randomises it's location to see if this improved on the above results.
+\textbf{Random Letter} -- like the previous this uses a limited sample by randomises it's location to see if this improved on the above results.
 
 \subsection{Exponential Scaling}
 
