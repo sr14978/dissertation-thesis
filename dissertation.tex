@@ -97,7 +97,7 @@ My research hypothesis is that statistical methods could be used by network base
 \subsubsection{Research Goals}
 
 \begin{itemize}
-\item Critically discuss the downfalls of using an FTE system to encode ciphertexts.
+\item Critically analyse the downfalls of using an FTE system to encode ciphertexts.
 \item Build a statistical tool for distinguishing fake traffic produced by FTE from normal traffic.
 \item Define a new cryptographic primitive -- DTE -- which enforces an arbitrary distribution onto ciphertexts.
 \item Construct a new scheme -- DE-CENSOR -- that instantiates this new primitive to overcome this detection.
@@ -588,11 +588,20 @@ Though, since the normal traffic distribution is known publicly the produced cip
 Due to this, application of this type of scheme must be carefully considered as to not provide any possible adversary with a decryption oracle.
 This must be inherited by the overall scheme to provide the standard IND-CPA assurances.
 
-\paragraph{Statistical Indistinguishability}
+\paragraph{Indistinguishability}
 
 This is a new demand that I am defining to ensure the closeness of the output distribution to the target distribution.
-This requirement does not refer to the computational indistinguishability that requires reduction to a hard known problem.
-Instead, it asks that for any well-behaving, polynomial-time distribution comparison function $\Delta$,\footnote{though does not need to be symmetric, or obey the triangle inequality,}
+This requirement can either be computational indistinguishability or whenever possible statistical indistinguishability.
+
+Computational indistinguishability can be achieved by reduction to a hard known problem and enforces that for any efficient distinguishing adversary $\mathcal{A}$ against the output distribution $\mathcal{D}_o^n$ and the target distribution $\mathcal{D}_t^n$, indexed by the security parameter $n$, 
+
+$$ \left|  \underset{x \leftarrow \mathcal{D}_o^n}{Pr} \big[ \mathcal{A}(x) = 1 \big] - \underset{x \leftarrow \mathcal{D}_t^n}{Pr} \big[ \mathcal{A}(x) = 1 \big]\right| = negl(n)$$
+
+where $negl$ is a negligible function.
+
+
+
+On the other hand, it asks that for any well-behaving, distribution comparison function $\Delta$,\footnote{though does not need to be symmetric, or obey the triangle inequality,}
 
 Over $ (k_e,k_s) \leftarrow Kg^{\mathcal{D}_2}, M \in Support_n(\mathcal{D}_1), N \in Support_n(\mathcal{D}_2)$; Measurement of $\Delta \left(  Enc^{\mathcal{D}_2}((k_e,k_s), M), N  \right)$ is small.
 
@@ -870,7 +879,7 @@ Therefore a reduction of IND-CPA security of the encryption layer can be reduced
 
 Here is the reduction:
 
-Assume the existence of $\mathcal{A}$ to be the adversary that can distinguish ciphertexts of DE-CENSOR scheme $\mathcal{E}^\mathcal{D}$ with access to a plaintext oracle.
+Assume the existence of $\mathcal{A}$ to be the adversary that can distinguish ciphertexts of DE-CENSOR scheme $\mathcal{E}^\mathcal{D}$ with access to a plaintext oracle. Note: encode and decode are polynomial-time algorithms.
 
 Define an adversary $\mathcal{B}$ to be the adversary that can distinguish ciphertexts of the underlying encryption scheme by,
 
@@ -901,7 +910,7 @@ where $negl$ is a negligible function and $|k|$ is the length of the keys.
 
 then the DE-CENSOR scheme is IND-CPA secure.
 
-\subsubsection{Statistical Distinguishably}
+\subsubsection{Indistinguishability}
 
 
 The construction will use the encryption scheme $\mathcal{E}_{crypt}$, as outlined in the privacy section.
@@ -925,6 +934,17 @@ This means that,
 
 $$ encrypt \left( (k_e, k_s), Support_n(\mathcal{D}_1 \right) ) \sim  U_n$$
 
+
+By the definition of $\mathcal{F}^{-1}_{D_N}$, if given values from the uniform distribution, it will generate heuristic values that follow the distribution of normal traffic of $\mathcal{H}$.
+
+However, the encryption scheme can only guarantee values that are computationally indistinguishable and so the proof must rely on this version rather than unbounded statistics.
+Though, note that statistics will used to detect but in practice these are limited to only calculations that are efficient.
+Therefore, this bound is meaningful in the real world.
+
+
+
+\paragraph{Old, void proof}
+\begin{quote}
 The discrete inverse transform sampling function $F^{-1}_{D_N}$ samples randomly within the division.
 Furthermore, since the division is uniformly selected by the uniform distribution generation by the encryption, the input to the continuous function $\mathcal{F}^{-1}_{D_N}$ is a continuous random real inside the domain.
 Therefore, by the definition of $\mathcal{F}^{-1}_{D_N}$, it will generate heuristic values that follow the distribution of normal traffic of $\mathcal{H}$.
@@ -936,6 +956,8 @@ $$ encode^{\mathcal{D}_2} \left( encrypt \left( (k_e, k_s), Support_n(\mathcal{D
 Therefore, any comparison function $\Delta$ that is based on the heuristics $\mathcal{D}_2 = \mathcal{H}$,
 
 $\Delta \left(  Enc^{\mathcal{D}_2}((k_e,k_s), M), N  \right) = 0$
+
+\end{quote}
 
 \chapter{Implementation}
 
@@ -1386,6 +1408,7 @@ Fisher's exact test		& 0			& good\\
 \chapter{Conclusion}
 \label{chap:conclusion}
 
+\section{Summary of Thesis}
 
 In this thesis, I started by explaining some of the benefits of a completely open web, and gave examples where this is not the case, and outlined the negative impacts that this has; socially and economically.
 I explained the focus of this thesis on the type of censorship that blocks access to content, rather than removing it, and discussed the current ways this is implemented.
@@ -1405,13 +1428,43 @@ Here, I leave the defining of the threshold up to the deploying-party, but as an
 To comprehensively define my new cryptographic primitive -- DTE -- I defined the syntax and security properties.
 I use a standard privacy property but define also include a novel one called statistical indistinguishability. I formally define the requirement, but again leave the exact bound to the deploying party since there is no generic, asymptotic, security parameter and exact value should be optimised for the situation.
 
+I then moved to create an instantiation of DTE to force no detection by my described detection mechanism.
+For ciphertext generation, I decided again to use heuristics to model the distribution and settled on inverse transform sampling to sample from it.
+I proposed a tweak to ensure the discrete version of the inverse transform  ($F^{-1}_{D_N}$) is invertible, and used it to form the an encoding scheme.
+I then defined DE-CENSOR to be the two stage encrypt-then-encode construction using an CBC encryption scheme and at least one level of encoding.
+Proofs of scheme requirements ensured that construction met the demands of DTE.
+Privacy was proved using a reduction to the security of the underlying encryption scheme showing the IND-CPA property is maintained through the encoding.
+Statistical indistinguishability...
+
+\section{Project Goals}
+
+During the thesis I have outlined the downfalls that I have found of using an FTE system to encode ciphertext -- the traffic it produces can be detected.
+I have prototyped the Censor Detection System in python, and tested it against normal and fake traffic with ...........results.
+I have given detailed formalisation of the new cryptographic primitive -- DTE --- and discussed its use in replacing FTE.
+Finally, not only have I constructed an instantiation of this scheme -- DE-CENSOR -- but I have also written a prototype proxy system that uses it and in experiments against the CDS, it has good results...........
+
+\section{Open Problems and Future Work}
+
+The focus of both the detection and generation of fake traffic has been based on heuristics that work on sets of messages. In this way, they are ignoring the temporal meta-information of packets such as ordering and delays. An interesting avenue for further research would be to remove this simplification and to also encapsulate this data into the traffic distribution. Other hand-crafted TOR transports like the discussed: SkypeMorph and Stegatorus; already have mechanisms to emulate real traffic packet rates. So generalising DTE to formalise interoperating these other factors would make it more competitive.
+
+Some protocols, such as Skype, use multiple streams running multiple protocols. These two extensions could be investigated, specifically, to discover if DTE could be easily generalised to this situation and how the DE-CENSOR construction would have to change. 
+
+The formalisation of DTE works on a stream of plaintext to produce a stream of ciphertext.
+It is formalised this way, contrary to the python implementation of processing message blocks one at a time, to neatly deal with the length-heuristic encoding.
+This encoding stage, in a effort to force the ciphertexts to have normal looking lengths, fragments the un-formatted ciphertexts before moving on to the next level.
+This produces a concise but not completely accurate model of reality, however, work has be done by Boldyreva et al. to develop security models in the presence of fragmentation~\cite{frag}.
+I think redefining DTE in terms of their "Message Privacy in the Presence of Fragmentation" model would increase assurances in the security of the scheme.
+
+This thesis has not measured the absolute performance of the scheme when running in censor detection mode or in the DE-CENSOR proxy mode. This was not done, since the implementation of the whole system was prototyped in python, which is not a very performant language. To test the feasibility for using DE-CENSOR in action, the core algorithms should be written in a lower level language such as C++ or one that is compiled to native code such as Haskell. Performance test of the latency, throughput and resource usage should be calculated through experimentation and compared with the results that the FTE scheme can achieve.
+
+DE-CENSOR meets the indistinguishability demand of DTE by providing computational indistinguishability. To obtain a distribution of ciphertexts that is statistically indistinguishable using the inverse transform function $\mathcal{F}^{-1}_{D_N}$ would require that the encryption scheme produces ciphertexts that are from a perfect uniform distribution. Apart from the impractical one-time-pad, all other know schemes only produce ciphertexts that are indistinguishable from random. Whether there is any transformation function, that upon input of a indistinguishable value, can produce exactly an output in the target distribution, is an open question.
+
+Finally, due to this projects goal as a proof of principle, the descriptions of packets was limited. For the scheme to be useful in the real world it must more comprehensibly cover distributions of the HTTP protocol.
+
+\section{Reflection}
 
 
 \vspace{2cm}
-{\bf A compulsory chapter,     of roughly $5$ pages}
-\vspace{1cm}
-
-\noindent
 The concluding chapter of a dissertation is often underutilised because it
 is too often left too close to the deadline: it is important to allocation
 enough attention.  Ideally, the chapter will consist of three parts:
