@@ -113,6 +113,7 @@ My research hypothesis is that statistical methods could be used by network base
 
 \multicolumn{3}{c}{Novel}\\
 &&\\
+Censors				&:		& A party who is conducting censorship\\
 DTE					&:		& Distribution Transforming Encryption\\
 FPE					&:		& Format Preserving Encryption\\
 FTE					&:		& Format Transforming Encryption\\
@@ -151,7 +152,7 @@ VOIP				&:		& Voice over IP\\
 \chapter*{Acknowledgements}
 
 
-I would like to take this opportunity to thank my supervisor -- Bogdan -- for his expertise and I would like to mention -- Karl -- for his machine learning insights. Also, for correcting my flaky grammar and phrasing, thank you to Jamie, Mike, mum and dad.
+I would like to take this opportunity to thank my supervisor -- Bogdan -- for his expertise and I would like to mention -- Karl -- for his machine learning insights. Also, for correcting my flaky grammar and phrasing, thank you to Jamie, Mike, Mum and Dad.
 
 % =============================================================================
 
@@ -195,7 +196,7 @@ Therefore, users cannot access the TOR network directly.
 To get around this problem, the concept of bridges have been implemented to hide the traffic's destination, but even still this does not hide the protocol sufficiently.
 
 Currently, the majority of the protocol detection schemes in use are based on regular expression parsers.
-As a result, there has been work to produce schemes that exploit this fact by: in the case of obfs4~\cite{obfs4} removing all formatting to avoid black-list detection; or in the case of Format Transforming Encryption (FTE) formatting the ciphertexts to match the definitions of white-listed protocols.
+As a result, there has been work to produce schemes that exploit this fact by: in the case of obfs4~\cite{obfs4} removing all formatting to avoid black-list detection; or in the case of Format Transforming Encryption (FTE), formatting the ciphertexts to match the definitions of white-listed protocols.
 These have had success in practice at supporting arbitrary web access for users in oppressive regimes and, currently, these systems are working.
 However, censors' abilities and techniques for detection are improving all the time. So, looking to the future, I am analysing a potential avenue for detection and pre-emptively finding a solution.
 
@@ -205,7 +206,7 @@ This thesis explores the analysis techniques that can be used to distinguish tra
 FTE is vulnerable against these types of attack since, although it captures the validity of ciphertexts using membership to a defined language, no frequency-of-use information is embedded in the description so it outputs strings all with equal probability.
 This bears no resemblance to data produced from an internet user's normal behaviour who might check one site many times a day, whereas other validly named sites may not even exist. 
 Enabling such a detection begins with discovering a way to practically define a description of an arbitrary distribution like that of normal traffic, and then realising how to compare two of these distributions against one another.
-To keep the distribution description manageable, I am forced to approximate it to several heuristic based measures. 
+To keep the distribution description manageable, I am forced to approximate it to several heuristic measures. 
 I can then calculate heuristic measurements over a test sample and apply statistical tests to gauge the similarity to heuristics of the normal traffic reference distribution.
 After first proposing this Censor Detection System, and then prototyping an implementation that is able to detect FTE, I move on to finding a way to bypass it.
 I formalise a new type of encryption scheme that is aimed to counter these detection techniques called Distribution Transforming Encryption (DTE).
@@ -231,7 +232,7 @@ Therefore, the internet today, especially for certain sub-networks in some parts
 
 Furthermore, although the Internet started as a place of openness and accpectance of all, recent policies have been made which challenge this status quo; certain content on the internet is now subject to censorship laws in some places like the United Kingdom or China. The motivations behind this censorship can be well-meaning, for example, the blocking of illegal content such as child pornography with the intention of protecting the innocent lives of children. A further attempt to reduce damage to people's lives was the implementation of search engine de-listing of personal content petitioned by the right-to-be-forgotten movement~\cite{rtbf}. However, this decision sparked much controversy since people believed that this deletion of history could lower the quality of the Web.
 
-However, other cases of censorship are on a much larger scale and are not universally accepted as positive. One example is certain nation states blocking access to content that they deem to be inciting opposition to their political standpoints. This can involve blanket restrictions to foreign websites or restricting sites which may be hosted inside the nation, but are deemed to perpetuate negative views. Many countries ban hate-speech, or exclude it from their freedom of speech laws~\cite{hate} and some countries have Libel rules~\cite{libel} which ban spreading of false information. However, there are a number of nations that actually hide information about certain world events or ideologies from their citizens, depriving their civil rights~\cite{chincensor}. This is dangerous for the world as it creates environments that can breed hatred directed at whomever the censors wants.
+However, other cases of censorship are on a much larger scale and are not universally accepted as positive. One example is certain nation states blocking access to content that they deem to be inciting opposition to their political standpoints. This can involve blanket restrictions to foreign websites or restricting sites which may be hosted inside the nation, but are deemed to perpetuate negative views. Many countries ban hate-speech or exclude it from their freedom of speech laws~\cite{hate} and some countries have Libel rules~\cite{libel} which ban spreading of false information. However, there are a number of nations that actually hide information about certain world events or ideologies from their citizens, depriving their civil rights~\cite{chincensor}. This is dangerous for the world as it creates environments that can breed hatred, directed at whomever the censors wants.
 
 There is no doubt that the western economy and society has benefited greatly from the success of the web and its ability to connect people and share information. What ensures the web's success is its status as a permissionless space that leads to creativity, innovation and freedom of expression. This allows any new, small start-up companies and individuals to use this commodity to build services and communities without the need for legal approval or business deals, leaving their projects to be free to grow and prosper. Proposed Net Neutrality regulations would allow Internet service providers to prioritise certain site's traffic. This does not permit full censorship but even the slowing down of traffic could reduce the usability of certain sites so that users would avoid them. This would fundamentally coerce people's browsing behaviour to direct them away from certain topics.
 
@@ -1498,7 +1499,9 @@ DE-CENSOR meets the indistinguishability demand of DTE by providing computationa
 
 Finally, due to this projects goal as a proof of principle, the descriptions of packets was limited. For the scheme to be useful in the real world it must more comprehensibly cover distributions of the HTTP protocol.
 
-\section{Reflection}
+\section{Final Remarks}
+
+Distribution aware detection systems are only going to become more popular for conducting network based censorship. This thesis starts to provide a concrete ecosystem to manage how we reason about these systems and about how to fool them.
 
 
 % =============================================================================
