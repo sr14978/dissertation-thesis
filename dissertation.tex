@@ -201,8 +201,10 @@ However, censors' abilities and techniques for detection are improving all the t
 
 \section{Results of This Thesis}
 
-During this thesis, I explore the analysis techniques that can be used to distinguish traffic produced using an FTE proxy from normal traffic.
-This begins with discovering a way to practically define a description of an arbitrary distribution like that of normal traffic, and then discusses techniques of how to compare two of these distributions.
+This thesis explores the analysis techniques that can be used to distinguish traffic produced using an FTE proxy from normal traffic.
+FTE is vulnerable against these types of attack since, although it captures the validity of ciphertexts using membership to a defined language, no frequency-of-use information is embedded in the description so it outputs strings all with equal probability.
+This bears no resemblance to data produced from an internet user's normal behaviour who might check one site many times a day, whereas other validly named sites may not even exist. 
+Enabling such a detection begins with discovering a way to practically define a description of an arbitrary distribution like that of normal traffic, and then realising how to compare two of these distributions against one another.
 To keep the distribution description manageable, I am forced to approximate it to several heuristic based measures. 
 I can then calculate heuristic measurements over a test sample and apply statistical tests to gauge the similarity to heuristics of the normal traffic reference distribution.
 After first proposing this Censor Detection System, and then prototyping an implementation that is able to detect FTE, I move on to finding a way to bypass it.
