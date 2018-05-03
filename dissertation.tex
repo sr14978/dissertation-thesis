@@ -129,6 +129,18 @@ AES                 &:		& Advanced Encryption Standard\\
 DES                 &:		& Data Encryption Standard\\
 DFA					&:		& Deterministic Finite Automaton\\
 NSA					&:		& National Security Agency of the United States\\
+VPN					&:		& Virtual Private Network\\
+HTTP				&:		& Hypertext Transfer Protocol\\
+HTTPS				&:		& HTTP Secure\\
+TLS					&:		& Transport Layer Security\\
+ISP					&:		& Internet Service Provider\\
+IP					&:		& Internet Protocol\\
+URL					&:		& Uniform Resource Locator\\
+TOR					&:		& The Onion Router\\
+VOIP				&:		& Voice over IP\\
+PDF					&:		& Portable Document Format\\
+SWF					&:		& Adobe's Small Web Format\\
+Exclsuive Or		&:		& A logical operation that outputs 1 when inputs differ else 0\\
 \end{tabularx}
 
 % -----------------------------------------------------------------------------
@@ -164,7 +176,7 @@ It allows citizens who are otherwise cut off, by geographical or physical factor
 In this way, it is a big driver for equality across the world, as it can provide equal access to resources, such as online learning.
 There are economic as advantages as well as these social ones, providing a unencumbered, competitive space for businesses to collaborate and grow.
 
-Conversely, the sharing of personal or false information, which might be in breach of privacy rights or against the law, could be unpleasant, misleading or even harmful to people’s lives.
+Conversely, the sharing of personal or false information, which might be in breach of privacy rights or against the law, could be unpleasant, misleading or even harmful to people's lives.
 It is widely accepted that blocking on-line access to child pornography would be beneficial to society and this is now a legal requirement in many countries: forcing websites and Internet Service Providers (ISPs) to block this type of content.
 
 However, this type of blocking can be taken further, with ISPs blocking the content they do not want others to see. Examples of this are the state-sponsored, censorship regimes of Iran and China, who block content of the Web in a bid to further their government's political agendas.
@@ -254,11 +266,11 @@ There has been some improvement to adjust its fingerprint to match TLS as much a
 
 Tor works by allowing users to connect to one of the publicly known entry guard relays. However, since these IP addresses are publicly known, they are easily detected and interfered with by network censor systems. As mentioned, one way this is done is by sending reset packets to both parties telling them to close the TCP stream.
 To circumvent this, users instead connect to private bridges in uncensored zones -- such as the United States -- so that the indented destination of the packets is hidden. However, with protocol fingerprinting by deep packet inspection (DPI) and the use of active probes, censors can still catch these unlisted bridges in under fifteen minutes of use!
-The use of obfuscation and FTE (described in section \ref{sec:FTE}) bridges have been able to fool these DPI systems for now since they fool the common protocol classification systems which use regular expressions. However, as deep learning becomes more prevalent it is known that this will not be enough.
+The use of obfuscation and FTE bridges (described in section \ref{sec:FTE}) have been able to fool these DPI systems for now since they target the common protocol classification systems that check the format of packets. However, as deep learning becomes more prevalent it is known that this will not be enough.
 
 \section{Summary}
 
-In this chapter, I have explained how there are motivations for wanting to access online resources with out the controllers of the network being able to determine the content of what you are accessing. I have discussed TOR's roll in this but also, that access to the TOR network is limited and that even TOR bridges are vulnerable since the traffic patterns are identifiable. Therefore, there is a need for encodings that cause misclassification of TOR traffic to other innocuous protocols.
+In this chapter, I have explained how there are motivations for wanting to access online resources without the controllers of the network being able to determine the content of what you are accessing. I have discussed TOR's roll in this but also, that access to the TOR network is limited and that even vanilla bridges are vulnerable since the traffic patterns are identifiable. Therefore, there is a need for encodings that cause protocol misclassification of TOR traffic to other innocuous protocols.
 
 % -----------------------------------------------------------------------------
 
@@ -925,7 +937,7 @@ All the code was written in \texttt{python2.7} for quick prototyping but, for pe
 
 \section{Collection}
 
-Packet collection is used for both parties (CDS and DE-CENSOR) since both the emulator and censor need to record a reference distribution to work against. The CDS is also required to read the packets for classification. Since both my censor and de-censors are running on Ubuntu machines I used the PyShark a python wrapper around the Tshark non-interactive command-line tool. Tshark is also able to parse and filter the packets similar to the abilities currently deployed DPI systems. I used this feature to extract the packets I cared about using the filter in figure \ref{fig:filter}.
+Packet collection is used for both parties (CDS and DE-CENSOR) since both the emulator and censor need to record a reference distribution to work against. The CDS is also required to read the packets for classification. Since both my censor and de-censors are running on Ubuntu machines I used the PyShark: a python wrapper around the Tshark non-interactive command-line tool. Tshark is also able to parse and filter the packets similar to the abilities currently deployed DPI systems. I used this feature to extract the packets I cared about using the filter in figure \ref{fig:filter}.
 
 \begin{figure}[h]
 \begin{verbatim}
