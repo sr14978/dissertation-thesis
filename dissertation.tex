@@ -114,6 +114,7 @@ My research hypothesis is that statistical methods could be used by network base
 \multicolumn{3}{c}{Novel}\\
 &&\\
 DTE					&:		& Distribution Transforming Encryption\\
+FPE					&:		& Format Preserving Encryption\\
 FTE					&:		& Format Transforming Encryption\\
 DE-CENSOR			&:		& Distribution Encoding of Ciphertexts to Emulate Normal Surfing for Onion Routing\\
 `normal' traffic		&:		& Traffic generated from a normal person browsing their normal sites on their normal web browser.\\
@@ -150,7 +151,7 @@ VOIP				&:		& Voice over IP\\
 \chapter*{Acknowledgements}
 
 
-I would like to take this opportunity to thank my supervisor -- Bogdan -- for his expertise and I would like to mention -- Karl -- for his machine learning incites. Also, for correcting my flaky grammar and phrasing, thank you to Jamie, Mike, mum and dad.
+I would like to take this opportunity to thank my supervisor -- Bogdan -- for his expertise and I would like to mention -- Karl -- for his machine learning insights. Also, for correcting my flaky grammar and phrasing, thank you to Jamie, Mike, mum and dad.
 
 % =============================================================================
 
@@ -243,7 +244,7 @@ The second type of network surveillance and censorship sits at these intermediat
 From their observations of the Chinese Internet filtering systems, Zittrain and Edelman deduced several methods that were being used~\cite{edelman2005empirical}.
 Filtering on the IP address of a resource can be done by analysing the destination field of the packet. This is good for blocking direct access to static sites since it is one of the simplest and therefore fastest to implement, though it relies on comprehensive black or white listing coordination.
 
-The most common method of blocking is for the routers to drop these black-listed packets, but as Clayton et al. found in their practical experiments~\cite{clayton2006ignoring}, for protocols that communicate in a streaming fashion over time, the network machinery sends TCP reset packets to both parties to interrupt the session and stop communication. This type of attack can be easily countered by ignoring all reset packets since, due to how the system is architectured, the original packets are allowed through. They also observed a less frequent technique which was the injection of a forged packet with random synchronisation numbers. When this reaches the destination, the server detects the incorrect value and validly triggers the sending of a reset packet. Now, if the reset packets are ignored then the two real endpoints become out of sync and the communication breaks down. Luckily, as it stands, the forged packets are poor imitations and so are easily detectable.
+The most common method of blocking is for the routers to drop these black-listed packets, but as Clayton et al. found in their practical experiments again in China~\cite{clayton2006ignoring}, that for protocols that communicate in a streaming fashion over time, the network machinery under censor control sends TCP reset packets to both parties to interrupt the session and stop communication. This method of censoring can be easily countered by ignoring all reset packets since, due to how the system is architectured, the original packets are allowed through. They also observed a less frequent technique which was the injection of a forged packet with random synchronisation numbers. The server recieves these forgeries and detects the incorrect SYN value and validly triggers the sending of a reset packet. Now, if the reset packets are ignored then the two real endpoints become out of sync and the communication breaks down. Luckily, as it stands, the forged packets are poor imitations and so are easily detectable.
 
 Another method used in practice is DNS poisoning, which involves incorrectly resolving URLs to redirect users either to a censorship notice or just a random -- and useless -- address. This only affects the use of URLs and so the use of raw IP address is completely unaffected, although many sites use them internally so it creates difficulty and work for users through setting up of a local host file.
 
@@ -257,7 +258,7 @@ One of the most effective tools for evading network surveillance is The Onion Ro
 
 However, there has been a lot of work and success around de-anonymising the TOR protocol to gather information on users. There has been research into both passive and active attacks giving varying levels of success but with varying levels of effort. Website fingerprinting attacks such as Cair et al.~\cite{webfinger} only need to eavesdrop at a single point but suffer from a high number of false positives. Traffic confirmation attacks, which require access to both ends of the communication, such as Shmatikov et al.~\cite{conf} need long periods to gain statistical significance. Active attacks, such as watermarking through delays, are a lot quicker but they involve a lot more work for the attacker since they need to maintain compromised relays in the network to apply the subtle modifications to the packets. However, government bodies with large influence and resources such as the NSA are interested in this field, so the use of these attacks is not out of the realms of possibility. Even so, if an adversary only controls a small proportion of the network, the chances of being allocated a fully comprised relay chain is small. Recently, Arp et al. released a side-channel attack for TOR called Torben~\cite{torben}, which is more reliable but less intrusive than other methods that use browser exploits. In fact in their research, Nithyanand et al. found that very high levels of active circuits were potentially vulnerable to autonomous and state level adversaries~\cite{AS}. To counter this, they have built a TOR client that is aware of possible adversaries and is able to more intelligently select relay paths. This is successful in reducing the rate of affected connections but, as with all these anonymising techniques, sacrifices performance, adding latency to the circuit generation before any data can be sent.
 
-Although TOR has these issues, these attacks are quick intensive so it makes the surveillance of users' browsing astronomically harder.
+Although TOR has these issues, these attacks are intensive so it makes the surveillance of users' browsing astronomically harder.
 In a presentation, released in the Edward Snowden leaks, entitled TOR Stinks, it reveals that the use of TOR makes wide-scale, continuous surveillance of users by the NSA impossible~\cite{tor_stinks}.
 Instead, only directed, manual analysis can reveal the identity of users.
 Therefore, censors such as the Chinese Government have resorted to a complete ban on the protocol.
@@ -279,6 +280,8 @@ In this chapter, I have explained how there are motivations for wanting to acces
 \chapter{Classical Cryptographic Background}
 \label{chap:technical}
 
+\section{Principles}
+
 After language was invented to share knowledge, humans soon needed a way hide it from those whom it was not intended. The first schemes used word or letter substitutions or the shuffling of characters to make the meaning of a message hard to obtain.
 These techniques are still used as the basic building blocks today; for example in the AES block cipher, a very popular component of encryption schemes, which is implemented in the hardware of all the major CPUs.
 Early schemes, however, relied on the secrecy of the method to protect the privacy of the message which means that they cannot be reused by others.
@@ -288,6 +291,8 @@ Modern schemes obey Kerkoff's principle -- that the security of the system only 
 The term -- security through obscurity -- is in stark contrast to the Kerkoff doctrine and advocates not sharing security system information.
 However, a well known saying is that ``security through obscurity is an illusion'' since; (a) there is no way of proving this type of security, and (b) schemes that are not in the public domain cannot get anywhere near the amount of scrutiny as those who are published, discussed and tested with others.
 These days, a lot of the research into cryptography is done by researchers at universities, where publishing and collaboration is the norm.
+
+\section{Symmetric Encryption}
 
 What defines modern cryptography is the requirement to prove the hardness of all problems, or at least compare them to the difficulty of another problem.
 Information theoretic security is a level of security that is based on information theory.
@@ -315,6 +320,8 @@ A third party could replace or edit the ciphertext, but without the second key, 
 Hash MAC (HMAC) is when a compression function involving a hash is used to compress the input before a final encryption instead of the many block cipher encryptions needed in a CBC-MAC.
 A hash function is a deterministic function that is infeasible to invert (first pre-image resistance), mixes the data such that when a small change occurs in the input, a large change occurs in the output and it should be hard to find two inputs that have the same output (collision resistance).
 
+\section{Asymmetric Encryption}
+
 The cryptography systems mentioned so far are symmetric in how they involve a single key, that is known to both parties and no-one else, to encrypt and decrypt.
 This is not practical in a lot of situations.
 Instead, we use an asymmetric scheme that uses different keys to encrypt and decrypt.
@@ -331,6 +338,8 @@ In many asymmetric schemes such as in the well known RSA cipher, the mathematics
 Therefore, they might have some structure to define the separate elements, for instance, an ElGamal ciphertext is $(g^y, m \cdot h^y )$ where, $m,g,h \in \mathbb{G}$ which is the group.
 Furthermore, since the sizes of the groups $\mathbb{G}$ are not a power of two, the elements' representations will not produce uniform bit patterns.
 
+\section{Steganography}
+
 Steganography is the practice of concealing one message inside another.
 Most examples of this are just security through obscurity such as invisible ink or hiding text in an image by altering pixel values.
 Honey encryption which we introduced in 2014 by Juels et al.~\cite{honey} has a similar tone to steganography, though instead of the resulting encoding appearing like innocuous data, it involves a ciphertext that can be decrypted to the original message or into an innocuous one.
@@ -343,7 +352,7 @@ Though similar, my distribution transforming encryption, like the format transfo
 
 \section{TOR Transports}
 
-The TOR community understands the necessity for disguising the TOR protocol as innocuous traffic.
+The TOR community understands the necessity for disguising the TOR protocol as innocuous-looking normal traffic.
 They have already produced several schemes that claim to help.
 
 \paragraph{ObfsProxy} simply encrypts the entire packet with a streaming cipher. Earlier versions used fixed parameters so although expensive, decryption could be done to obtain the standard traffic but now even that is not possible since a key exchange produces ephemeral keys. This procedure produces ciphertexts that are computationally indistinguishable from a random string so intensive computational statistics would be able to differentiate this from a background distribution of standard traffic. Also, due to its complete lack of structure, it would not pass any protocol white-listing filters.
@@ -352,9 +361,9 @@ They have already produced several schemes that claim to help.
 
 \paragraph{SkypeMorph} transforms Tor traffic so it looks like a Skype Video Call.
 In a review of TOR transports Houmansadr et al. find that since its imitation of the Skype protocol is incomplete, a low-cost, passive attack that can always detect this encoding~\cite{parot}.
-To be fair, the Skype ecosystem is very complicated as it deals with dependencies between multiple sub-protocols in different streams, talking to Skype directory servers and the VOIP recipient. Houmansadr suggests that one solution would be to run the whole Skype stack and then encode the data in the audio stream, with careful consideration of the lossy transmission. This, however, adds a complicated and intensive overhead to the communication.
+However, accurate emulation of the Skype ecosystem is very complicated as it deals with dependencies between multiple sub-protocols in different streams, talking to Skype directory servers and the VOIP recipient. Therefore, Houmansadr suggests that one solution would be to run the whole Skype stack normally and then encode the data in the audio stream, with careful consideration of the lossy transmission. This, however, adds a complicated and intensive overhead to the communication.
 
-\paragraph{In summary,} although, each of these systems is being successfully used today, they each have floors that could be attacked in the future, which inhibit them from being universal solutions. Therefore, as invited by the TOR community, new systems are needed.
+\paragraph{In summary,} although, each of these systems is being successfully used today, they each have flaws that could be attacked in the future, which inhibit them from being universal solutions. Therefore, as invited by the TOR community, new systems are needed.
 
 %meek\\
 %Description: Is a transport that uses HTTP for carrying bytes and TLS for obfuscation. Traffic is relayed through a third-party server (Google App Engine). It uses a trick to talk to the third party so that it looks like it is talking to an unblocked server.
@@ -374,7 +383,7 @@ In 1981, NIST~\cite{FIPS74} outlined a mode of DES that was able to restrict the
 
 The field has become a highly practical one, with companies such as Voltage moving to take advantage of the concept. They are using it to upgrade older systems by adding a layer of security that is invisible to the applications that sit on top since does not change the structure of the data. Therefore this vastly reduces the costs of this retrofitting since the need to completely redesign the system is usually eliminated. As of 2018, HPE~\cite{hp} are still pushing it as part of their SecureData product to help maintain legacy software.
 
-To keep up with the work in industry, Bellare et al. wrote a comprehensive paper~\cite{fpe} that formally defines the goals of FTE. They did this in the form of adversary based games. They redefine the standard Pseudo Random Permutation (PRP) Security game which challenges an adversary to distinguish the encryption scheme from a random permutation. The paper also gives weaker notions they think are more appropriate. Single Point Indistinguishably (SPI) requires the adversary to be unable to distinguish between the encryption of any chosen plaintext from the specified language and a randomly selected ciphertext of the same language. The Message Recovery (MR) game gives the adversary the frequency distribution of plaintexts and asks for a decryption of the ciphertext of a randomly selected item from the plaintext space. The adversary is given adaptive access to an encryption and verification oracle. Finally, they define Message Privacy (MP) as the inability of an adversary to compute a function of a plaintext given the ciphertext; Note in this game the adversary can select the function it hopes it will have the most success with. They state the following strength hierarchy for these games, showing PRP does give us the Message Recovery property we ultimately want.
+To keep up with the work in industry, Bellare et al. wrote a comprehensive paper~\cite{fpe} that formally defines the goals of FPE. They did this in the form of adversary based games. They redefine the standard Pseudo Random Permutation (PRP) Security game which challenges an adversary to distinguish the encryption scheme from a random permutation. The paper also gives weaker notions they think are more appropriate. Single Point Indistinguishably (SPI) requires the adversary to be unable to distinguish between the encryption of any chosen plaintext from the specified language and a randomly selected ciphertext of the same language. The Message Recovery (MR) game gives the adversary the frequency distribution of plaintexts and asks for a decryption of the ciphertext of a randomly selected item from the plaintext space. The adversary is given adaptive access to an encryption and verification oracle. Finally, they define Message Privacy (MP) as the inability of an adversary to compute a function of a plaintext given the ciphertext; Note in this game the adversary can select the function it hopes it will have the most success with. They state the following strength hierarchy for these games, showing PRP does give us the Message Recovery property we ultimately want.
 $$ PRP \implies SPI \implies MP \implies MR $$
 The first implication is trivial since a random function will produce a random element when given the message. The last implication is also trivial since MR is just a special case of MP -- where the function is fixed to be the identity. For the proof of $ SPI, \implies MP $ the paper shows how an adversary $B$ for SPI can be constructed using an adversary $A$ for MP with sufficiently large advantage. In this construction, $B$ is able to run $A$ and satisfy its calls to the encryption oracle using its own oracle in turn.
 
