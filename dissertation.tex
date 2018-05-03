@@ -584,7 +584,7 @@ A DTE scheme $\mathcal{E}^{\mathcal{D}_2} = (Kg^{\mathcal{D}_2}, Enc^{\mathcal{D
 \paragraph{Privacy}
 
 I demand indistinguishability of ciphertexts under an adaptive chosen plaintext attack. Standard modes of authenticated encryption such as the cipher block chaining and encrypt the HMAC mode of AES provides higher levels of security.
-Though due to publicly known normal traffic distribution the produced ciphertexts are malleable, making chosen ciphertext attacks always possible.
+Though, since the normal traffic distribution is known publicly the produced ciphertexts are malleable, so chosen ciphertext attacks always possible.
 Due to this, application of this type of scheme must be carefully considered as to not provide any possible adversary with a decryption oracle.
 This must be inherited by the overall scheme to provide the standard IND-CPA assurances.
 
@@ -592,7 +592,7 @@ This must be inherited by the overall scheme to provide the standard IND-CPA ass
 
 This is a new demand that I am defining to ensure the closeness of the output distribution to the target distribution.
 This requirement does not refer to the computational indistinguishability that requires reduction to a hard known problem.
-Instead, it asks that for any well-behaving distribution comparison function $\Delta$,\footnote{though does not need to be symmetric, or obey the triangle inequality,}
+Instead, it asks that for any well-behaving, polynomial-time distribution comparison function $\Delta$,\footnote{though does not need to be symmetric, or obey the triangle inequality,}
 
 Over $ (k_e,k_s) \leftarrow Kg^{\mathcal{D}_2}, M \in Support_n(\mathcal{D}_1), N \in Support_n(\mathcal{D}_2)$; Measurement of $\Delta \left(  Enc^{\mathcal{D}_2}((k_e,k_s), M), N  \right)$ is small.
 
@@ -1403,8 +1403,9 @@ This calculates the distance measure between a test sample and a record backgrou
 Here, I leave the defining of the threshold up to the deploying-party, but as an example mention how one could be obtained.
 
 To comprehensively define my new cryptographic primitive -- DTE -- I defined the syntax and security properties.
-I demand IND-CPA privacy, which is lower than the IND-CCA security of AEAD schemes. 
-Due to this, applications of this type of scheme must be carefully 
+I use a standard privacy property but define also include a novel one called statistical indistinguishability. I formally define the requirement, but again leave the exact bound to the deploying party since there is no generic, asymptotic, security parameter and exact value should be optimised for the situation.
+
+
 
 \vspace{2cm}
 {\bf A compulsory chapter,     of roughly $5$ pages}
