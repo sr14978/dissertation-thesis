@@ -1476,7 +1476,7 @@ I proposed an adaptation to ensure that the discrete version of the inverse tran
 I then defined DE-CENSOR to be the two stage encrypt-then-encode construction using a CBC encryption scheme and at least one level of encoding.
 Proofs of scheme requirements ensured that construction met the demands of DTE.
 Privacy was proved using a reduction to the security of the underlying encryption scheme showing the IND-CPA property is maintained through the encoding.
-Statistical indistinguishability...
+DE-CENSOR does not reach the requirement for statistical indistinguishability since the encryption scheme only produces ciphertexts that are indistinguishable from random. However, it cannot be distinguished efficiently. To prove this, I employed a hybrid argument, to join the indistinguishability property of the underlying encryption function and a reduction to the whole scheme.
 
 \section{Project Goals}
 
