@@ -30,7 +30,7 @@
                 % the dissertation subtitle (which can    be blank)
                   subtitle={The DE-CENSOR Scheme},
                 % the dissertation     type
-                      type={Research},
+                      type={research},
                 % the year of submission
                       year={2018} ]{dissertation}
 
@@ -938,32 +938,61 @@ The underlying encryption scheme of DE-CENSOR: $\mathcal{E}_{crypt}$ is one of t
 
 This means that,
 
-$$ encrypt \left( (k_e, k_s), Support_n(\mathcal{D}_1 \right) ) \sim  U_n$$
+$$ encrypt \left( (k_e, k_s), \mathcal{D}_1 \right) \sim  U_n$$
 
 
-By the definition of $\mathcal{F}^{-1}_{D_N}$, if given values from the uniform distribution, it will generate heuristic values that follow the distribution of normal traffic of $\mathcal{H}$.
+By the definition of $\mathcal{F}^{-1}_{D_N}$, if given values from the uniform distribution, it will generate heuristic values that follow the distribution of normal traffic of $\mathcal{D}_2 = \mathcal{H}$.
 
-However, the encryption scheme can only guarantee values that are computationally indistinguishable and so the proof must rely on this version rather than unbounded statistics.
+However, the encryption scheme can only guarantee values that are computationally indistinguishable and so the proof must rely on this version rather than unbounded statistical bound.
 Though, note that statistics will used to detect but in practice these are limited to only calculations that are efficient.
 Therefore, this bound is meaningful in the real world.
 
+To prove that unformatted ciphertexts, that are computationally indistinguishable from random, form distributed ciphertexts, that are computationally indistinguishable from the target distribution under the encoding scheme, I will form a reduction.
+
+%------------------------------
+
+Assume the existence of $\mathcal{A}$ to be the adversary that can distinguish values from the $Enc^{\mathcal{D}}$ function of the DE-CENSOR scheme $\mathcal{E}^\mathcal{D}$ from values distributed by $\mathcal{D}$. Note: encode and decode are polynomial-time algorithms.
+
+Define an adversary $\mathcal{B}$ to be the adversary that can distinguish values outputted by the $encrypt$ function of the underlying encryption scheme $\mathcal{E}_{crypt}$ from uniform random, by,
+
+\begin{itemize}
+
+\item The game with the security parameter $n$ is randomly initialised: $(k_e, k_s) \xleftarrow{\$} Kg^{n}$ and $b \xleftarrow{\$} \{0,1\}$
+
+\item If $b=0$ then $x \xleftarrow{\$} \{0,1\}^n$ else $b=1$ then $i \xleftarrow{\$} \{0,1\}^n; x \leftarrow encrypt((k_e, k_s), i)$
+
+\item $\mathcal{B}$ receives a value $C$, creates a corresponding distributed ciphertext $N$ using $encode^\mathcal{D}$ with the publicly known distribution $\mathcal{D}$ and returns $\mathcal{A}(N)$ as $b*$.
+
+\item $\mathcal{B}$ wins iff $b* = b$
+
+\end{itemize}
+
+Since $\mathcal{B}$ returns exactly the same as $\mathcal{A}$ then,
+
+$$\underset{x \leftarrow U_n}{Pr} \big[ \mathcal{B}(x) = 1 \big] = \underset{x \leftarrow\mathcal{D}^n}{Pr} \big[ \mathcal{A}(x) = 1 \big] $$
+
+and
+
+$$\underset{x \leftarrow encode^{\mathcal{D}_2}(U_n)}{Pr} \big[ \mathcal{B}(x) = 1 \big] = \underset{x \leftarrow Enc^{\mathcal{D}_2}}{Pr} \big[ \mathcal{A}(x) = 1 \big] $$
+
+so
+
+$$ \left|  \underset{x \leftarrow \mathcal{D}^n_2}{Pr} \big[ \mathcal{B}(x) = 1 \big] - \underset{x \leftarrow Enc_2^{\mathcal{D}}}{Pr} \big[ \mathcal{B}(x) = 1 \big]\right| = \left|  \underset{x \leftarrow U_n}{Pr} \big[ \mathcal{A}(x) = 1 \big] - \underset{x \leftarrow encode^{\mathcal{D}_2}(U_n)}{Pr} \big[ \mathcal{A}(x) = 1 \big]\right| = negl(n)$$
 
 
-\paragraph{Old, void proof}
-\begin{quote}
-The discrete inverse transform sampling function $F^{-1}_{D_N}$ samples randomly within the division.
-Furthermore, since the division is uniformly selected by the uniform distribution generation by the encryption, the input to the continuous function $\mathcal{F}^{-1}_{D_N}$ is a continuous random real inside the domain.
-Therefore, by the definition of $\mathcal{F}^{-1}_{D_N}$, it will generate heuristic values that follow the distribution of normal traffic of $\mathcal{H}$.
+where $negl$ is a negligible function.
 
-So, by hybrid argument,
+then if the un-formatted ciphertexts are computationally indistinguishable from random, then the emulated ciphertexts are computationally indistinguishable from the target distribution.
 
-$$ encode^{\mathcal{D}_2} \left( encrypt \left( (k_e, k_s), Support_n(\mathcal{D}_1) \right) \right) \sim  encode \left( U_n \right) \sim \mathcal{H}$$
+so by hybrid argument we have,
 
-Therefore, any comparison function $\Delta$ that is based on the heuristics $\mathcal{D}_2 = \mathcal{H}$,
+$$ Enc^{\mathcal{D}_2}((k_e,k_s), \mathcal{D}_1) = encode^{\mathcal{D}_2} \left( encrypt \left( (k_e, k_s), \mathcal{D}_1 \right) \right) \sim  encode^{\mathcal{D}_2} \left( U_n \right) \sim \mathcal{D}_2$$
 
-$\Delta \left(  Enc^{\mathcal{D}_2}((k_e,k_s), M), N  \right) = 0$
 
-\end{quote}
+
+%------------------------------
+
+
 
 \chapter{Implementation}
 
