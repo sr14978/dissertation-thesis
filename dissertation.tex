@@ -192,18 +192,24 @@ One of the core and proven systems for avoiding censorship is The Onion Router (
 Although originally built to primarily provide anonymity of users to the sites that they visit, it has now become important in also providing users with anonymity to network-based surveillance.
 However, because of this, censors such as Iran and China have resorted to blocking the entire protocol.
 Therefore, users cannot access the TOR network directly.
-To get around this problem, the concept of bridges have been implemented to hide the traffics destination, but even still this does not hide the protocol sufficiently.
+To get around this problem, the concept of bridges have been implemented to hide the traffic's destination, but even still this does not hide the protocol sufficiently.
 
 Currently, the majority of the protocol detection schemes in use are based on regular expression parsers.
 As a result, there has been work to produce schemes that exploit this fact by: in the case of obfs4~\cite{obfs4} removing all formatting to avoid black-list detection; or in the case of Format Transforming Encryption (FTE) formatting the ciphertexts to match the definitions of white-listed protocols.
 These have had success in practice at supporting arbitrary web access for users in oppressive regimes and, currently, these systems are working.
 However, censors' abilities and techniques for detection are improving all the time. So, looking to the future, I am analysing a potential avenue for detection and pre-emptively finding a solution.
 
-During this thesis, I explore the statistical analysis techniques that can be used to distinguish traffic produced using an FTE proxy from normal traffic.
+\section{Results of This Thesis}
+
+During this thesis, I explore the analysis techniques that can be used to distinguish traffic produced using an FTE proxy from normal traffic.
 This begins with discovering a way to practically define a description of an arbitrary distribution like that of normal traffic, and then discusses techniques of how to compare two of these distributions.
-Then, I formalise a new type of encryption scheme to counter these detection techniques, called Distribution Transforming Encryption (DTE), by defining its syntax and security requirements.
-Next, I explore how to sample from arbitrary distributions to produce normal-looking ciphertexts and then define my concrete scheme -- DE-CENSOR -- using my chosen method.
-After proving the security of my construction, I discuss building an implementation and evaluate the practicality and performance of using the scheme in a proxy situation.
+To keep the distribution description manageable, I am forced to approximate it to several heuristic based measures. 
+I can then calculate heuristic measurements over a test sample and apply statistical tests to gauge the similarity to heuristics of the normal traffic reference distribution.
+After first proposing this Censor Detection System, and then prototyping an implementation that is able to detect FTE, I move on to finding a way to bypass it.
+I formalise a new type of encryption scheme that is aimed to counter these detection techniques called Distribution Transforming Encryption (DTE).
+In section \ref{sec:dte}, I define the scheme's syntax and declare the security requirements -- privacy and indistinguishability.
+Next, in search of an instantiation of DTE, I explore how to sample from arbitrary distributions to produce normal-looking ciphertexts and then define my concrete scheme -- DE-CENSOR -- using my chosen method.
+After proving the security of my construction, I discuss building an implementation and evaluate the practicality and success of using the scheme in a proxy situation.
 
 
 % -----------------------------------------------------------------------------
@@ -557,7 +563,7 @@ Deciding whether this divergence value is significant enough to trigger the dete
 I discuss a method of calculating this threshold from positive and negative samples in section \ref{sec:thresholding}. However, this threshold can be adjusted by the censor to vary the false positive, true negative rate as applicable to their situation.
 
 
-\chapter{Distribution Transforming Encryption}
+\chapter{Distribution Transforming Encryption}\label{sec:dte}
 
 Informally, my scheme will produce ciphertexts that look the same as a stream of normal browser HTTP traffic.
 In practice, the scheme will draw samples from a pre-recorded reference distribution to emulate the target distribution.
