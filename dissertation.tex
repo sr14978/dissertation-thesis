@@ -135,16 +135,9 @@ NSA					&:		& National Security Agency of the United States\\
 
 \chapter*{Acknowledgements}
 
-{\bf An optional section, of at most $1$ page}
-\vspace{1cm}
 
-\noindent
-It is common practice (although totally optional) to acknowledge any
-third-party advice, contribution or influence you have found useful
-during your work.  Examples include support from friends or family,
-the input of your Supervisor and/or Advisor, external organisations
-or persons who  have supplied resources of some kind (e.g., funding,
-advice or time).
+I would like to take this opportunity to thank my supervisor -- Bogdan -- for his expertise and I would like to mention -- Karl -- for his machine learning incites. Also, for correcting my flaky grammar and phrasing, thank you to Jamie, Mike, mum and dad.
+
 % =============================================================================
 
 % After the front matter comes a number of chapters; under each chapter,
@@ -545,7 +538,7 @@ In practice, the scheme will draw samples from a pre-recorded reference distribu
 This encoding can be flexible to target different frequency distributions, for instance, to hide inside different protocols, but I will define a DTE scheme to target a fixed distribution.
 
 \subsubsection{Syntax}
-Let $\mathcal{D}_1$ represent the message source distribution and $\mathcal{D}_2$ represent the target population distribution.
+Let $\mathcal{D}_1$ represent the message source distribution and $\mathcal{D}_2$ represent the arbitrary target population distribution.
 
 
 A DTE scheme $\mathcal{E}^{\mathcal{D}_2}$ that targets the distribution $\mathcal{D}_2$ can be defined as a 3-tuple: ($Kg^{\mathcal{D}_2}$, $Enc^{\mathcal{D}_2}$, $Dec^{\mathcal{D}_2}$), where,
@@ -780,10 +773,10 @@ Instead, each field of the protocol needs to be dealt with individually accordin
 It could also be possible for there to be heuristics to decide whether fields such as \texttt{Cookies} should be included at all.
 However, each heuristic would be dealt with in the same way, so to limit the scope of the project to a proof of concept, I will only target the path field.
 The mechanics of the scheme will use the same structure as FTE. First, an authenticated encryption scheme is used to encrypt the original data using a symmetric key.
-This is then passed to the emulator encoding module, which uses the length and pattern heuristic distributions to produce normally distributed ciphertexts.
+This is then passed to the emulator encoding module, which uses the length and pattern heuristic distributions to produce normally distributed ciphertexts one heuristic at a time and shown in figure \ref{fig:imp-diag}.
 The un-distributed encryption is constructed from an IV, encrypted blocks, and an HMAC. Therefore, over a choice of random encryption and signing keys, it is indistinguishable from random.
-Therefore, no matter what the underlying data is the uniform distributions that our encodings rely on is upheld.
-The inverse operation must use the same key and heuristic distributions, so can invert each encoding layer and then decrypt using a standard cipher.
+Therefore, no matter what the underlying data is, the uniform distributions that our encodings rely on is upheld.
+The inverse operation must use the same key and heuristic distributions, so can invert each encoding layer and then decrypt using the cipher.
 I refer to this scheme as DE-CENSOR: a Distribution Encoding of Ciphertexts to Emulate Normal Surfing while Onion Routing.
 
 \subsubsection{Pattern Encoding}
@@ -791,11 +784,11 @@ I refer to this scheme as DE-CENSOR: a Distribution Encoding of Ciphertexts to E
 The mechanics of the pattern encoding is basically a base transformation from base 0x100 (characters) to a base of the number of divisions of the pattern heuristic distribution.
 Once this new list of digits is produced, the scheme can apply our discrete inverse transformation function $F^{-1}_{D_N}$ to each one to map this to a list of output patterns which can be joined to form the normally pattern-distributed ciphertext.
 
-The un-encode mechanism splits the string of patterns up and then can apply the forward transformation function. The bases of the digits can then be changed back to the byte before forming the original character string once more.
+The un-encode mechanism splits the string of patterns up and then applies the forward transformation function. The bases of the digits can then be changed back to bytes before forming the original character string once more.
 
 \subsubsection{Length Encoding}
 
-If length encoding took in arbitrary length ciphertexts, it would need to include the length of the original into the encoding, such as pre-pending the data with its length as a number of bytes.
+If length encoding took in arbitrary length ciphertexts, it would need to include the length of the original message into the encoding, such as pre-pending the data with its length as a number of bytes.
 However, whatever way this is done, the resulting output will not satisfy the uniform random requirement for the next level (pattern encoding).
 To counter this, another level of encryption could be done with another set of keys. However, this is undesirable due to the increased ciphertext length expansion and computational work.
 Another solution is to fix the whole scheme to only work on fixed sized blocks as input. TO enforce this messages can be padded before encryption using a secure padding scheme such as defined in ISO 10126~\cite{iso-pad}.
@@ -888,7 +881,7 @@ The construction will use the encryption scheme $\mathcal{E}_{crypt}$, as outlin
 For this proof, we will only consider the simpler system with the boundary correction of $F^{-1}_{D_N}$ removed.
 
 Also, for this construction requirement, we rely on a notion of security defined in Rogaway's paper called IND\$-CPA which ensures indistinguishability from random bits under an adaptive chosen-plaintext-and-IV attack~\cite{ind_dollar}.
-This abstraction, of lifting the IV initialisation from the mode of operation such as CBC to the user, produces a deterministic scheme.
+This abstraction of lifting the IV initialisation from the mode of operation such as CBC, to the user, produces a deterministic scheme.
 However, using a scheme that is IND\$-CPA means that if the $IV$ is treated as a nonce -- a value, like a counter, that is used at most once within a session -- the output bits are indistinguishable from random.
 
 Therefore, if a scheme is built that,
@@ -919,14 +912,17 @@ $\Delta \left(  Enc^{\mathcal{D}_2}((k_e,k_s), M), N  \right) = 0$
 
 \chapter{Implementation}
 
-I have implemented the code for the censor and the de-censor scheme. The censor implementation consists of a measurement program that calculates the statistical similarity of batches of paths to a pre-recorded reference histogram of normal traffic. It compares the statistic to a threshold pre-calculated to separate normal from malicious requests. The de-censor scheme takes in messages, encrypts them and then encodes them using the selected emulator, that outputs an expanded ciphertext but one that is distributed according to its reference histogram. This can be the same reference distribution as the censor, but a high success rate is also possible using a separately recorded histogram of the same normally distributed background traffic. This is important since practically, it would not be possible to extract the used distribution from in-use instances of the tool.
+I have written an implementation of the Censor Detection System (CDS) and also the DE-CENSOR scheme.
+The CDS's implementation consists of a measurement program that calculates the statistical similarity of batches of paths to a pre-recorded reference histogram of normal traffic.
+It compares the test statistic to a threshold -- pre-calculated to separate normal from malicious requests.
+The DE-CENSOR scheme takes in messages, encrypts them and then encodes them using the selected heuristic emulator, that outputs an expanded ciphertext but one that is distributed according to its reference histogram. This can be the same reference distribution as the censor, but a high success rate is also possible using a separately recorded histogram of the same normally distributed background traffic.
+This is important since practically, it would not be possible to extract the used distribution from in-use instances of the tool.
 
-
-All the code was written in \texttt{python2.7} for quick prototyping but for performance gains, the core could be re-written in \texttt{C/C++} to remove the overheads of the python interpreter. I conducted my implementation and testing on Ubuntu 16.04 on VMware virtual machines running on a low powered i5 Intel VT enabled laptop.
+All the code was written in \texttt{python2.7} for quick prototyping but, for performance improvements, the core could be re-written in \texttt{C/C++} to remove the overheads of the python interpreter. I conducted my implementation and testing on an Ubuntu 16.04 operating system, on VMware virtual machines running on a standard i5 Intel laptop.
 
 \section{Collection}
 
-Packet collection is used for both parties since both the emulator and censor need to record a reference distribution to work against and the censor is also required to read the packets for classification. Since both my censor and de-censors are running on Ubuntu machines I used the PyShark a python wrapper around the Tshark non-interactive command-line tool. Tshark is also able to parse and filter the packets like currently deployed DPI systems. I used this feature to extract the packets I cared about using the filter in figure \ref{fig:filter}.
+Packet collection is used for both parties (CDS and DE-CENSOR) since both the emulator and censor need to record a reference distribution to work against. The CDS is also required to read the packets for classification. Since both my censor and de-censors are running on Ubuntu machines I used the PyShark a python wrapper around the Tshark non-interactive command-line tool. Tshark is also able to parse and filter the packets similar to the abilities currently deployed DPI systems. I used this feature to extract the packets I cared about using the filter in figure \ref{fig:filter}.
 
 \begin{figure}[h]
 \begin{verbatim}
@@ -936,14 +932,12 @@ http && http.request.method == "GET"
 \label{fig:filter}
 \end{figure}
 
-The filter shows that we only targeted GET requests. This is because HTTP is a very one-sided protocol with most of the content moving from the web server to the client and therefore it is harder to hide messages inside the requests. The response encoding should be more straightforward. GET requests as opposed to POST requests take up a larger proportion of web traffic and so are the obvious choice.
+The filter shows that we only targeted GET requests. This is because HTTP is a very one-sided protocol, with most of the content moving from the web server to the client.
+Therefore, it is harder to hide messages inside the requests due to there normally low data size. The response encoding should be more straightforward since files returned from servers are usually much less structured. GET requests, as opposed to POST requests, take up a larger proportion of web traffic and so are the obvious choice to hide inside, although, in future work, a heuristic to produce a distribution of both could improve the scheme.
 
-In this experiment, I have fixed all other parameters apart from the path. This is a proof of principle
-of the sides of communication to forge due to its normally low data size. Files returned from servers are usually much less structured
+In this experiment, I have fixed all other HTTP fields apart from the path to simplify the implementation. I have done this since this is only a proof of principle and expanding the scope to create more complexity is left to a future goal.
 
-To collect real web traffic data, I built a web-crawler using the FOSS Selenium web automation framework. To gather a realistic distribution I needed to emulate the whole browser environment since X amount of the requests from modern sites are dynamics initiated from inside the scripts.
-% graph
-
+To collect real web traffic data, I built a web-crawler using the FOSS Selenium web automation framework. To gather a realistic distribution I needed to emulate the whole browser environment since a large amount of the requests from modern sites are dynamically initiated from inside the scripts.
 I crawled recursively over the Alexa top 50 sites~\cite{alexa} that support unencrypted traffic. This gave me a sample of 10,000 paths to create reference distribution.
 
 \section{Histogram creation}
@@ -1078,6 +1072,8 @@ I used the Cryptography implementation from the PyCrypto library.This provides a
 
 The statistical distribution comparison calculations are done by the SciPy Library, which provides a C++ back-end to complete the heavy lifting and improves the performance.
 
+I used the Selenium browser automation tool to control the Firefox web browser and produce realistic browsing traffic.
+
 % -----------------------------------------------------------------------------
 
 \chapter{Critical Evaluation}
@@ -1098,7 +1094,7 @@ Here I will observe the practical outcomes that occur when the pattern length is
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
 \hline
 \multirow{2}{*}{Pattern Length}&
-\multicolumn{3}{|c|}{Distrobution Bin Number}&
+\multicolumn{3}{|c|}{Distribution Bin Number}&
 \multicolumn{3}{|c|}{Max Splitting}&
 \multicolumn{3}{|c|}{Extension Factor}\\
 \cline{2-10}
