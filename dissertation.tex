@@ -348,7 +348,7 @@ The approach was actually targeted for situations with low entropy keys, such th
 Though similar, my distribution transforming encryption, like the format transforming encryption, is not exactly a steganographic scheme since the data is not embedded inside other innocuous data, but it is the innocuous data. This distinction means that it is more general and more efficient since well-looking cover traffic does not need to be produced to embed each new message.
 
 
-\chapter{Previous Work}\label{prev_work}
+\chapter{Previous Work}\label{chap:prev_work}
 
 \section{TOR Transports}
 
@@ -521,7 +521,7 @@ Other more less specific specific heuristics include \texttt{inter-slash-distanc
 
 \subsection{Detection}
 
-For less obvious differences in heuristic values between normal and fake distributions more comprehensive comparison of the distributions are needed.
+To make the attack more generic, so it will work for less obvious differences in heuristic values between normal and fake distributions, a more comprehensive comparison of the distributions is needed.
 
 For testing distributions that are known to follow fixed-shape but parametrised models, such as a Gaussian, the Z-test can be used by testing the difference in means test statistic.
 The T-test is more appropriate for small sample sizes, where the population's standard deviation is hard to estimate since the Z-test relies on this to calculate the significance level.
@@ -585,7 +585,8 @@ A DTE scheme $\mathcal{E}^{\mathcal{D}_2} = (Kg^{\mathcal{D}_2}, Enc^{\mathcal{D
 
 I demand indistinguishability of ciphertexts under an adaptive chosen plaintext attack. Standard modes of authenticated encryption such as the cipher block chaining and encrypt the HMAC mode of AES provides higher levels of security.
 Though due to publicly known normal traffic distribution the produced ciphertexts are malleable, making chosen ciphertext attacks always possible.
-This must be inherited by the overall scheme to provide the standard assurances.
+Due to this, application of this type of scheme must be carefully considered as to not provide any possible adversary with a decryption oracle.
+This must be inherited by the overall scheme to provide the standard IND-CPA assurances.
 
 \paragraph{Statistical Indistinguishability}
 
@@ -973,23 +974,23 @@ Like the recording of reference material, the calculation of distribution histog
 
 \begin{figure}[h]
 	\centering
-	\begin{subfigure}[b]{0.24\textwidth}
-		\includegraphics[width=\textwidth]{bob}
+	\begin{subfigure}[b]{0.3\linewidth}
+		\includegraphics[width=\linewidth]{bob}
 		\caption{Path length}
 		\label{fig:length_hist}
 	\end{subfigure}
-	\begin{subfigure}[b]{0.24\textwidth}
-		\includegraphics[width=\textwidth]{bob}
+	\begin{subfigure}[b]{0.3\linewidth}
+		\includegraphics[width=\linewidth]{bob}
 		\caption{Character based}
 		\label{fig:char_hist}
 	\end{subfigure}
-	\begin{subfigure}[b]{0.24\textwidth}
-		\includegraphics[width=\textwidth]{bob}
+	\begin{subfigure}[b]{0.3\linewidth}
+		\includegraphics[width=\linewidth]{bob}
 		\caption{First Letter}
 		\label{fig:first_hist}
 	\end{subfigure}
-	\begin{subfigure}[b]{0.24\textwidth}
-		\includegraphics[width=\textwidth]{bob}
+	\begin{subfigure}[b]{0.3\linewidth}
+		\includegraphics[width=\linewidth]{bob}
 		\caption{Random Letter}
 		\label{fig:rand_hist}
 	\end{subfigure}
@@ -1385,21 +1386,29 @@ Fisher's exact test		& 0			& good\\
 \chapter{Conclusion}
 \label{chap:conclusion}
 
+
+In this thesis, I started by explaining some of the benefits of a completely open web, and gave examples where this is not the case, and outlined the negative impacts that this has; socially and economically.
+I explained the focus of this thesis on the type of censorship that blocks access to content, rather than removing it, and discussed the current ways this is implemented.
+I described The Onion Router's part in the anonymisation of traffic and how the protocol based detection of this protocol by network censoring agents is used to block it completely.
+I used this as a motivation to create schemes to encrypt messages in to ciphertexts that have some enforced properties, so that they could be used to encrypt TOR packets into ciphertexts that look like innocuous packets.
+In section \ref{chap:prev_work} on previous work, I looked at current systems that are deployed as TOR transports to fill this role, and concluded that although they have had some success, a more general, yet specifically targeted solution was needed.
+Therefore, I have looked to the future, to try and pre-empt ways that could stop the current TOR transports from being effective.
+
+After summarising related classical cryptography and then the work done in the field of format based encryption, I showed that although FTE can force protocol misclassification of traffic by regular expression based deep packet inspection tools, there is a very simple identifying feature - fixed length - which can be used to distinguish FTE traffic from normal traffic.
+I then move on to generalise the detection, so that it can work for other, possibly new, vulnerable schemes.
+I describe an efficient way to describe the intractable full definition of traffic distribution, using heuristic and give some promising examples.
+I decide that pattern frequency is also a good distinguisher for FTE and, later, in the evaluation, conduct experiments to find appropriate hyper-parameter -- pattern length.
+I then construct a detection mechanism using an appropriate test of similarities between distributions.
+This calculates the distance measure between a test sample and a record background sample and concludes using a threshold whether the test sample is sufficiently close to `normal'.
+Here, I leave the defining of the threshold up to the deploying-party, but as an example mention how one could be obtained.
+
+To comprehensively define my new cryptographic primitive -- DTE -- I defined the syntax and security properties.
+I demand IND-CPA privacy, which is lower than the IND-CCA security of AEAD schemes. 
+Due to this, applications of this type of scheme must be carefully 
+
+\vspace{2cm}
 {\bf A compulsory chapter,     of roughly $5$ pages}
 \vspace{1cm}
-
-%In this thesis, 
-%
-%web's goals
-%discussed censorship,
-%types,
-%methods
-%anonymisation
-%TOR
-%transports
-%
-%
-%I have looked to the future, to try and pre-empt ways that could stop the current TOR transports from being effective.
 
 \noindent
 The concluding chapter of a dissertation is often underutilised because it
