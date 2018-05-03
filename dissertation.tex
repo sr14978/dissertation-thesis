@@ -46,6 +46,11 @@
 \usepackage{wrapfig}
 \usepackage{multirow}
 \usepackage{tabularx}
+%\usepackage{titlesec}
+%
+%\titleformat{\chapter}[display]
+%    {\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+%\titlespacing*{\chapter}{0pt}{10pt}{40pt}
 
 \usepackage{lineno}
 \linenumbers
@@ -610,9 +615,7 @@ where $negl$ is a negligible function.
 
 
 
-On the other hand, it asks that for any well-behaving, distribution comparison function $\Delta$,\footnote{though does not need to be symmetric, or obey the triangle inequality,}
-
-Over $ (k_e,k_s) \leftarrow Kg^{\mathcal{D}_2}, M \in Support_n(\mathcal{D}_1), N \in Support_n(\mathcal{D}_2)$; Measurement of $\Delta \left(  Enc^{\mathcal{D}_2}((k_e,k_s), M), N  \right)$ is small.
+On the other hand, it asks that for any well-behaving, distribution comparison function $\Delta$,\footnote{though does not need to be symmetric, or obey the triangle inequality,} Over $ (k_e,k_s) \leftarrow Kg^{\mathcal{D}_2}, M \in Support_n(\mathcal{D}_1), N \in Support_n(\mathcal{D}_2)$; Measurement of $\Delta \left(  Enc^{\mathcal{D}_2}((k_e,k_s), M), N  \right)$ is small.
 
 This quantification of \textit{small} is left up to the creator of the construction.
 It can refer to a negligible function in one of the parameters but does not need to.
@@ -843,19 +846,15 @@ Another solution is to fix the whole scheme to only work on fixed sized blocks a
 
 DE-CENSOR is an encrypt-then-encode framework, and so the encryption and decryption operations are made up of 2 stages each. Let us define these formally.
 
-$\mathcal{E}_{crypt} = (encrypt, decrypt) $ is the underlying encryption scheme.
-
-$encrypt :: ( (k_e, k_s), M ) \rightarrow C$ is the encryption function of the authenticated encryption scheme.
-
+$\mathcal{E}_{crypt} = (encrypt, decrypt) $ is the underlying encryption scheme.\\
+$encrypt :: ( (k_e, k_s), M ) \rightarrow C$ is the encryption function of the authenticated encryption scheme.\\
 $decrypt :: ( (k_e, k_s), C ) \rightarrow M$ is the decryption function of the authenticated encryption scheme.
 
 Let, $H$ be a description of each heuristic and $D$ its value's frequency distribution.
 Then we can encapsulate $\mathcal{D}_2$, as $\mathcal{H} = \{(H_0,D_0), \cdots , (H_m,D_m)\}$ containing the information about each of the $m$ heuristics used in the encoding.
 
-$\mathcal{E}_{code}{\mathcal{H}} = (encode^{\mathcal{H}}, decode^{\mathcal{H}}) $ is the underlying encoding scheme.
-
-$encode^{\mathcal{H}} :: C \rightarrow N$, is the function that uses the heuristic distributions to transform ciphertexts $C$ in to normal traffic patterns $N$.
-
+$\mathcal{E}_{code}{\mathcal{H}} = (encode^{\mathcal{H}}, decode^{\mathcal{H}}) $ is the underlying encoding scheme.\\
+$encode^{\mathcal{H}} :: C \rightarrow N$, is the function that uses the heuristic distributions to transform ciphertexts $C$ in to normal traffic patterns $N$.\\
 $decode^{\mathcal{H}} :: N \rightarrow C$, is the function that again uses the heuristic distributions, but now transform normal traffic $N$ back in to ciphertexts $C$.
 
 Now we can use these to implement the DTE specification.
@@ -886,9 +885,8 @@ Therefore, assuming the underlying block cipher -- AES -- is secure, this mode p
 This security guarantee is only for the encryption layer, however, since the encoding only has access to the IND-CPA ciphertext, no information leakage about the plaintext is possible.
 Therefore a reduction of IND-CPA security of the encryption layer can be reduced to the IND-CPA security of the whole scheme.
 
-Here is the reduction:
-
-Assume the existence of $\mathcal{A}$ to be the adversary that can distinguish ciphertexts of DE-CENSOR scheme $\mathcal{E}^\mathcal{D}$ with access to a plaintext oracle. Note: encode and decode are polynomial-time algorithms.
+\paragraph{Reduction:}
+Assume the existence of $\mathcal{A}$ to be the adversary that can distinguish ciphertexts of DE-CENSOR scheme $\mathcal{E}^\mathcal{D}$ with access to a plaintext oracle. Note: encode are polynomial-time algorithms.
 
 Define an adversary $\mathcal{B}$ to be the adversary that can distinguish ciphertexts of the underlying encryption scheme by,
 
@@ -1035,22 +1033,22 @@ Like the recording of reference material, the calculation of distribution histog
 \begin{figure}[h]
 	\centering
 	\begin{subfigure}[b]{0.3\linewidth}
-		\includegraphics[width=\linewidth]{bob}
+		\includegraphics[width=\linewidth]{length_dist}
 		\caption{Path length}
 		\label{fig:length_hist}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.3\linewidth}
-		\includegraphics[width=\linewidth]{bob}
+		\includegraphics[width=\linewidth]{char_dist}
 		\caption{Character based}
 		\label{fig:char_hist}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.3\linewidth}
-		\includegraphics[width=\linewidth]{bob}
+		\includegraphics[width=\linewidth]{first_dist}
 		\caption{First Letter}
 		\label{fig:first_hist}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.3\linewidth}
-		\includegraphics[width=\linewidth]{bob}
+		\includegraphics[width=\linewidth]{rand_dist}
 		\caption{Random Letter}
 		\label{fig:rand_hist}
 	\end{subfigure}
@@ -1063,8 +1061,9 @@ Like the recording of reference material, the calculation of distribution histog
 \textbf{Character distribution} -- This graph exhibits the underlying encryption schemes uniform randomness, whereas in real traffic not all characters are created equally.
 
 \textbf{First Letter} -- This method was attempted to see if the same distinguishing effect would be possible only using a fixed subset of the URL.
+The graph shows both distributions have few non-zero bins. There is almost full mutual exclusivity. 
 
-\textbf{Random Letter} -- like the previous this uses a limited sample by randomises its location to see if this improved on the above results.
+\textbf{Random Letter} -- like the previous this uses a limited sample by randomises its location to see if this improved on the above results. It shows a similar shape to the full character distribution but, as expected, higher variation, making it harder to distinguish.
 
 \subsection{Exponential Scaling}
 

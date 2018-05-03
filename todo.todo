@@ -43,6 +43,6 @@ Evaluation:
   ☐ using different measurements
 
 Conclusion:
-  ☐ run through
-  ☐ rate success
-  ☐ future work
+  ✔ run through @done(2018-05-03 14:26) @project(Conclusion)
+  ✔ rate success @done(2018-05-03 19:08) @project(Conclusion)
+  ✔ future work @done(2018-05-03 19:08) @project(Conclusion)
