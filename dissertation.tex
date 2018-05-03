@@ -348,8 +348,8 @@ This partially solves the problem of key distribution, since it is all right to 
 This authentication problem can be solved by more asymmetric cryptography called signatures which are the asymmetric version of MACs.
 
 Although many symmetric encryption schemes produce ciphertexts that are indistinguishable from random bits, asymmetric schemes do not.
-This is because these systems are based on mathematical equations to link the public and private key.
-In many asymmetric schemes such as in the well known RSA cipher, the mathematics is based on group theory and the keys are definitions of groups and ciphertexts are made from elements inside them.
+This is because these systems are based on mathematical equations linking the two key.
+In many asymmetric schemes such as in the well known RSA cipher, the mathematics is based on group theory, the keys are definitions of groups and ciphertexts are made from elements inside them.
 Therefore, they might have some structure to define the separate elements, for instance, an ElGamal ciphertext is $(g^y, m \cdot h^y )$ where, $m,g,h \in \mathbb{G}$ which is the group.
 Furthermore, since the sizes of the groups $\mathbb{G}$ are not a power of two, the elements' representations will not produce uniform bit patterns.
 
