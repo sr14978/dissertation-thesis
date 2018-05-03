@@ -46,6 +46,7 @@
 \usepackage{wrapfig}
 \usepackage{multirow}
 \usepackage{tabularx}
+\usepackage{mdframed}
 %\usepackage{titlesec}
 %
 %\titleformat{\chapter}[display]
@@ -157,7 +158,7 @@ VOIP				&:		& Voice over IP\\
 \chapter*{Acknowledgements}
 
 
-I would like to take this opportunity to thank my supervisor -- Bogdan -- for his expertise and I would like to mention -- Karl -- for his machine learning insights. Also, for correcting my flaky grammar and phrasing, thank you to Jamie, Mike, Mum and Dad.
+I would like to take this opportunity to thank my supervisor -- Bogdan -- for his expertise and I would like to mention, Carl,x for his machine learning insights. Also, for invaluable proof reading, thank you to Jamie, Mike, Pete, Joe, Mum and Dad.
 
 % =============================================================================
 
@@ -262,7 +263,7 @@ The most common method of blocking is for the routers to drop these black-listed
 
 Another method used in practice is DNS poisoning, which involves incorrectly resolving URLs to redirect users either to a censorship notice or just a random -- and useless -- address. This only affects the use of URLs and so the use of raw IP address is completely unaffected, although many sites use them internally so it creates difficulty and work for users through setting up of a local host file.
 
-Finally, packet inspection has become very common place. This can be content-based detection such as searching for trigger words in HTTP request paths, or in the HTML content returned. A good example of this is search terms included the query parameters of search engine requests. Although these snooping attacks only apply to clear unencrypted HTTP traffic and using an encrypted  TLS transport layer hides all this information, sites that do encrypt, risk having the whole site IP blocked as above. This happened to Wikipedia in China when the site switched to enforcing HTTPS on all traffic. When the site did this, the Golden Shield Project -- in charge of China's network surveillance -- could no longer selectively block the specific culprit pages, instead, a blanket ban on the service was enforced.
+Finally, packet inspection has become very common place. This can be content-based detection such as searching for trigger words in HTTP request paths, or in the HTML content returned. A good example of this is search terms included in the query parameters of search engine requests. Although these snooping attacks only apply to clear unencrypted HTTP traffic and using an encrypted  TLS transport layer hides all this information, sites that do encrypt, risk having the whole site IP blocked as above. This happened to Wikipedia in China when the site switched to enforcing HTTPS on all traffic. When the site did this, the Golden Shield Project -- in charge of China's network surveillance -- could no longer selectively block the specific culprit pages, instead, a blanket ban on the service was enforced.
 
 The packet inspection and classification is also done on a protocol basis. Censors are usually tolerant to users accessing web pages over HTTP or video calling over VOIP protocols, however, protocols that allow the transfer of data in an opaque way such as VPN tunnelling, The Onion Router and TLS (less so) are often blocked completely.
 
@@ -308,7 +309,7 @@ These days, a lot of the research into cryptography is done by researchers at un
 
 \section{Symmetric Encryption}
 
-What defines modern cryptography is the requirement to prove the hardness of all problems, or at least compare them to the difficulty of another problem.
+What defines modern cryptography is the requirement to prove the hardness breaking encryption, or at least compare it to the difficulty of another problem.
 Information theoretic security is a level of security that is based on information theory.
 These proofs do not rely on any unproven assumptions but imply that there is just not enough information in the ciphertext to recover the plaintext.
 Perfect security is a subtype of information theoretic security which proves there is not enough information in the ciphertext to obtain any information about the plaintext.
@@ -356,7 +357,7 @@ Furthermore, since the sizes of the groups $\mathbb{G}$ are not a power of two, 
 
 Steganography is the practice of concealing one message inside another.
 Most examples of this are just security through obscurity such as invisible ink or hiding text in an image by altering pixel values.
-Honey encryption which we introduced in 2014 by Juels et al.~\cite{honey} has a similar tone to steganography, though instead of the resulting encoding appearing like innocuous data, it involves a ciphertext that can be decrypted to the original message or into an innocuous one.
+Honey encryption which was introduced in 2014 by Juels et al.~\cite{honey} has a similar tone to steganography, though instead of the resulting encoding appearing like innocuous data, it involves a ciphertext that can be decrypted to the original message or into an innocuous one.
 The approach was actually targeted for situations with low entropy keys, such that brute force attacks are possible. To counter this, the definition enforces that for any number of incorrect keys the scheme produces plausible-looking but bogus plaintexts.
 
 Though similar, my distribution transforming encryption, like the format transforming encryption, is not exactly a steganographic scheme since the data is not embedded inside other innocuous data, but it is the innocuous data. This distinction means that it is more general and more efficient since well-looking cover traffic does not need to be produced to embed each new message.
@@ -429,7 +430,7 @@ Then if we have an encryption scheme $Enc :: \mathcal{K} \times \mathcal{N} \tim
 
 They provide a ranking and un-ranking algorithm for regular languages inspired by the work done by Goldberg in '85~\cite{rank}, but to make this efficient, pre-computation is needed. For each word length, a table of path numbers has to be created which can be done through dynamic programming.
 
-Furthermore, using M\"akinen's~\cite{rankcf} algorithms, if a language can be described an unambiguous context-free grammar then ranking can be done in linear time and unranking can be done in $O(n \log n)$ time, if we allow $O(n^2)$ time and space preprocessing. This is since the left Szilard language of the grammar can be more easily ranked and unranked. Conversion back to the original grammar is as simple as linearly applying the rules and conversion from a word to its left Szilard counterpart depends on the efficiency of parsing, which, is not always linear, but for unambiguous grammars is still efficient.
+Furthermore, using M\"akinen's~\cite{rankcf} algorithms, if a language can be described as an unambiguous context-free grammar, then ranking can be done in linear time and unranking can be done in $O(n \log n)$ time, if we allow $O(n^2)$ time and space preprocessing. This is since the left Szilard language of the grammar can be more easily ranked and unranked. Conversion back to the original grammar is as simple as linearly applying the rules and conversion from a word to its left Szilard counterpart depends on the efficiency of parsing, which, is not always linear, but for unambiguous grammars is still efficient.
 
 \section{Format Transforming Encryption}\label{sec:FTE}
 
@@ -439,31 +440,35 @@ Their scheme is targeted against the regular expression based deep packet inspec
 
 They show in their paper that FTE leaves these systems vulnerable to protocol misclassification by targeting the allowed formats that can either be extracted from the enterprise software or learned by taking network samples. They also show that the formatting encryption expansion factor for realistic regular expressions is low enough to enable web surfing over the TOR protocol.
 
-Formally, the scheme takes a formatting regular expression grammar $\mathcal{F}$ and lets $L(\mathcal{F})$ be the language defined by it. Then, using an existing authenticated encryption scheme $Enc_k$, the original message $M$ is encrypted and the unformatted ciphertext $Y$ is interpreted as an element of $\mathbb{Z}_{\vert L(\mathcal{F}) \vert}$. The encoding function $unrank :: \mathbb{Z}_{\vert L(\mathcal{F}) \vert} \rightarrow L(\mathcal{F})$ is then used to format it to specification. To make \texttt{unrank} and its inverse, decryption counterpart \texttt{rank} efficient the same precomputation is done as by Bellare and only a subset of the formatted language with fixed length is used. This is optimisation is key to be able to use this in practice. This turns the use of the scheme in to a block cipher used in Electronic Code Book mode. However, this lack of diffusion does not lead to pattern leakage since a random IV is used for each large block.
+Formally, the scheme takes a formatting regular expression grammar $\mathcal{F}$ and lets $L(\mathcal{F})$ be the language defined by it. Then, using an existing authenticated encryption scheme $Enc_k$, the original message $M$ is encrypted and the unformatted ciphertext $Y$ is interpreted as an element of $\mathbb{Z}_{\vert L(\mathcal{F}) \vert}$. The encoding function $unrank :: \mathbb{Z}_{\vert L(\mathcal{F}) \vert} \rightarrow L(\mathcal{F})$ is then used to format it to specification. To make \texttt{unrank} and its inverse, decryption counterpart \texttt{rank} efficient the same precomputation is done as by Bellare and only a subset of the formatted language with a fixed length is used. This optimisation is key to be able to use this in practice. This turns the use of the scheme in to a block cipher used in Electronic Code Book mode. However, this lack of diffusion does not lead to pattern leakage since a random IV is used for each large block.
 
 They have implemented this scheme and integrated it in to a TOR transport. Although, the regex based parameters make the scheme flexible so any protocol (described by a regular expression) can be targeted they have focused on hiding inside the HTTP protocol. To be precise they use the regular expression in figure \ref{fig:http-regex}. This hides the ciphertext inside the path of a \texttt{GET} request but due to the lack of structure -- any alpha-numeric string -- the packets are not visually convincing as seen in figure \ref{fig:http-ex}.
 
 Although as a TOR proxy, the FTE scheme has had success in bypassing China's Golden Shield Project (GSP) censorship mechanisms as is listed as a official TOR transport.
 
 \begin{figure}[h]
+\begin{mdframed}
 \begin{verbatim}
 ^GET\ \/([a-zA-Z0-9\.\/]*) HTTP/1\.1\r\n\r\n$
 \end{verbatim}
 \caption{Regex pattern to describe the HTTP protocol}
 \label{fig:http-regex}
+\end{mdframed}
 \end{figure}
 
-
 \begin{figure}[h]
+\begin{mdframed}
 \begin{verbatim}
-GET /EopwqPHDbCy8WfNPEO3BPB.UUXEJ7xe2NoW/fSZQny4.x/jacDVkxjZQ4uSqgZu7.N2AGbaYeFqr/DEh
-bHSMhLjVf2cZy7z7iBGOhwsgtCegXuBNZn//VGXFLUmG55Hlk5bsMMhoO4tqF.mYApGxAd2c0G/goOnZLivQB
-.qTAzDFwxPtxS1i.bw2Oud2BQ7RtZaLoAcBJ40fjLwsLi7v18Oi9Q6cUqTqHKTMsVWijB9/kh HTTP/1.1
+GET /EopwqPHDbCy8WfNPEO3BPB.UUXEJ7xe2NoW/fSZQny4.x/jacDVkxjZQ4uSqgZu7.N2AGba
+YeFqr/DEhbHSMhLjVf2cZy7z7iBGOhwsgtCegXuBNZn/VGXFLUmG55Hlk5bsMMhoO4tqF.mYApGx
+Ad2c0GgoOnZLivQB.qTAzDFwxPtxS1i.bw2Oud2BQ7RtZaLoAcBJ40fjLwsLi7v18Oi9Q6cUqTqH
+KTMsVWijB9/kh HTTP/1.1
 \end{verbatim}
 $\hookleftarrow$\\
 $\hookleftarrow$
 \caption{Example packet generated by FTE}
 \label{fig:http-ex}
+\end{mdframed}
 \end{figure}
 
 
@@ -537,11 +542,11 @@ Other more less specific specific heuristics include \texttt{inter-slash-distanc
 
 To make the attack more generic, so it will work for less obvious differences in heuristic values between normal and fake distributions, a more comprehensive comparison of the distributions is needed.
 
-For testing distributions that are known to follow fixed-shape but parametrised models, such as a Gaussian, the Z-test can be used by testing the difference in means test statistic.
+For testing distributions that are known to follow fixed-shape but parametrised models, such as a Gaussian, the Z-test can be used by testing the difference-in-means test statistic.
 The T-test is more appropriate for small sample sizes, where the population's standard deviation is hard to estimate since the Z-test relies on this to calculate the significance level.
 Although, due to the central limit theorem, these measures could be used, the arbitrary structure of the distributions in question it could result in false positives in the measurements if only the means of the samples were taken into consideration.
 
-An exact test, such Fisher's exact test, will calculate the exact probability of obtaining each observation in the sample.
+An exact test, such as Fisher's exact test, will calculate the exact probability of obtaining each observation in the sample.
 Assuming the independence of the observations the overall probability can then be computed and then compared with a significance level threshold.
 However, in this situation, the independence assumption is unfounded and furthermore, the computational cost of this method is large, so for large sizes of our samples, other tests are recommended.
 
@@ -568,7 +573,7 @@ In a more generic attack, using other heuristics, statistical and divergence tes
 The Kullback-Leibler divergence test is commonly used in experimental designs and since its asymmetry is not an issue in this setting the proposed system will adopt it to measure the distance between the observed test distribution and pre-recorded reference distribution.
 
 Deciding whether this divergence value is significant enough to trigger the detection can be done by comparison to a threshold.
-I discuss a method of calculating this threshold from positive and negative samples in section \ref{sec:thresholding}. However, this threshold can be adjusted by the censor to vary the false positive, true negative rate as applicable to their situation.
+I will discuss a method of calculating this threshold from positive and negative samples in section \ref{sec:thresholding}. However, this threshold can be adjusted by the censor to vary the false positive, true negative rate as applicable to their situation.
 
 
 \chapter{Distribution Transforming Encryption}\label{sec:dte}
@@ -598,7 +603,7 @@ A DTE scheme $\mathcal{E}^{\mathcal{D}_2} = (Kg^{\mathcal{D}_2}, Enc^{\mathcal{D
 \paragraph{Privacy}
 
 I demand indistinguishability of ciphertexts under an adaptive chosen plaintext attack. Standard modes of authenticated encryption such as the cipher block chaining and encrypt the HMAC mode of AES provides higher levels of security.
-Though, since the normal traffic distribution is known publicly the produced ciphertexts are malleable, so chosen ciphertext attacks always possible.
+Though, since the normal traffic distribution is known publicly the produced ciphertexts are malleable, so chosen ciphertext attacks are always possible.
 Due to this, application of this type of scheme must be carefully considered as to not provide any possible adversary with a decryption oracle.
 This must be inherited by the overall scheme to provide the standard IND-CPA assurances.
 
@@ -629,21 +634,21 @@ Yet, in other settings, where even one detection would cause large detrimental e
 To create this DTE scheme, there must be a way to encapsulate not just the valid language but its frequency distribution.
 Firstly, I looked to the finite state machine produced by the regular expressions as used in FTE. Sadly, augmenting the node with weights according to the visiting frequency does not produce the desired effect.
 The adding of these weights to the DFA's state transitions would still produce a graph that could be ranked using a slightly altered algorithm.
-However, these weights would not be meaningful, since they would not be taking into consideration the previous path through transition graph and therefore previous symbols in the stream.
+However, these weights would not be meaningful, since they would not be taking into consideration the previous path through the transition graph and therefore previous symbols in the stream.
 In some graphs, where every different input stream parses through a different subset of the DFA states, this approach is valid.
 However, efficient DFAs do not do this since it has an exponential blow up, and specifically not the DFAs for the languages that we are targeting.
 
 I also looked into ways of obtaining the structure of normal traffic using tools such as sequitur~\cite{sequitur} to infer a grammar, but this too has the same problems.
 
 As discussed in section \ref{attacking_fte} about attacking FTE, since the distribution of normal traffic is highly unstructured describing it in full is intractable, for the censor and here for the DTE scheme.
-Therefore, the suggestion was to instead concentrate on the distribution of values of certain heuristics which describe the packets.
+Therefore, their suggestion was to instead concentrate on the distribution of values of certain heuristics which describe the packets.
 That idea can also be applied here, to generate packets that when tested against those heuristics will match the normal traffic distribution.
 
 Different heuristics were discussed; such as lengths and pattern frequencies.
 Pattern frequency analysis can be done at varying levels of granularity to give varying results.
 The obvious level of abstraction is at the character level, which if used to base an emulation from, will only produce strings containing valid characters since they are what is extracted from normal traffic.
 Since patterns are recorded and generated independently, any lower level of granularity could produce byte values for non-valid characters such as control characters.
-This makes detection easy for a censor, as these values are not allowed in the protocol, so they can reject without even considering their frequency of use in normal traffic.
+This makes detection easy for a censor, as these values are not allowed in the protocol, so they can be rejected without even considering their frequency of use in normal traffic.
 Longer patterns reduced independence since larger chunks are taken in context, however, the complexity increases dramatically, as per our exponential calculation previously.
 Longer patterns have pros and cons; more character dependence, leading to more realistic URLs to the eye. Sequences of semantically correct content appear such as words and data structures like query string parameters. On the other hand, the complexity is increased dramatically, as per our exponential calculation previously.
 I will evaluate the effects of differences in granularity in section \ref{sec:gran}.
@@ -672,10 +677,10 @@ However, it works by calculating the inverse of the cumulative frequency distrib
 
 Fully connected neural networks with a single hidden layer are theoretically able to model any continuous function.
 Therefore, they should be able to convert distributions.
-To test this, in early 2018, Horger et al. wrote a paper on training neural nets to generate samples from arbitrary distrobutions~\cite{deepl}.
+To test this, in early 2018, Horger et al. wrote a paper on training neural nets to generate samples from arbitrary distributions~\cite{deepl}.
 They trained the fully connected neural net to map uniformly generated inputs to a chosen probability density function by minimising Jensen-Shannon divergence.
 Their model was able to produce results that have comparable goodness of fit to other classical methods and after training was competitive in performance.
-Large amounts of data are needed to train the system, which if is to be done with realistic performance, needs special hardware to cope with the parallelism. Although, in the not so distant future this may become ubiquitous.
+Large amounts of data are needed to train the system, where, if we desire practical performance, specialist hardware will be required to cope with the parallelism. Although, in the not so distant future this may become ubiquitous.
 
 \subsection{The Proposed Scheme}
 
@@ -781,7 +786,7 @@ Surjectivity of $F^{-1}_{D_N}$ follows from the fact that $\mathcal{F}^{-1}_{D_N
 
 However, injectivity is not provable in general. It depends on the exact instance of the distribution histogram.
 In fact, it is very unlikely for no overlaps between output quantisation and input quantisation to occur.
-Therefore, I made a tweak to make the system usable.
+Therefore, I made an adaptation to make the system usable.
 This was to shrink the input divisions slightly so that they matched up to the nearest output division.
 This preprocessing step is outlined in implementation.
 It is important to note that if a correction makes the lower bound greater than the higher bound the process is invalid and the splitting rate must be reduced.
@@ -799,7 +804,7 @@ The green lines are the corrected splittings to force the function to be injecti
 Redefine:
 $$F^{-1}_{D_N}(x) = x' \xleftarrow{\$} [B[x], B[x+1]); \mathcal{F}^{-1}_{D_N}(x')$$
 
-This new function still is surjective by roughly the same proof as before but its injectivity also holds.
+This new function is still surjective by roughly the same proof as before but its injectivity also holds.
 Proof:
 Firstly, the correction moved the boundaries of the inputs to match the boundaries of the outputs.
 The divisions started as non-overlapping and during the correction, this did not change,
@@ -807,7 +812,7 @@ $$\forall i \neq j \in \mathbb{Z}_s, \big[ B[i],B[i+1] \big) \cap \big[ B[j],B[j
 Also since the boundaries match, the pre-image of a output value is contained by only one input value,
 $$ \forall i \neq j \in \mathbb{Z}_s, \alpha,\beta \in \mathcal{X} \text{ such that } \alpha \in Img_{F^{-1}_{D_N}}(\big[ B[i],B[i+1] \big)) \text{ and } \beta \in Img_{F^{-1}_{D_N}}(\big[ B[j],B[j+1] \big))$$
 $$\text{ then } \alpha \neq \beta$$
-Therefore, if we take arbitrary $i, j \in \mathbb{Z}_s, \text{ such that letting} \alpha = F^{-1}_{D_N}(i), \text{ and } \beta = F^{-1}_{D_N}(j), \text{ then } \alpha = \beta \in \mathcal{X}$ then by the contrapositive above $i=j$, and so injectivity holds.
+Therefore, if we take arbitrary $i, j \in \mathbb{Z}_s, \text{ such that letting } \alpha = F^{-1}_{D_N}(i), \text{ and } \beta = F^{-1}_{D_N}(j), \text{ then } \alpha = \beta \in \mathcal{X}$ then by the contrapositive above $i=j$, and so injectivity holds.
 
 \subsection{Towards a Concrete Scheme}
 
@@ -945,7 +950,7 @@ $$ encrypt \left( (k_e, k_s), \mathcal{D}_1 \right) \sim  U_n$$
 By the definition of $\mathcal{F}^{-1}_{D_N}$, if given values from the uniform distribution, it will generate heuristic values that follow the distribution of normal traffic of $\mathcal{D}_2 = \mathcal{H}$.
 
 However, the encryption scheme can only guarantee values that are computationally indistinguishable and so the proof must rely on this version rather than unbounded statistical bound.
-Though, note that statistics will used to detect but in practice these are limited to only calculations that are efficient.
+Though, note that statistical analysis techniques will be used to detect, but in practice, these are limited to only calculations that are computationally efficient.
 Therefore, this bound is meaningful in the real world.
 
 To prove that unformatted ciphertexts, that are computationally indistinguishable from random, form distributed ciphertexts, that are computationally indistinguishable from the target distribution under the encoding scheme, I will form a reduction.
@@ -1020,7 +1025,7 @@ http && http.request.method == "GET"
 The filter shows that we only targeted GET requests. This is because HTTP is a very one-sided protocol, with most of the content moving from the web server to the client.
 Therefore, it is harder to hide messages inside the requests due to there normally low data size. The response encoding should be more straightforward since files returned from servers are usually much less structured. GET requests, as opposed to POST requests, take up a larger proportion of web traffic and so are the obvious choice to hide inside, although, in future work, a heuristic to produce a distribution of both could improve the scheme.
 
-In this experiment, I have fixed all other HTTP fields apart from the path to simplify the implementation. I have done this since this is only a proof of principle and expanding the scope to create more complexity is left to a future goal.
+In this experiment, I have fixed all other HTTP fields apart from the path to simplify the implementation. I have done this since this is only a proof of principle and expanding the scope to create more complexity is left as a future goal.
 
 To collect real web traffic data, I built a web-crawler using the FOSS Selenium web automation framework. To gather a realistic distribution I needed to emulate the whole browser environment since a large amount of the requests from modern sites are dynamically initiated from inside the scripts.
 I crawled recursively over the Alexa top 50 sites~\cite{alexa} that support unencrypted traffic. This gave me a sample of 10,000 paths to create reference distribution.
@@ -1166,7 +1171,7 @@ I used the Selenium browser automation tool to control the Firefox web browser a
 \label{chap:evaluation}
 
 After building the proposed scheme, I conducted some experiments to test its performance in a practical situation.
-Firstly, I will test and explain how adjusting a heuristic parameter affects spaces requirements and ciphertext expansion.
+Firstly, I will test and explain how adjusting a heuristic parameter affects space requirements and ciphertext expansion.
 Secondly, I will evaluate the scheme for its statistical indistinguishability property to ensure it holds when the boundary tweak is applied.
 
 \section{Evaluating Pattern Length Effects}\label{sec:gran}
@@ -1396,7 +1401,7 @@ To sum up, the smaller the patterns lead to more independence and so more even d
 \subsubsection{Larger Samples}
 
 To investigate the effect of the reference sample size on these figures, I extracted more network traffic so I could compare 3 different-sized datasets.
-The figure on histogram-bin-numbers shows how, although each sample size does have diminishing returns, as pattern length increases, the maximum value reached does improve directly with the size of the sample. This is because although at small pattern sizes the samples are exhaustive, on larger patterns although the actual normal distribution may contain up to an exponential number of sequences in a fixed sample we only ever see a small portion of them.
+The figure on histogram-bin-numbers shows how, although each sample size does have diminishing returns, as pattern length increases, the maximum value reached does improve directly with the size of the sample. This is because, at small pattern sizes the samples are exhaustive, yet on larger patterns, although the actual normal distribution may contain up to an exponential number of sequences, in a fixed sample we only ever see a small portion of them.
 
 I believe the largest sample produces such a large increase compared to the step from 10000 to 20000 due to the way the web crawler worked.
 As described in the implementation section, it starts with a small set of sites and ventures outwards by following links on the pages.
@@ -1449,10 +1454,10 @@ Fisher's exact test		& 0			& good\\
 
 In this thesis, I started by explaining some of the benefits of a completely open web, and gave examples where this is not the case, and outlined the negative impacts that this has; socially and economically.
 I explained the focus of this thesis on the type of censorship that blocks access to content, rather than removing it, and discussed the current ways this is implemented.
-I described The Onion Router's part in the anonymisation of traffic and how the protocol based detection of this protocol by network censoring agents is used to block it completely.
+I described The Onion Router's part in the anonymisation of traffic and how the protocol based detection of its packets by network censoring agents is used to block it completely.
 I used this as a motivation to create schemes to encrypt messages in to ciphertexts that have some enforced properties, so that they could be used to encrypt TOR packets into ciphertexts that look like innocuous packets.
 In section \ref{chap:prev_work} on previous work, I looked at current systems that are deployed as TOR transports to fill this role, and concluded that although they have had some success, a more general, yet specifically targeted solution was needed.
-Therefore, I have looked to the future, to try and pre-empt ways that could stop the current TOR transports from being effective.
+In this thesis, I have looked to the future, to try and pre-empt ways that could stop the current TOR transports from being effective.
 
 After summarising related classical cryptography and then the work done in the field of format based encryption, I showed that although FTE can force protocol misclassification of traffic by regular expression based deep packet inspection tools, there is a very simple identifying feature - fixed length - which can be used to distinguish FTE traffic from normal traffic.
 I then move on to generalise the detection, so that it can work for other, possibly new, vulnerable schemes.
@@ -1462,13 +1467,13 @@ I then construct a detection mechanism using an appropriate test of similarities
 This calculates the distance measure between a test sample and a record background sample and concludes using a threshold whether the test sample is sufficiently close to `normal'.
 Here, I leave the defining of the threshold up to the deploying-party, but as an example mention how one could be obtained.
 
-To comprehensively define my new cryptographic primitive -- DTE -- I defined the syntax and security properties.
-I use a standard privacy property but define also include a novel one called statistical indistinguishability. I formally define the requirement, but again leave the exact bound to the deploying party since there is no generic, asymptotic, security parameter and exact value should be optimised for the situation.
+To comprehensively define my new cryptographic primitive -- DTE -- I described the syntax and security properties.
+I use a standard privacy property but also include a novel one called statistical indistinguishability. I formally define the requirement, but again leave the exact bound to the deploying party since there is no generic, asymptotic, security parameter and the exact value should be optimised for the situation.
 
 I then moved to create an instantiation of DTE to force no detection by my described detection mechanism.
 For ciphertext generation, I decided again to use heuristics to model the distribution and settled on inverse transform sampling to sample from it.
-I proposed a tweak to ensure the discrete version of the inverse transform  ($F^{-1}_{D_N}$) is invertible, and used it to form the an encoding scheme.
-I then defined DE-CENSOR to be the two stage encrypt-then-encode construction using an CBC encryption scheme and at least one level of encoding.
+I proposed an adaptation to ensure that the discrete version of the inverse transform  ($F^{-1}_{D_N}$) is invertible, and used it to form an encoding scheme.
+I then defined DE-CENSOR to be the two stage encrypt-then-encode construction using a CBC encryption scheme and at least one level of encoding.
 Proofs of scheme requirements ensured that construction met the demands of DTE.
 Privacy was proved using a reduction to the security of the underlying encryption scheme showing the IND-CPA property is maintained through the encoding.
 Statistical indistinguishability...
@@ -1500,7 +1505,7 @@ Finally, due to this projects goal as a proof of principle, the descriptions of 
 
 \section{Final Remarks}
 
-Distribution aware detection systems are only going to become more popular for conducting network based censorship. This thesis starts to provide a concrete ecosystem to manage how we reason about these systems and about how to fool them.
+Distribution aware detection systems are only going to become more popular for conducting network based censorship. This thesis starts to provide a concrete ecosystem to manage how we reason about these systems and about how to defeat them.
 
 
 % =============================================================================
