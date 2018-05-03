@@ -113,11 +113,11 @@ My research hypothesis is that statistical methods could be used by network base
 
 \multicolumn{3}{c}{Novel}\\
 &&\\
-FTE					&:		& Format Transforming Encryption\\
 DTE					&:		& Distribution Transforming Encryption\\
-Normal distribution &:		& Laplace-Gauss distribution\\
-normal traffic		&:		& Traffic generated from a normal person browsing their normal sites on their normal web browser.\\
+FTE					&:		& Format Transforming Encryption\\
 DE-CENSOR			&:		& Distribution Encoding of Ciphertexts to Emulate Normal Surfing for Onion Routing\\
+`normal' traffic		&:		& Traffic generated from a normal person browsing their normal sites on their normal web browser.\\
+Normal distribution &:		& Laplace-Gauss distribution\\
 Record Layer		&:		& Layer in the network stack that receives data from the application layer, encrypts it, fragments it to an appropriate size and sends it on to the Transport Layer.\\
 SOCKS				&:		& Socket Secure -- Internet Proxy Protocol\\
 Statistical Indistinguishability&:& Cryptographic demand of DTE, for ciphertexts to be indistinguishable from the target distribution, by statistical methods.\\
@@ -128,19 +128,21 @@ Statistical Indistinguishability&:& Cryptographic demand of DTE, for ciphertexts
 AES                 &:		& Advanced Encryption Standard\\
 DES                 &:		& Data Encryption Standard\\
 DFA					&:		& Deterministic Finite Automaton\\
-NSA					&:		& National Security Agency of the United States\\
-VPN					&:		& Virtual Private Network\\
+Exclsuive Or		&:		& A logical operation that outputs 1 when inputs differ else 0\\
 HTTP				&:		& Hypertext Transfer Protocol\\
 HTTPS				&:		& HTTP Secure\\
-TLS					&:		& Transport Layer Security\\
-ISP					&:		& Internet Service Provider\\
+IND-CPA				&:		& Indistinguishability of ciphertexts under a plaintext attack\\
 IP					&:		& Internet Protocol\\
-URL					&:		& Uniform Resource Locator\\
-TOR					&:		& The Onion Router\\
-VOIP				&:		& Voice over IP\\
+ISP					&:		& Internet Service Provider\\
+NSA					&:		& National Security Agency of the United States\\
 PDF					&:		& Portable Document Format\\
 SWF					&:		& Adobe's Small Web Format\\
-Exclsuive Or		&:		& A logical operation that outputs 1 when inputs differ else 0\\
+TLS					&:		& Transport Layer Security\\
+TOR					&:		& The Onion Router\\
+URL					&:		& Uniform Resource Locator\\
+VPN					&:		& Virtual Private Network\\
+VOIP				&:		& Voice over IP\\
+
 \end{tabularx}
 
 % -----------------------------------------------------------------------------
@@ -213,7 +215,7 @@ These key values, that also lie at the heart of democracy, can ensure that if a 
 Traditionally, the Internet has been built as a distributed entity, to share the technological burden, but also to share responsibility and provide options -- the very concept of a network can provide many routes for information to move from source to destination.
 
 However, as organisations throughout the world realised the Internet's importance, in a bid to try to control it, they caused a trend of centralisation.
-For instance many VOIP systems are no longer pure peer-to-peer systems but route all traffic through a central server.
+For instance, many VOIP systems are no longer pure peer-to-peer systems but route all traffic through a central server.
 Large Internet service providers control the backbone of the Internet and are in charge of handling the movement of information around the world.
 The world has become reliant on search engines to help us navigate the expanse of knowledge available to us, but this role is dominated by few big entities.
 Therefore, the internet today, especially for certain sub-networks in some parts of the world, is under the control of just a few powerful actors.
@@ -806,7 +808,7 @@ The un-encode mechanism splits the string of patterns up and then applies the fo
 If length encoding took in arbitrary length ciphertexts, it would need to include the length of the original message into the encoding, such as pre-pending the data with its length as a number of bytes.
 However, whatever way this is done, the resulting output will not satisfy the uniform random requirement for the next level (pattern encoding).
 To counter this, another level of encryption could be done with another set of keys. However, this is undesirable due to the increased ciphertext length expansion and computational work.
-Another solution is to fix the whole scheme to only work on fixed sized blocks as input. TO enforce this messages can be padded before encryption using a secure padding scheme such as defined in ISO 10126~\cite{iso-pad}.
+Another solution is to fix the whole scheme to only work on fixed sized blocks as input. To enforce this, messages can be padded before encryption using a secure padding scheme such as defined in ISO 10126~\cite{iso-pad}.
 
 
 \subsection{Formalising the Construction}
