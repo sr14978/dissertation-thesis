@@ -478,7 +478,7 @@ $\hookleftarrow$
 
 \section{Attacking FTE}\label{attacking_fte}
 
-Although FTE produces validly formatted ciphertexts which satisfy many current filtering systems, the ciphertexts look in no way normal.
+Although FTE produces validly formatted ciphertexts which bypass many current filtering systems, the ciphertexts look in no way normal.
 Informally, this is in the same way auto-generated C source code looks very different to any C code that a human would write.
 This means that statistical analysis such as deep learning techniques will discover that these streams are in fact fake.
 
@@ -634,7 +634,7 @@ Yet, in other settings, where even one detection would cause large detrimental e
 To create this DTE scheme, there must be a way to encapsulate not just the valid language but its frequency distribution.
 Firstly, I looked to the finite state machine produced by the regular expressions as used in FTE. Sadly, augmenting the node with weights according to the visiting frequency does not produce the desired effect.
 The adding of these weights to the DFA's state transitions would still produce a graph that could be ranked using a slightly altered algorithm.
-However, these weights would not be meaningful, since they would not be taking into consideration the previous path through the transition graph and therefore previous symbols in the stream.
+However, these weights would not be meaningful, since they do not take into consideration the previous path through the transition graph and therefore previous symbols in the stream.
 In some graphs, where every different input stream parses through a different subset of the DFA states, this approach is valid.
 However, efficient DFAs do not do this since it has an exponential blow up, and specifically not the DFAs for the languages that we are targeting.
 
@@ -679,8 +679,8 @@ Fully connected neural networks with a single hidden layer are theoretically abl
 Therefore, they should be able to convert distributions.
 To test this, in early 2018, Horger et al. wrote a paper on training neural nets to generate samples from arbitrary distributions~\cite{deepl}.
 They trained the fully connected neural net to map uniformly generated inputs to a chosen probability density function by minimising Jensen-Shannon divergence.
-Their model was able to produce results that have comparable goodness of fit to other classical methods and after training was competitive in performance.
-Large amounts of data are needed to train the system, where, if we desire practical performance, specialist hardware will be required to cope with the parallelism. Although, in the not so distant future this may become ubiquitous.
+Their model was able to produce results that have comparable goodness of fit to other classical methods and using an already trained network is competitive in performance.
+However, large amounts of data are needed to train the system, where, if we desire practical performance, specialist hardware will be required to cope with the parallelism. Although, in the not so distant future this may become ubiquitous.
 
 \subsection{The Proposed Scheme}
 
