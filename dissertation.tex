@@ -265,61 +265,64 @@ In this chapter, I have explained how there are motivations for wanting to acces
 \chapter{Classical Cryptographic Background}
 \label{chap:technical}
 
-After language was invented to share knowledge, humans soon needed a way hide it from those whom it was not intended. The first schemes used word or letter substitutions or the shuffling of characters to make the meaning of a message hard to obtain. These techniques are still used as the basic building blocks today; for example in the AES block cipher, a very popular encryption scheme, of which there are hardware implementations baked into many of the major computer chips. Early schemes, however, relied on the secrecy of the method to protect the privacy of the message which meant that they cannot be reused by others. This lead to the introduction of parametrised constructions that use a key to alter the encryption such as the Vigen\`ere cipher. Modern schemes obey Kerkoff's principle; that the security of the system only depends on the security of the key, allowing the same encryption method to be used by all.
+After language was invented to share knowledge, humans soon needed a way hide it from those whom it was not intended. The first schemes used word or letter substitutions or the shuffling of characters to make the meaning of a message hard to obtain.
+These techniques are still used as the basic building blocks today; for example in the AES block cipher, a very popular component of encryption schemes, which is implemented in the hardware of all the major CPUs.
+Early schemes, however, relied on the secrecy of the method to protect the privacy of the message which means that they cannot be reused by others.
+This lead to the introduction of parametrised constructions that use a key to alter the encryption such as the Vigen\`ere cipher.
+Modern schemes obey Kerkoff's principle -- that the security of the system only depends on the security of the key -- allowing the same encryption method to be used by all.
 
 The term -- security through obscurity -- is in stark contrast to the Kerkoff doctrine and advocates not sharing security system information.
-However, a well known saying is that ``security through obscurity is an illusion'' since; (a) there is no way of proving this type of security, and (b) schemes that are not in the public domain cannot get any where near the amount of scrutiny as those who are published, discussed and tested with others.
-These days, a lot of the research into cryptography is done by staff at universities, where publishing and collaboration is the norm.
+However, a well known saying is that ``security through obscurity is an illusion'' since; (a) there is no way of proving this type of security, and (b) schemes that are not in the public domain cannot get anywhere near the amount of scrutiny as those who are published, discussed and tested with others.
+These days, a lot of the research into cryptography is done by researchers at universities, where publishing and collaboration is the norm.
 
-What defines modern cryptography is the requirement to prove the hardness of all problems, or at least compare it to the difficulty of another problem.
+What defines modern cryptography is the requirement to prove the hardness of all problems, or at least compare them to the difficulty of another problem.
 Information theoretic security is a level of security that is based on information theory.
-Proving this does not rely on any unproven assumptions but implies that there is just not enough information in the ciphertext to recover the plaintext.
-Perfect security is a subtype of information theoretic security in which implies there is not enough information in the ciphertext to obtain any information about the plaintext.
-One example of this, in the one-time-pad which involves using a key just as big as the plaintext and exclusive-oring (Xor) them together bitwise.
+These proofs do not rely on any unproven assumptions but imply that there is just not enough information in the ciphertext to recover the plaintext.
+Perfect security is a subtype of information theoretic security which proves there is not enough information in the ciphertext to obtain any information about the plaintext.
+One example of this is the one-time-pad which involves using a key just as big as the plaintext and exclusive-oring (Xor) them together bitwise.
 Although this scheme has perfect security, it relies on sharing the same random key (of the same size as the message) between the two parties who wish to communicate without leaking it to anyone else.
-This feature of the scheme is unsustainable since for every message that is sent the two parties must meet up and share more key material
+This feature of the scheme is unsustainable since for every message that is sent the two parties must meet up and share a key just as long as the message.
 Therefore, it is hardly ever used in practice.
 
 Instead, schemes are used that require a much smaller secret.
 This secret still must be long enough so that it would take a \textit{long} time to guess, but due to exponential scaling this can be quite manageable.
 For example, for a key of length 256 bits, it could take up to many times the age of the universe to guess.
-Also, the schemes shuffle and mix the ciphertext such that to work out what the key is, by mathematical constraints, many plaintext-ciphertext pairs are needed.
+Also, the schemes shuffle and mix the ciphertext such that to work out what the key is by mathematical constraints many plaintext-ciphertext pairs are needed.
 
 To be a bit more formal, encryption schemes are built from building blocks called blockciphers.
 A blockcipher is a set of keyed permutations each of a fixed uniform length $n$ and an example of one is AES.
-These constructions, encrypt plaintexts of length $n$ into ciphertexts of length $n$ so to build a cipher that works over arbitrary length data, they need to be combined in some fashion.
-There are bad ways of doing this such as electronic code book mode (ECB), which suffers from block independence so certain patterns in the plaintext are obvious in the ciphertext.
+These constructions, encrypt plaintexts of length $n$ into ciphertexts of length $n$ so, to build a cipher that works over arbitrary length data, they need to be combined in some fashion.
+There are bad ways of doing this, such as electronic code book mode (ECB), which suffers from block independence so certain patterns in the plaintext are obvious in the ciphertext.
 There are also good ways, such as cipher block chaining (CBC) which XORs the previous ciphertext into the next plaintext to make all ciphertext blocks dependent on all previous plaintext blocks.
-This has performance implications since to decode one block you have to decode all previous blocks in the message so there are other modes tailored to that but, this also means the last block is a calculation that depends on all other blocks.
+This means that the last block is a calculation that depends on all other blocks.
 
-This same mode can then be used with a different key to \textit{encrypt} the ciphertext, only keeping the last block. This last block can then be sent with the ciphertext as proof that the ciphertext is not changed while in transit, since recalculation at the destination should result in the same message authentication code (MAC).
+Therefore, this same mode can then be used with a different key to \textit{encrypt} the ciphertext, only keeping the last block. This last block can then be sent with the ciphertext as proof that the ciphertext is not changed while in transit, since recalculation at the destination should result in the same message authentication code (MAC).
 A third party could replace or edit the ciphertext, but without the second key, they can't reproduce the correct corresponding MAC.
-Hash MAC (HMAC) is when a compression function involving a hash is used to compress the input before a final encryption instead of many encryptions needed in a CBC-MAC.
-A hash function is a deterministic function that is infeasible to invert (first pre-image resistance), mixes the data such that a small change occurs in the input, a large change occurs in the output.
-It should be hard to find two inputs that have the same output (collision resistance).
+Hash MAC (HMAC) is when a compression function involving a hash is used to compress the input before a final encryption instead of the many block cipher encryptions needed in a CBC-MAC.
+A hash function is a deterministic function that is infeasible to invert (first pre-image resistance), mixes the data such that when a small change occurs in the input, a large change occurs in the output and it should be hard to find two inputs that have the same output (collision resistance).
 
-The cryptography systems mentioned so far are symmetric in that they involve a single key, that is known to both parties by no-one else, to encrypt and decrypt.
+The cryptography systems mentioned so far are symmetric in how they involve a single key, that is known to both parties and no-one else, to encrypt and decrypt.
 This is not practical in a lot of situations.
 Instead, we use an asymmetric scheme that uses different keys to encrypt and decrypt.
 This means that the decrypt key can be kept private but the encrypt key can be made public to everyone, such that anyone can encrypt a message and send it, but no-one, even the original author, can decrypt it, apart from the one with the private decrypt key.
 We name these keys; private and public respectively.
 The way the schemes work is based on a trap door function which is easy to compute in the encryption direction but the inversion for decryption is hard unless you know the private key.
-The major difference here is that you can calculate the private key from just the public key, but the system is built such that it would take a lot of computation and so if infeasible in real life.
-This partially solves the problem of key distribution, since it is all right to send the public in the clear, however, there is now a problem of ensuring the key a sending party is using to encrypt is the correct one.
+The major difference here is that you can calculate the private key from just the public key, but the system is built such that it would take a lot of computation and so is infeasible in real life.
+This partially solves the problem of key distribution, since it is all right to send the public in the clear, however, there is now a problem of ensuring the key used to encrypt is the correct one.
 This authentication problem can be solved by more asymmetric cryptography called signatures which are the asymmetric version of MACs.
 
 Although many symmetric encryption schemes produce ciphertexts that are indistinguishable from random bits, asymmetric schemes do not.
 This is because these systems are based on mathematical equations to link the public and private key.
 In many asymmetric schemes such as in the well known RSA cipher, the mathematics is based on group theory and the keys are definitions of groups and ciphertexts are made from elements inside them.
 Therefore, they might have some structure to define the separate elements, for instance, an ElGamal ciphertext is $(g^y, m \cdot h^y )$ where, $m,g,h \in \mathbb{G}$ which is the group.
-Furthermore, since the sizes of the groups $\mathbb{G}$ are not a power of two, the elements representations will not produce uniform bit patterns.
+Furthermore, since the sizes of the groups $\mathbb{G}$ are not a power of two, the elements' representations will not produce uniform bit patterns.
 
 Steganography is the practice of concealing one message inside another.
 Most examples of this are just security through obscurity such as invisible ink or hiding text in an image by altering pixel values.
-Honey encryption which we introduced in 2014 by Juels et al.~\cite{honey} has a similar tone to steganography, though instead of the resulting encoding appearing like innocuous data, it involves as ciphertext that can be decrypted to the original message or into an innocuous one.
+Honey encryption which we introduced in 2014 by Juels et al.~\cite{honey} has a similar tone to steganography, though instead of the resulting encoding appearing like innocuous data, it involves a ciphertext that can be decrypted to the original message or into an innocuous one.
 The approach was actually targeted for situations with low entropy keys, such that brute force attacks are possible. To counter this, the definition enforces that for any number of incorrect keys the scheme produces plausible-looking but bogus plaintexts.
 
-Though similar, my distribution transforming encryption, like the format transforming encryption, is not exactly a steganographic scheme since the data is not embedded inside innocuous other innocuous data, but it is the innocuous data. This distinction means that it is more general and more efficient since well-looking cover traffic does not need to be produced to encode each new message.
+Though similar, my distribution transforming encryption, like the format transforming encryption, is not exactly a steganographic scheme since the data is not embedded inside other innocuous data, but it is the innocuous data. This distinction means that it is more general and more efficient since well-looking cover traffic does not need to be produced to embed each new message.
 
 
 \chapter{Previous Work}\label{prev_work}
