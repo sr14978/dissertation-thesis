@@ -47,14 +47,9 @@
 \usepackage{multirow}
 \usepackage{tabularx}
 \usepackage{mdframed}
-%\usepackage{titlesec}
-%
-%\titleformat{\chapter}[display]
-%    {\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
-%\titlespacing*{\chapter}{0pt}{10pt}{40pt}
 
-\usepackage{lineno}
-\linenumbers
+%\usepackage{lineno}
+%\linenumbers
 
 \begin{document}
 
@@ -1417,33 +1412,71 @@ Therefore, there is an application specific trade-off that deployers of the sche
 Also, as expected, larger samples produce a higher fidelity distribution.
 This does increase the space requirement of the scheme, but time performance should not be affected to the same extent due to the sublinear complexity of the binary search.
 
-\section{Statistical Indistinguishability}
+\section{Statistical Indistinguishability}\label{sec:stat_ind}
+
+To evaluate the success of the DE-CENSOR scheme I will experimentally demonstrate the closeness to which it resembles the target distribution.
+To demonstrate this I recorded 3 reference distributions from normal traffic.
+One was used to define the encoding scheme, $Enc^{\mathcal{D}_2}$ and $Dec^{\mathcal{D}_2}$; one was used to base the Censor Detection Scheme from; and one was used as a control set of background traffic.
+I used 4 different statistical measurements and 10 samples of: FTE produced ciphertexts, DTE produced ciphertexts and normal traffic.
+The results are outlined in the table.
 
 \begin{table}[h]
 \centering
-\begin{tabular}{|c|c|c|}
+\begin{tabular}{|c|c|c|c|c|}
 
 \hline
 
-Test					& Value		& Result\\
+Test					& FTE		& Normal	& DTE		& Result\\
 
 \hline
 
-Chi-square				& 0			& good\\
+Chi-square				& 9.0071	& 2.4376	& 0.2081	& Good\\
 
-G-test					& 0			& good\\
+G-test					& 2.5116	& 0.7348	& 0.2425	& Good\\
 
-Kullback-Leibler		& 0			& good\\
+Kullback-Leibler		& 1.2558	& 0.3674	& 0.1211	& Good\\
 
-Jensen-Shannon			& 0			& good\\
-
-Fisher's exact test		& 0			& good\\
+Jensen-Shannon			& 0.2292	& 0.0650	& 0.0339	& Good\\
 
 \hline
 
 \end{tabular}
-
+\caption{Example statistical test results when compared to a normal reference distribution}
 \end{table}
+
+Firstly, this demonstrates the successful detection of the FTE ciphertexts, since a clear threshold would produce no false positives and true negatives. 
+Secondly this shows each DTE score is consistent with, if not closer to the censor's reference distribution, than the normal traffic benchmark.
+In this case, there is no clear best statistical measure and so the Censor Detection Scheme could use any of the choices.
+
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}[b]{0.4\linewidth}
+		\includegraphics[width=\linewidth]{chi}
+		\caption{Chi-square}
+		\label{fig:length_hist}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.4\linewidth}
+		\includegraphics[width=\linewidth]{gtest}
+		\caption{G-test}
+		\label{fig:char_hist}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.4\linewidth}
+		\includegraphics[width=\linewidth]{kl}
+		\caption{Kullback-Leibler}
+		\label{fig:first_hist}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.4\linewidth}
+		\includegraphics[width=\linewidth]{js}
+		\caption{Jensen-Shannon}
+		\label{fig:rand_hist}
+	\end{subfigure}
+
+	\caption{Visualisation of the Statistic Measurements}\label{fig:hists}
+\end{figure}
+
+
+
+
 
 % -----------------------------------------------------------------------------
 
@@ -1480,10 +1513,10 @@ DE-CENSOR does not reach the requirement for statistical indistinguishability si
 
 \section{Project Goals}
 
-During the thesis I have outlined the downfalls that I have found of using an FTE system to encode ciphertext -- the traffic it produces can be detected.
-I have prototyped the Censor Detection System in python, and tested it against normal and fake traffic with ...........results.
+During the thesis I have outlined the downfalls that I have found of using an FTE system to encode ciphertext -- the traffic it produces does not follow the same distribution as normal traffic and therefore can be detected.
+I have prototyped the Censor Detection System in python, and tested it against normal and fake traffic. In section \ref{sec:stat_ind}, I show the detection systems success in producing no false positives or true negatives in the sample.
 I have given detailed formalisation of the new cryptographic primitive -- DTE --- and discussed its use in replacing FTE.
-Finally, not only have I constructed an instantiation of this scheme -- DE-CENSOR -- but I have also written a prototype proxy system that uses it and in experiments against the CDS, it has good results...........
+Finally, not only have I constructed an instantiation of this scheme -- DE-CENSOR -- but I have also written a prototype proxy system that uses it and in experiments against the CDS in section \ref{sec:stat_ind}, I show how it has consistent scores with normal traffic across all example tests.
 
 \section{Open Problems and Future Work}
 

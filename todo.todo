@@ -40,7 +40,7 @@ Implementation:
 
 Evaluation:
   ✔ pattern length effects @done(2018-05-02 14:49) @project(Evaluation)
-  ☐ using different measurements
+  ✔ using different measurements @done(2018-05-04 01:37) @project(Evaluation)
 
 Conclusion:
   ✔ run through @done(2018-05-03 14:26) @project(Conclusion)
